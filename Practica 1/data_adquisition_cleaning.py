@@ -31,6 +31,7 @@ def limpiar_dataset(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(how="all")
     df["Date"] = pd.to_datetime(df["Date"], dayfirst=True, errors="coerce")
     df = df.dropna(subset=["Date", "HomeTeam", "AwayTeam"])
+    df = df.dropna(subset=["HTHG", "HTAG", "HTR"]) #esto es por un solo partido que no tiene dato de tiempo
 
     for col in ["FTR", "HTR"]:
         if col in df.columns:
@@ -45,23 +46,27 @@ def limpiar_dataset(df: pd.DataFrame) -> pd.DataFrame:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
+    # reemplazo de nulos de odds con la mediana de cada columna
+    for col in odds_cols:
+        if col in df.columns:
+            df[col] = df[col].fillna(df[col].median())
+
     df = df.drop_duplicates(subset=["Div", "Date", "HomeTeam", "AwayTeam"])
     df = df.sort_values(["Date", "Div"]).reset_index(drop=True)
     return df
 
-#filtra las top 5 ligas del csv porque también contiene otras
+# top 5 ligas europeas
 ligas = ["E0", "SP1", "D1", "I1", "F1"]
 temporadas = ["1920", "2021", "2122", "2223", "2324", "2425", "2526"]
 
 columnas_resultado = ["Div", "Season", "Date", "HomeTeam", "AwayTeam",
                       "FTHG", "FTAG", "FTR", "HTHG", "HTAG", "HTR"]
 
+# se eliminó Pinnacle por irregularidades dichos por el creador de la api y nulos excesivos +250
 odds_cols = ["B365H", "B365D", "B365A",
-             "PSH", "PSD", "PSA",
              "MaxH", "MaxD", "MaxA",
              "AvgH", "AvgD", "AvgA",
              "B365CH", "B365CD", "B365CA",
-             "PSCH", "PSCD", "PSCA",
              "MaxCH", "MaxCD", "MaxCA",
              "AvgCH", "AvgCD", "AvgCA"]
 
@@ -77,6 +82,7 @@ combined.to_csv("data/raw/football_raw.csv", index=False)
 print(f"\nraw: {combined.shape}")
 
 df_clean = limpiar_dataset(combined)
+print(df_clean.isnull().sum())
 df_clean.to_csv("data/clean/football_clean.csv", index=False)
 
 print(f"clean: {df_clean.shape}")

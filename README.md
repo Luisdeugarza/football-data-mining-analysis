@@ -130,7 +130,7 @@ Se usa `normalize_distribution` para comparar la distribución real de goles con
 | `goles_local_vs_visitante.png` | Scatter FTHG vs FTAG |
 | `movimiento_mercado.png` | Scatter movimiento H vs A |
 
-## Hallazgos principales
+## Hallazgos principales por el momento
 
 - **Ventaja local estable**: ~43% de victorias locales en todas las temporadas
 - **Bundesliga** es la liga más goleadora (3.15 goles/partido), **La Liga** la más defensiva (2.55)
@@ -139,19 +139,8 @@ Se usa `normalize_distribution` para comparar la distribución real de goles con
 - El **overround** aumentó en 2025/26 (~1.062) respecto a temporadas anteriores (~1.044)
 - Las **remontadas locales** representan ~5-6% de los partidos en todas las ligas
 
-## Próximas prácticas
 
-| Práctica | Tema | Semana |
-|----------|------|--------|
-| 3 | Visualización de datos | 6 |
-| 4 | Pruebas estadísticas (ANOVA, Kruskal-Wallis) | 7 |
-| 5 | Regresión lineal | 9 |
-| 6 | KNN | 10 |
-| 7 | K-means | 12 |
-| 8 | Series de tiempo / Forecasting | 13 |
-| 9 | Análisis de texto | 14 |
-
-## Dependencias
+## Imports
 
 ```
 pandas

@@ -4,7 +4,7 @@ Análisis estadístico completo del dataset de fútbol europeo usando funciones 
 
 ## Objetivo
 
-Extraer estadísticas descriptivas significativas del dataset limpio, identificar patrones por liga y temporada, y validar distribuciones reales contra distribuciones simuladas.
+Extraer estadísticas descriptivas significativas del dataset limpio e identificar patrones por liga y temporada usando funciones de agregación sobre los datos reales.
 
 ## Estructura
 
@@ -12,15 +12,12 @@ Extraer estadísticas descriptivas significativas del dataset limpio, identifica
 Practica 2/
 ├── img/
 │   ├── er_diagram.png
-│   ├── boxplot_goles_por_liga.png
-│   ├── boxplot_odds_H_por_liga.png
-│   ├── boxplot_mov_H_por_liga.png
-│   ├── boxplot_goles_por_temporada.png
-│   ├── sim_vs_real_D1.png
-│   ├── sim_vs_real_E0.png
-│   ├── sim_vs_real_F1.png
-│   ├── sim_vs_real_I1.png
-│   ├── sim_vs_real_SP1.png
+│   ├── odds_apertura_por_liga.png
+│   ├── goles_local_vs_visitante.png
+│   ├── odds_apertura_vs_cierre_H.png
+│   ├── odds_apertura_vs_cierre_A.png
+│   ├── implied_prob_H_vs_A.png
+│   ├── movimiento_mercado.png
 │   ├── goles_por_temporada_y_liga.png
 │   ├── over25_por_temporada_y_liga.png
 │   ├── btts_por_temporada_y_liga.png
@@ -31,10 +28,7 @@ Practica 2/
 │   ├── distribucion_goles_por_liga.png
 │   ├── distribucion_goles_totales.png
 │   ├── overround_por_liga.png
-│   ├── underdog_win_vs_lose.png
-│   ├── odds_apertura_por_liga.png
-│   ├── goles_local_vs_visitante.png
-│   └── movimiento_mercado.png
+│   └── underdog_win_vs_lose.png
 └── descriptive_statistics.py
 ```
 
@@ -44,9 +38,9 @@ Practica 2/
 
 | Función | Aplicación en el análisis |
 |---------|--------------------------|
-| `min` / `max` | Goles máximos, odds extremas, odds de underdogs |
+| `min` / `max` | Goles máximos, odds extremas por periodo |
 | `moda` | Resultado más frecuente (FTR, HTR) por liga/temporada |
-| `count` | Partidos totales por segmento, underdogs, smart money |
+| `count` | Partidos totales por segmento |
 | `sum` | Goles acumulados, victorias totales, clean sheets |
 | `mean` | Promedio de goles, odds, porcentajes de resultados |
 | `var` / `std` | Variabilidad de goles y movimiento de mercado |
@@ -55,13 +49,25 @@ Practica 2/
 
 ### Álgebra relacional aplicada
 
-| Operación | Código |
-|-----------|--------|
+| Operación | Ejemplo en el análisis |
+|-----------|----------------------|
 | Selección | `df[df["Season"] == temporada]` |
 | Proyección | `df[["Div","Date","HomeTeam","FTHG","FTAG"]]` |
 | Agrupación | `df.groupby(["Div","Season"]).agg(...)` |
 | Join | `hg.merge(ag, on="equipo", how="outer")` |
 | Transposición | `.unstack()` para pivotar resultados H/D/A |
+
+### Patrón Map-Reduce
+
+```python
+# MAP: transformar cada elemento
+df["imp_prob_H"]  = df["AvgH"].map(lambda x: 1/x)
+df["total_goals"] = df["FTHG"] + df["FTAG"]
+
+# REDUCE: agregar por grupo
+df.groupby("Div")["total_goals"].agg(["sum","mean","count","std"])
+df.groupby(["Div","Season"])["home_win"].mean()
+```
 
 ## Variables derivadas
 
@@ -87,14 +93,14 @@ is_underdog    = AvgA > 4
 
 Para cada temporada se calculan:
 
-- Estadísticas numéricas completas (mean, median, std, min, max, q25, q75, skew, kurt)
-- Distribución simulada vs real de goles
+- Estadísticas numéricas completas: mean, median, std, min, max, q25, q75, skew, kurt
 - Resultados FT y HT con porcentajes
-- Flags: btts, over/under, clean sheets, alta anotación, sin goles
+- Flags: btts, over/under 1.5–4.5, clean sheets, alta anotación, sin goles
 - Remontadas (pierde HT, gana FT) y comportamiento entre tiempos
 - Odds: apertura, cierre, overround, movimiento de mercado
 - Underdogs (AvgA > 4) y underdogs extremos (AvgA > 8) que ganaron
 - Smart money: movimientos > 0.1 hacia local, visitante y empate
+- Listado de partidos de alta anotación (≥ 5 goles)
 
 ### Ciclo por liga dentro de cada temporada (D1, E0, F1, I1, SP1)
 
@@ -105,29 +111,18 @@ Para cada combinación liga × temporada:
 - Top 5 equipos con más clean sheets
 - Listado de underdogs extremos que ganaron
 
-### Comparación general
+### Comparación general al final
 
-Al final se comparan todas las temporadas y todas las ligas en tablas resumen, incluyendo tabla de distribución simulada vs real por temporada y por liga.
-
-## Distribuciones simuladas
-
-Se implementan `normalize_distribution` y `create_distribution` para generar distribuciones sintéticas basadas en la media observada y compararlas con los datos reales:
-
-```python
-def normalize_distribution(dist: np.ndarray, n: int) -> np.ndarray:
-    b = dist - dist.min() + 1e-6
-    c = (b / b.sum()) * n
-    return np.round(c)
-
-def create_distribution(mean: float, size: int) -> np.ndarray:
-    return normalize_distribution(np.random.standard_normal(size), mean * size)
-```
-
-Esto permite validar si la distribución real de goles se comporta de forma consistente con lo esperado dado el promedio observado.
+- Tablas resumen de todas las temporadas
+- Tablas resumen de todas las ligas (todo el periodo)
+- Skewness y kurtosis de goles por liga
+- Rankings de equipos: goles, victorias, empates, clean sheets
+- Matriz de correlación entre variables
+- Estadísticas por mes del año
 
 ## Diagrama Entidad-Relación
 
-Generado con `matplotlib` a partir del dataset. Entidades y relaciones:
+Generado con `matplotlib`. Entidades y relaciones del dataset:
 
 | Entidad | Atributos clave |
 |---------|----------------|
@@ -135,7 +130,7 @@ Generado con `matplotlib` a partir del dataset. Entidades y relaciones:
 | Team | HomeTeam / AwayTeam |
 | League | Div (E0, SP1, D1, I1, F1) |
 | Season | Season (1920 … 2526) |
-| Odds | B365H/D/A, MaxH/D/A, AvgH/D/A, B365CH/D/A, MaxCH/D/A, AvgCH/D/A |
+| Odds | B365H/D/A, MaxH/D/A, AvgH/D/A, cierres |
 
 | Relación | Cardinalidad |
 |----------|-------------|
@@ -143,6 +138,29 @@ Generado con `matplotlib` a partir del dataset. Entidades y relaciones:
 | Match has Odds | 1:1 |
 | Match belongs to League | N:1 |
 | Match played in Season | N:1 |
+
+## Gráficas generadas
+
+| Archivo | Descripción |
+|---------|-------------|
+| `er_diagram.png` | Diagrama entidad-relación del dataset |
+| `goles_por_temporada_y_liga.png` | Evolución de goles promedio por temporada |
+| `over25_por_temporada_y_liga.png` | Tendencia over 2.5 por temporada |
+| `btts_por_temporada_y_liga.png` | Tendencia ambos marcan por temporada |
+| `pct_home_win_por_temporada_liga.png` | Ventaja local por temporada |
+| `clean_sheet_por_temporada_liga.png` | Porterías a cero por temporada |
+| `resultados_pie_por_liga.png` | Distribución H/D/A por liga |
+| `btts_over_under_cs_por_liga.png` | Métricas de goles agrupadas por liga |
+| `distribucion_goles_por_liga.png` | Histogramas de goles por liga |
+| `distribucion_goles_totales.png` | Histograma global de goles |
+| `overround_por_liga.png` | Margen de la casa por liga |
+| `underdog_win_vs_lose.png` | Odds de underdogs ganadores vs perdedores |
+| `odds_apertura_por_liga.png` | Scatter AvgH vs AvgA por liga |
+| `goles_local_vs_visitante.png` | Scatter FTHG vs FTAG por liga |
+| `movimiento_mercado.png` | Scatter movimiento de mercado H vs A |
+| `implied_prob_H_vs_A.png` | Scatter probabilidades implícitas H vs A |
+| `odds_apertura_vs_cierre_H.png` | Scatter odds apertura vs cierre local |
+| `odds_apertura_vs_cierre_A.png` | Scatter odds apertura vs cierre visitante |
 
 ## Hallazgos principales
 
@@ -153,8 +171,8 @@ Generado con `matplotlib` a partir del dataset. Entidades y relaciones:
 | Liga menos goleadora | La Liga (2.55 goles/partido) |
 | Underdogs extremos (AvgA > 8) | Ganan ~15% de las veces |
 | Smart money hacia local | Predice correctamente ~35% |
-| Overround promedio | ~1.044 (2019-2025), sube a ~1.062 en 2025/26 |
-| Remontadas locales | ~5-6% de los partidos |
+| Overround promedio | ~1.044 (2019–2025), sube a ~1.062 en 2025/26 |
+| Remontadas locales | ~5–6% de los partidos |
 | Equipo más goleador | Bayern Munich (663 goles totales) |
 | Mayor % victorias local | Bayern Munich y Real Madrid (~77%) |
 
@@ -165,5 +183,4 @@ pandas
 numpy
 matplotlib
 tabulate
-scipy
 ```

@@ -1,0 +1,2025 @@
+
+======================================================================
+  TEMPORADA 2019/20  (1725 partidos)
+======================================================================
+
+--- goles generales 2019/20 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | FTHG        |  1.544 |        1 | 1.278 |     0 |     8 |     1 |     2 |  0.96  |  1.182 |
+|  1 | FTAG        |  1.248 |        1 | 1.188 |     0 |     9 |     0 |     2 |  1.157 |  2.09  |
+|  2 | HTHG        |  0.681 |        0 | 0.848 |     0 |     5 |     0 |     1 |  1.299 |  1.734 |
+|  3 | HTAG        |  0.545 |        0 | 0.74  |     0 |     5 |     0 |     1 |  1.402 |  2.19  |
+|  4 | total_goals |  2.792 |        3 | 1.617 |     0 |     9 |     2 |     4 |  0.506 |  0.208 |
+|  5 | ht_goals    |  1.226 |        1 | 1.076 |     0 |     6 |     0 |     2 |  0.776 |  0.286 |
+|  6 | goal_diff   |  0.296 |        0 | 1.865 |    -9 |     8 |    -1 |     1 |  0.02  |  0.951 |
+
+--- distribucion simulada vs real 2019/20 ---
+
+--- resultados FT 2019/20 ---
+|    | FTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | H     |     761 | 44.12 |
+|  1 | A     |     544 | 31.54 |
+|  2 | D     |     420 | 24.35 |
+
+--- resultados HT 2019/20 ---
+|    | HTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | D     |     699 | 40.52 |
+|  1 | H     |     575 | 33.33 |
+|  2 | A     |     451 | 26.14 |
+
+--- btts / over / under / clean sheets 2019/20 ---
+  btts: 932 (54.03%)
+  over15: 1348 (78.14%)
+  over25: 941 (54.55%)
+  over35: 518 (30.03%)
+  over45: 239 (13.86%)
+  under15: 377 (21.86%)
+  under25: 784 (45.45%)
+  under35: 1207 (69.97%)
+  clean_sheet_h: 528 (30.61%)
+  clean_sheet_a: 373 (21.62%)
+  high_scoring: 239 (13.86%)
+  goalless: 108 (6.26%)
+
+--- remontadas 2019/20 ---
+  local remonta (pierde HT, gana FT): 60 (3.48%)
+  visit remonta (pierde HT, gana FT): 48 (2.78%)
+  gana HT pero pierde FT (local):     48 (2.78%)
+  empate HT -> gana local FT:         265
+  empate HT -> gana visit FT:         184
+
+--- odds generales 2019/20 ---
+|    | column    |   mean |   median |   std |   min |    max |   q25 |   q75 |   skew |   kurt |
+|----+-----------+--------+----------+-------+-------+--------+-------+-------+--------+--------|
+|  0 | AvgH      |  2.779 |    2.23  | 1.892 | 1.06  | 17.04  | 1.7   | 3.03  |  3.098 | 13.176 |
+|  1 | AvgD      |  4.084 |    3.65  | 1.298 | 2.78  | 14.01  | 3.35  | 4.27  |  2.893 | 11.025 |
+|  2 | AvgA      |  4.526 |    3.32  | 3.873 | 1.14  | 32.25  | 2.4   | 5.03  |  3.095 | 12.668 |
+|  3 | AvgCH     |  2.821 |    2.22  | 2.028 | 1.04  | 25.99  | 1.7   | 3.11  |  3.703 | 22.472 |
+|  4 | AvgCD     |  4.128 |    3.64  | 1.473 | 2.71  | 19.42  | 3.33  | 4.32  |  3.361 | 16.682 |
+|  5 | AvgCA     |  4.594 |    3.35  | 4.099 | 1.09  | 40.86  | 2.39  | 5.11  |  3.437 | 16.632 |
+|  6 | overround |  1.048 |    1.049 | 0.004 | 1.035 |  1.058 | 1.046 | 1.051 | -0.429 | -0.322 |
+
+--- movimiento de mercado 2019/20 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | odds_move_H |  0.042 |     0.01 | 0.487 | -2.96 |  8.95 | -0.07 |  0.11 |  5.026 | 82.573 |
+|  1 | odds_move_D |  0.044 |     0    | 0.377 | -2.08 |  6.62 | -0.09 |  0.1  |  5.194 | 69.653 |
+|  2 | odds_move_A |  0.068 |     0.01 | 0.897 | -6.05 | 11.84 | -0.14 |  0.19 |  3.334 | 44.279 |
+
+--- underdogs 2019/20 ---
+  visitante (AvgA>4):  626 | ganan 91 (14.54%) | avg odd 7.878
+  local (AvgH>4):      250 | ganan 44 (17.6%) | avg odd 6.405
+  extremos (AvgA>8):   203 | ganan 18 (8.87%)
+
+--- underdogs extremos que ganaron en 2019/20 ---
+|      | Div   | Date                | HomeTeam      | AwayTeam       |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+-------+---------------------+---------------+----------------+--------+--------+--------+--------|
+|  337 | D1    | 2019-10-05 00:00:00 | Bayern Munich | Hoffenheim     |   1.11 |  23.32 |      1 |      2 |
+|  365 | E0    | 2019-10-06 00:00:00 | Man City      | Wolves         |   1.13 |  21.61 |      0 |      2 |
+| 1636 | SP1   | 2020-07-16 00:00:00 | Barcelona     | Osasuna        |   1.15 |  17.44 |      1 |      2 |
+|  269 | F1    | 2019-09-25 00:00:00 | Paris SG      | Reims          |   1.16 |  16.93 |      0 |      2 |
+|  989 | I1    | 2020-01-20 00:00:00 | Atalanta      | Spal           |   1.19 |  13.82 |      1 |      2 |
+| 1133 | I1    | 2020-02-09 00:00:00 | Napoli        | Lecce          |   1.21 |  13.34 |      2 |      3 |
+|  274 | I1    | 2019-09-25 00:00:00 | Napoli        | Cagliari       |   1.2  |  13.29 |      0 |      1 |
+|   88 | E0    | 2019-08-25 00:00:00 | Tottenham     | Newcastle      |   1.24 |  12.35 |      0 |      1 |
+|  772 | E0    | 2019-12-14 00:00:00 | Chelsea       | Bournemouth    |   1.25 |  11.64 |      0 |      1 |
+| 1393 | D1    | 2020-06-17 00:00:00 | Dortmund      | Mainz          |   1.26 |  10.55 |      0 |      2 |
+|  727 | E0    | 2019-12-07 00:00:00 | Man City      | Man United     |   1.31 |   9.9  |      1 |      2 |
+|  783 | I1    | 2019-12-14 00:00:00 | Napoli        | Parma          |   1.31 |   9.72 |      1 |      2 |
+|  655 | E0    | 2019-11-30 00:00:00 | Chelsea       | West Ham       |   1.3  |   9.63 |      0 |      1 |
+|  534 | I1    | 2019-11-03 00:00:00 | Atalanta      | Cagliari       |   1.31 |   9.56 |      0 |      2 |
+|  652 | D1    | 2019-11-30 00:00:00 | Bayern Munich | Leverkusen     |   1.29 |   9.37 |      1 |      2 |
+|   71 | E0    | 2019-08-24 00:00:00 | Man United    | Crystal Palace |   1.36 |   9.16 |      1 |      2 |
+|  871 | E0    | 2019-12-26 00:00:00 | Chelsea       | Southampton    |   1.35 |   8.58 |      0 |      2 |
+|  998 | E0    | 2020-01-22 00:00:00 | Man United    | Burnley        |   1.41 |   8.43 |      0 |      2 |
+
+--- smart money 2019/20 ---
+  hacia local:     343 | gana 39.65%
+  hacia visitante: 520 | gana 25.77%
+  hacia empate:    377 | empata 23.34%
+
+--- partidos alta anotacion (>=5 goles) 2019/20: 239 (13.86%) ---
+|      | Div   | Date                | HomeTeam    | AwayTeam   |   FTHG |   FTAG | FTR   |
+|------+-------+---------------------+-------------+------------+--------+--------+-------|
+|  432 | E0    | 2019-10-25 00:00:00 | Southampton | Leicester  |      0 |      9 | A     |
+| 1264 | I1    | 2020-03-01 00:00:00 | Lecce       | Atalanta   |      2 |      7 | A     |
+|  219 | E0    | 2019-09-21 00:00:00 | Man City    | Watford    |      8 |      0 | H     |
+|  469 | I1    | 2019-10-27 00:00:00 | Atalanta    | Udinese    |      7 |      1 | H     |
+|  504 | D1    | 2019-11-02 00:00:00 | RB Leipzig  | Mainz      |      8 |      0 | H     |
+|  953 | D1    | 2020-01-18 00:00:00 | Augsburg    | Dortmund   |      3 |      5 | A     |
+|   46 | SP1   | 2019-08-17 00:00:00 | Villarreal  | Granada    |      4 |      4 | D     |
+| 1153 | F1    | 2020-02-15 00:00:00 | Amiens      | Paris SG   |      4 |      4 | D     |
+| 1676 | E0    | 2020-07-22 00:00:00 | Liverpool   | Chelsea    |      5 |      3 | H     |
+| 1616 | I1    | 2020-07-14 00:00:00 | Atalanta    | Brescia    |      6 |      2 | H     |
+
+  ────────────────────────────────────────────────────────────
+  D1 | 2019/20  (306 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.66 | visit 1.549 | total 3.209 | std 1.634 | max 8
+  medio tiempo: local 0.683 | visit 0.667
+  resultados FT: H 123 (40.2%) | D 68 (22.22%) | A 115 (37.58%)
+  resultados HT: H 99 | D 109 | A 98
+  btts 58.17% | over1.5 85.62% | over2.5 65.03% | over3.5 41.5% | over4.5 19.93%
+  under1.5 14.38% | under2.5 34.97% | under3.5 58.5%
+  clean sheet local 24.84% | visit 20.92% | sin goles 3.92% | +5 goles 19.93%
+  remontada local 8 (2.61%) | visit 6 (1.96%)
+  odds avg: H 2.905 | D 4.471 | A 4.561 | CH 2.992 | CA 4.506 | overround 1.0482
+  mov mercado: H 0.0868 | D 0.0661 | A -0.0542
+  ud visit: 106 (15.09% ganan, avg 8.387) | ud local: 49 (14.29% ganan)
+  ud extremos: 36 | ganan 3 (8.33%)
+  sm local: 52 (34.62%) | visit: 103 (23.3%) | empate: 59 (18.64%)
+  top goles local:        {'Bayern Munich': 53, 'Dortmund': 46, "M'gladbach": 40, 'RB Leipzig': 38, 'Ein Frankfurt': 36}
+  top goles visit:        {'Bayern Munich': 47, 'RB Leipzig': 43, 'Dortmund': 38, 'Wolfsburg': 29, 'Leverkusen': 29}
+  top clean sheets local: {'Dortmund': 9, 'Bayern Munich': 7, 'Union Berlin': 7, 'Freiburg': 6, 'Hertha': 6}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam      | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+---------------+------------+--------+--------+--------+--------|
+|  337 | 2019-10-05 00:00:00 | Bayern Munich | Hoffenheim |   1.11 |  23.32 |      1 |      2 |
+| 1393 | 2020-06-17 00:00:00 | Dortmund      | Mainz      |   1.26 |  10.55 |      0 |      2 |
+|  652 | 2019-11-30 00:00:00 | Bayern Munich | Leverkusen |   1.29 |   9.37 |      1 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  E0 | 2019/20  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.516 | visit 1.205 | total 2.721 | std 1.512 | max 9
+  medio tiempo: local 0.7 | visit 0.55
+  resultados FT: H 172 (45.26%) | D 92 (24.21%) | A 116 (30.53%)
+  resultados HT: H 138 | D 140 | A 102
+  btts 51.05% | over1.5 80.0% | over2.5 52.11% | over3.5 28.16% | over4.5 11.58%
+  under1.5 20.0% | under2.5 47.89% | under3.5 71.84%
+  clean sheet local 32.37% | visit 22.11% | sin goles 5.53% | +5 goles 11.58%
+  remontada local 14 (3.68%) | visit 8 (2.11%)
+  odds avg: H 2.982 | D 4.299 | A 4.833 | CH 3.013 | CA 4.863 | overround 1.0427
+  mov mercado: H 0.0308 | D 0.0677 | A 0.0303
+  ud visit: 140 (13.57% ganan, avg 8.822) | ud local: 68 (23.53% ganan)
+  ud extremos: 54 | ganan 8 (14.81%)
+  sm local: 72 (37.5%) | visit: 116 (25.0%) | empate: 83 (14.46%)
+  top goles local:        {'Man City': 57, 'Liverpool': 52, 'Man United': 40, 'Arsenal': 36, 'Tottenham': 36}
+  top goles visit:        {'Man City': 45, 'Chelsea': 39, 'Liverpool': 33, 'Leicester': 32, 'Southampton': 30}
+  top clean sheets local: {'Man City': 10, 'Chelsea': 8, 'Burnley': 8, 'Leicester': 8, 'Wolves': 8}
+  underdogs extremos que ganaron:
+|     | Date                | HomeTeam   | AwayTeam       |   AvgH |   AvgA |   FTHG |   FTAG |
+|-----+---------------------+------------+----------------+--------+--------+--------+--------|
+| 365 | 2019-10-06 00:00:00 | Man City   | Wolves         |   1.13 |  21.61 |      0 |      2 |
+|  88 | 2019-08-25 00:00:00 | Tottenham  | Newcastle      |   1.24 |  12.35 |      0 |      1 |
+| 772 | 2019-12-14 00:00:00 | Chelsea    | Bournemouth    |   1.25 |  11.64 |      0 |      1 |
+| 727 | 2019-12-07 00:00:00 | Man City   | Man United     |   1.31 |   9.9  |      1 |      2 |
+| 655 | 2019-11-30 00:00:00 | Chelsea    | West Ham       |   1.3  |   9.63 |      0 |      1 |
+|  71 | 2019-08-24 00:00:00 | Man United | Crystal Palace |   1.36 |   9.16 |      1 |      2 |
+| 871 | 2019-12-26 00:00:00 | Chelsea    | Southampton    |   1.35 |   8.58 |      0 |      2 |
+| 998 | 2020-01-22 00:00:00 | Man United | Burnley        |   1.41 |   8.43 |      0 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  F1 | 2019/20  (279 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.495 | visit 1.029 | total 2.523 | std 1.589 | max 8
+  medio tiempo: local 0.71 | visit 0.444
+  resultados FT: H 134 (48.03%) | D 70 (25.09%) | A 75 (26.88%)
+  resultados HT: H 103 | D 118 | A 58
+  btts 48.39% | over1.5 69.89% | over2.5 47.31% | over3.5 25.45% | over4.5 11.11%
+  under1.5 30.11% | under2.5 52.69% | under3.5 74.55%
+  clean sheet local 36.2% | visit 22.94% | sin goles 7.53% | +5 goles 11.11%
+  remontada local 4 (1.43%) | visit 9 (3.23%)
+  odds avg: H 2.542 | D 3.75 | A 4.381 | CH 2.547 | CA 4.518 | overround 1.0521
+  mov mercado: H 0.0047 | D 0.0186 | A 0.1373
+  ud visit: 101 (13.86% ganan, avg 7.038) | ud local: 20 (20.0% ganan)
+  ud extremos: 23 | ganan 1 (4.35%)
+  sm local: 53 (49.06%) | visit: 86 (25.58%) | empate: 65 (26.15%)
+  top goles local:        {'Paris SG': 44, 'Monaco': 29, 'Nice': 28, 'Montpellier': 26, 'Rennes': 25}
+  top goles visit:        {'Paris SG': 31, 'Lyon': 25, 'Bordeaux': 21, 'Marseille': 20, 'Nantes': 17}
+  top clean sheets local: {'Paris SG': 9, 'Lille': 9, 'Reims': 8, 'Angers': 7, 'Montpellier': 7}
+  underdogs extremos que ganaron:
+|     | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|-----+---------------------+------------+------------+--------+--------+--------+--------|
+| 269 | 2019-09-25 00:00:00 | Paris SG   | Reims      |   1.16 |  16.93 |      0 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  I1 | 2019/20  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.621 | visit 1.416 | total 3.037 | std 1.686 | max 9
+  medio tiempo: local 0.718 | visit 0.611
+  resultados FT: H 158 (41.58%) | D 85 (22.37%) | A 137 (36.05%)
+  resultados HT: H 121 | D 149 | A 110
+  btts 62.11% | over1.5 81.84% | over2.5 62.89% | over3.5 33.95% | over4.5 16.84%
+  under1.5 18.16% | under2.5 37.11% | under3.5 66.05%
+  clean sheet local 24.21% | visit 19.21% | sin goles 5.53% | +5 goles 16.84%
+  remontada local 23 (6.05%) | visit 17 (4.47%)
+  odds avg: H 2.821 | D 4.075 | A 4.339 | CH 2.891 | CA 4.414 | overround 1.0503
+  mov mercado: H 0.0701 | D 0.0532 | A 0.0754
+  ud visit: 129 (17.83% ganan, avg 7.874) | ud local: 67 (10.45% ganan)
+  ud extremos: 49 | ganan 5 (10.2%)
+  sm local: 78 (35.9%) | visit: 124 (28.23%) | empate: 92 (30.43%)
+  top goles local:        {'Atalanta': 51, 'Juventus': 46, 'Lazio': 46, 'Sassuolo': 44, 'Inter': 40}
+  top goles visit:        {'Atalanta': 47, 'Inter': 41, 'Roma': 41, 'Lazio': 33, 'Milan': 32}
+  top clean sheets local: {'Udinese': 8, 'Lazio': 8, 'Inter': 8, 'Juventus': 8, 'Milan': 7}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+|  989 | 2020-01-20 00:00:00 | Atalanta   | Spal       |   1.19 |  13.82 |      1 |      2 |
+| 1133 | 2020-02-09 00:00:00 | Napoli     | Lecce      |   1.21 |  13.34 |      2 |      3 |
+|  274 | 2019-09-25 00:00:00 | Napoli     | Cagliari   |   1.2  |  13.29 |      0 |      1 |
+|  783 | 2019-12-14 00:00:00 | Napoli     | Parma      |   1.31 |   9.72 |      1 |      2 |
+|  534 | 2019-11-03 00:00:00 | Atalanta   | Cagliari   |   1.31 |   9.56 |      0 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  SP1 | 2019/20  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.437 | visit 1.042 | total 2.479 | std 1.55 | max 8
+  medio tiempo: local 0.603 | visit 0.45
+  resultados FT: H 174 (45.79%) | D 105 (27.63%) | A 101 (26.58%)
+  resultados HT: H 114 | D 183 | A 83
+  btts 49.74% | over1.5 72.63% | over2.5 45.53% | over3.5 22.11% | over4.5 10.26%
+  under1.5 27.37% | under2.5 54.47% | under3.5 77.89%
+  clean sheet local 35.79% | visit 23.16% | sin goles 8.68% | +5 goles 10.26%
+  remontada local 11 (2.89%) | visit 8 (2.11%)
+  odds avg: H 2.608 | D 3.813 | A 4.483 | CH 2.625 | CA 4.63 | overround 1.0482
+  mov mercado: H 0.0166 | D 0.0108 | A 0.1467
+  ud visit: 150 (12.67% ganan, avg 7.207) | ud local: 46 (21.74% ganan)
+  ud extremos: 41 | ganan 1 (2.44%)
+  sm local: 88 (42.05%) | visit: 91 (26.37%) | empate: 78 (25.64%)
+  top goles local:        {'Barcelona': 52, 'Real Madrid': 40, 'Villarreal': 37, 'Betis': 34, 'Sociedad': 33}
+  top goles visit:        {'Barcelona': 34, 'Real Madrid': 30, 'Sevilla': 28, 'Granada': 26, 'Villarreal': 26}
+  top clean sheets local: {'Real Madrid': 11, 'Ath Madrid': 10, 'Sevilla': 9, 'Ath Bilbao': 8, 'Valladolid': 8}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 1636 | 2020-07-16 00:00:00 | Barcelona  | Osasuna    |   1.15 |  17.44 |      1 |      2 |
+
+======================================================================
+  TEMPORADA 2020/21  (1826 partidos)
+======================================================================
+
+--- goles generales 2020/21 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | FTHG        |  1.476 |        1 | 1.296 |     0 |     9 |     1 |     2 |  0.987 |  1.225 |
+|  1 | FTAG        |  1.324 |        1 | 1.169 |     0 |     7 |     0 |     2 |  0.894 |  0.773 |
+|  2 | HTHG        |  0.663 |        0 | 0.832 |     0 |     4 |     0 |     1 |  1.293 |  1.617 |
+|  3 | HTAG        |  0.601 |        0 | 0.781 |     0 |     5 |     0 |     1 |  1.3   |  1.658 |
+|  4 | total_goals |  2.801 |        3 | 1.678 |     0 |     9 |     2 |     4 |  0.537 |  0.064 |
+|  5 | ht_goals    |  1.263 |        1 | 1.125 |     0 |     6 |     0 |     2 |  0.851 |  0.544 |
+|  6 | goal_diff   |  0.152 |        0 | 1.81  |    -7 |     9 |    -1 |     1 |  0.175 |  0.623 |
+
+--- distribucion simulada vs real 2020/21 ---
+
+--- resultados FT 2020/21 ---
+|    | FTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | H     |     728 | 39.87 |
+|  1 | A     |     633 | 34.67 |
+|  2 | D     |     465 | 25.47 |
+
+--- resultados HT 2020/21 ---
+|    | HTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | D     |     731 | 40.03 |
+|  1 | H     |     582 | 31.87 |
+|  2 | A     |     513 | 28.09 |
+
+--- btts / over / under / clean sheets 2020/21 ---
+  btts: 1000 (54.76%)
+  over15: 1420 (77.77%)
+  over25: 958 (52.46%)
+  over35: 563 (30.83%)
+  over45: 283 (15.5%)
+  under15: 406 (22.23%)
+  under25: 868 (47.54%)
+  under35: 1263 (69.17%)
+  clean_sheet_h: 494 (27.05%)
+  clean_sheet_a: 456 (24.97%)
+  high_scoring: 283 (15.5%)
+  goalless: 124 (6.79%)
+
+--- remontadas 2020/21 ---
+  local remonta (pierde HT, gana FT): 49 (2.68%)
+  visit remonta (pierde HT, gana FT): 40 (2.19%)
+  gana HT pero pierde FT (local):     40 (2.19%)
+  empate HT -> gana local FT:         239
+  empate HT -> gana visit FT:         216
+
+--- odds generales 2020/21 ---
+|    | column    |   mean |   median |   std |   min |    max |   q25 |   q75 |   skew |   kurt |
+|----+-----------+--------+----------+-------+-------+--------+-------+-------+--------+--------|
+|  0 | AvgH      |  2.964 |    2.38  | 1.941 | 1.05  | 15.44  | 1.75  | 3.35  |  2.435 |  7.67  |
+|  1 | AvgD      |  4.017 |    3.645 | 1.115 | 2.09  | 15.05  | 3.35  | 4.27  |  2.882 | 13.195 |
+|  2 | AvgA      |  4.107 |    3.12  | 3.233 | 1.16  | 34.44  | 2.17  | 4.69  |  2.949 | 12.823 |
+|  3 | AvgCH     |  3.027 |    2.38  | 2.059 | 1.08  | 19.5   | 1.76  | 3.49  |  2.592 |  9.237 |
+|  4 | AvgCD     |  4.026 |    3.63  | 1.16  | 2.19  | 11.47  | 3.32  | 4.307 |  2.483 |  8.051 |
+|  5 | AvgCA     |  4.106 |    3.11  | 3.179 | 1.15  | 24.73  | 2.17  | 4.76  |  2.621 |  8.988 |
+|  6 | overround |  1.048 |    1.048 | 0.003 | 1.037 |  1.058 | 1.045 | 1.05  | -0.109 | -0.199 |
+
+--- movimiento de mercado 2020/21 ---
+|    | column      |   mean |   median |   std |    min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+--------+-------+-------+-------+--------+--------|
+|  0 | odds_move_H |  0.063 |     0.01 | 0.444 |  -4.22 |  4.06 | -0.08 | 0.15  |  1.293 | 20.866 |
+|  1 | odds_move_D |  0.01  |    -0.01 | 0.321 |  -3.63 |  3.9  | -0.11 | 0.11  |  0.049 | 31.748 |
+|  2 | odds_move_A | -0.001 |    -0.01 | 0.801 | -10.43 | 12.96 | -0.18 | 0.178 | -0.153 | 74.956 |
+
+--- underdogs 2020/21 ---
+  visitante (AvgA>4):  597 | ganan 94 (15.75%) | avg odd 7.368
+  local (AvgH>4):      317 | ganan 44 (13.88%) | avg odd 6.402
+  extremos (AvgA>8):   167 | ganan 23 (13.77%)
+
+--- underdogs extremos que ganaron en 2020/21 ---
+|      | Div   | Date                | HomeTeam    | AwayTeam         |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+-------+---------------------+-------------+------------------+--------+--------+--------+--------|
+| 3327 | SP1   | 2021-04-29 00:00:00 | Barcelona   | Granada          |   1.15 |  16.88 |      1 |      2 |
+| 3050 | F1    | 2021-03-14 00:00:00 | Paris SG    | Nantes           |   1.18 |  15.39 |      1 |      2 |
+| 3096 | I1    | 2021-03-21 00:00:00 | Juventus    | Benevento        |   1.18 |  15.04 |      0 |      1 |
+| 3114 | E0    | 2021-04-03 00:00:00 | Chelsea     | West Brom        |   1.22 |  14.99 |      2 |      5 |
+| 2621 | E0    | 2021-01-21 00:00:00 | Liverpool   | Burnley          |   1.2  |  14.89 |      0 |      1 |
+| 2514 | I1    | 2021-01-06 00:00:00 | Napoli      | Spezia           |   1.2  |  14.13 |      1 |      2 |
+| 1942 | SP1   | 2020-10-17 00:00:00 | Real Madrid | Cadiz            |   1.22 |  13.22 |      0 |      1 |
+| 3535 | F1    | 2021-05-23 00:00:00 | Lyon        | Nice             |   1.21 |  12.69 |      2 |      3 |
+| 2170 | D1    | 2020-11-28 00:00:00 | Dortmund    | FC Koln          |   1.23 |  11.94 |      1 |      2 |
+| 3483 | SP1   | 2021-05-16 00:00:00 | Barcelona   | Celta            |   1.24 |  10.7  |      1 |      2 |
+| 2671 | E0    | 2021-01-27 00:00:00 | Man United  | Sheffield United |   1.28 |  10.6  |      1 |      2 |
+| 2592 | F1    | 2021-01-17 00:00:00 | Lyon        | Metz             |   1.28 |  10.56 |      0 |      1 |
+| 3093 | F1    | 2021-03-21 00:00:00 | Lille       | Nimes            |   1.32 |  10.5  |      1 |      2 |
+| 3540 | F1    | 2021-05-23 00:00:00 | St Etienne  | Dijon            |   1.3  |   9.79 |      0 |      1 |
+| 1839 | E0    | 2020-09-27 00:00:00 | Man City    | Leicester        |   1.29 |   9.68 |      2 |      5 |
+| 1780 | E0    | 2020-09-19 00:00:00 | Man United  | Crystal Palace   |   1.32 |   9.56 |      1 |      3 |
+| 3166 | E0    | 2021-04-10 00:00:00 | Man City    | Leeds            |   1.3  |   9.56 |      1 |      2 |
+| 2401 | I1    | 2020-12-22 00:00:00 | Juventus    | Fiorentina       |   1.34 |   9.11 |      0 |      3 |
+| 2187 | SP1   | 2020-11-28 00:00:00 | Real Madrid | Alaves           |   1.35 |   8.65 |      1 |      2 |
+| 2992 | E0    | 2021-03-07 00:00:00 | Liverpool   | Fulham           |   1.38 |   8.39 |      0 |      1 |
+| 2730 | E0    | 2021-02-03 00:00:00 | Liverpool   | Brighton         |   1.36 |   8.38 |      0 |      1 |
+| 3464 | E0    | 2021-05-16 00:00:00 | Everton     | Sheffield United |   1.4  |   8.34 |      0 |      1 |
+| 3037 | D1    | 2021-03-14 00:00:00 | Leverkusen  | Bielefeld        |   1.38 |   8.18 |      1 |      2 |
+
+--- smart money 2020/21 ---
+  hacia local:     369 | gana 32.25%
+  hacia visitante: 592 | gana 30.24%
+  hacia empate:    478 | empata 25.52%
+
+--- partidos alta anotacion (>=5 goles) 2020/21: 283 (15.5%) ---
+|      | Div   | Date                | HomeTeam      | AwayTeam      |   FTHG |   FTAG | FTR   |
+|------+-------+---------------------+---------------+---------------+--------+--------+-------|
+| 1903 | E0    | 2020-10-04 00:00:00 | Aston Villa   | Liverpool     |      7 |      2 | H     |
+| 2724 | E0    | 2021-02-02 00:00:00 | Man United    | Southampton   |      9 |      0 | H     |
+| 1770 | D1    | 2020-09-18 00:00:00 | Bayern Munich | Schalke 04    |      8 |      0 | H     |
+| 3236 | I1    | 2021-04-18 00:00:00 | Lazio         | Benevento     |      5 |      3 | H     |
+| 2165 | D1    | 2020-11-27 00:00:00 | Wolfsburg     | Werder Bremen |      5 |      3 | H     |
+| 2378 | E0    | 2020-12-20 00:00:00 | Man United    | Leeds         |      6 |      2 | H     |
+| 2479 | I1    | 2021-01-03 00:00:00 | Inter         | Crotone       |      6 |      2 | H     |
+| 2099 | F1    | 2020-11-08 00:00:00 | Lens          | Reims         |      4 |      4 | D     |
+| 3294 | I1    | 2021-04-24 00:00:00 | Parma         | Crotone       |      3 |      4 | A     |
+| 3353 | I1    | 2021-05-02 00:00:00 | Lazio         | Genoa         |      4 |      3 | H     |
+
+  ────────────────────────────────────────────────────────────
+  D1 | 2020/21  (306 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.676 | visit 1.356 | total 3.033 | std 1.71 | max 8
+  medio tiempo: local 0.703 | visit 0.624
+  resultados FT: H 129 (42.16%) | D 81 (26.47%) | A 96 (31.37%)
+  resultados HT: H 92 | D 133 | A 81
+  btts 60.13% | over1.5 82.03% | over2.5 58.82% | over3.5 36.6% | over4.5 18.95%
+  under1.5 17.97% | under2.5 41.18% | under3.5 63.4%
+  clean sheet local 25.49% | visit 20.26% | sin goles 5.88% | +5 goles 18.95%
+  remontada local 11 (3.59%) | visit 5 (1.63%)
+  odds avg: H 3.031 | D 4.272 | A 4.077 | CH 3.07 | CA 3.996 | overround 1.0473
+  mov mercado: H 0.039 | D -0.0096 | A -0.0802
+  ud visit: 98 (10.2% ganan, avg 7.541) | ud local: 52 (26.92% ganan)
+  ud extremos: 30 | ganan 2 (6.67%)
+  sm local: 59 (38.98%) | visit: 95 (15.79%) | empate: 82 (25.61%)
+  top goles local:        {'Bayern Munich': 64, 'Dortmund': 40, 'Ein Frankfurt': 37, 'Leverkusen': 34, 'Freiburg': 33}
+  top goles visit:        {'Bayern Munich': 35, 'Dortmund': 35, "M'gladbach": 32, 'Ein Frankfurt': 32, 'RB Leipzig': 31}
+  top clean sheets local: {'Wolfsburg': 9, 'RB Leipzig': 8, 'Dortmund': 7, 'Bielefeld': 6, 'Hertha': 6}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 2170 | 2020-11-28 00:00:00 | Dortmund   | FC Koln    |   1.23 |  11.94 |      1 |      2 |
+| 3037 | 2021-03-14 00:00:00 | Leverkusen | Bielefeld  |   1.38 |   8.18 |      1 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  E0 | 2020/21  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.353 | visit 1.342 | total 2.695 | std 1.756 | max 9
+  medio tiempo: local 0.666 | visit 0.605
+  resultados FT: H 144 (37.89%) | D 83 (21.84%) | A 153 (40.26%)
+  resultados HT: H 120 | D 153 | A 107
+  btts 48.95% | over1.5 73.42% | over2.5 50.0% | over3.5 26.84% | over4.5 14.47%
+  under1.5 26.58% | under2.5 50.0% | under3.5 73.16%
+  clean sheet local 29.74% | visit 29.21% | sin goles 7.89% | +5 goles 14.47%
+  remontada local 9 (2.37%) | visit 9 (2.37%)
+  odds avg: H 3.054 | D 4.073 | A 4.216 | CH 3.106 | CA 4.127 | overround 1.0435
+  mov mercado: H 0.052 | D 0.0115 | A -0.089
+  ud visit: 127 (20.47% ganan, avg 7.697) | ud local: 69 (14.49% ganan)
+  ud extremos: 35 | ganan 9 (25.71%)
+  sm local: 74 (22.97%) | visit: 142 (33.8%) | empate: 92 (21.74%)
+  top goles local:        {'Man City': 43, 'Man United': 38, 'Tottenham': 35, 'Leicester': 34, 'West Ham': 32}
+  top goles visit:        {'Man City': 40, 'Liverpool': 39, 'Man United': 35, 'Leeds': 34, 'Leicester': 34}
+  top clean sheets local: {'Man City': 10, 'Chelsea': 10, 'Aston Villa': 7, 'Brighton': 7, 'Tottenham': 7}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam         |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------------+--------+--------+--------+--------|
+| 3114 | 2021-04-03 00:00:00 | Chelsea    | West Brom        |   1.22 |  14.99 |      2 |      5 |
+| 2621 | 2021-01-21 00:00:00 | Liverpool  | Burnley          |   1.2  |  14.89 |      0 |      1 |
+| 2671 | 2021-01-27 00:00:00 | Man United | Sheffield United |   1.28 |  10.6  |      1 |      2 |
+| 1839 | 2020-09-27 00:00:00 | Man City   | Leicester        |   1.29 |   9.68 |      2 |      5 |
+| 1780 | 2020-09-19 00:00:00 | Man United | Crystal Palace   |   1.32 |   9.56 |      1 |      3 |
+| 3166 | 2021-04-10 00:00:00 | Man City   | Leeds            |   1.3  |   9.56 |      1 |      2 |
+| 2992 | 2021-03-07 00:00:00 | Liverpool  | Fulham           |   1.38 |   8.39 |      0 |      1 |
+| 2730 | 2021-02-03 00:00:00 | Liverpool  | Brighton         |   1.36 |   8.38 |      0 |      1 |
+| 3464 | 2021-05-16 00:00:00 | Everton    | Sheffield United |   1.4  |   8.34 |      0 |      1 |
+
+  ────────────────────────────────────────────────────────────
+  F1 | 2020/21  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.397 | visit 1.363 | total 2.761 | std 1.569 | max 8
+  medio tiempo: local 0.645 | visit 0.629
+  resultados FT: H 142 (37.37%) | D 95 (25.0%) | A 143 (37.63%)
+  resultados HT: H 124 | D 132 | A 124
+  btts 54.21% | over1.5 78.16% | over2.5 54.21% | over3.5 30.53% | over4.5 14.47%
+  under1.5 21.84% | under2.5 45.79% | under3.5 69.47%
+  clean sheet local 24.74% | visit 27.89% | sin goles 6.84% | +5 goles 14.47%
+  remontada local 14 (3.68%) | visit 9 (2.37%)
+  odds avg: H 2.856 | D 3.902 | A 4.06 | CH 2.938 | CA 4.029 | overround 1.0513
+  mov mercado: H 0.0819 | D -0.0219 | A -0.0302
+  ud visit: 108 (20.37% ganan, avg 7.514) | ud local: 55 (10.91% ganan)
+  ud extremos: 29 | ganan 5 (17.24%)
+  sm local: 71 (39.44%) | visit: 126 (37.3%) | empate: 106 (26.42%)
+  top goles local:        {'Paris SG': 44, 'Monaco': 43, 'Lyon': 42, 'Montpellier': 34, 'Marseille': 32}
+  top goles visit:        {'Paris SG': 42, 'Lyon': 39, 'Lille': 36, 'Monaco': 33, 'Strasbourg': 28}
+  top clean sheets local: {'Lille': 10, 'Bordeaux': 9, 'Paris SG': 9, 'Monaco': 7, 'Reims': 6}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 3050 | 2021-03-14 00:00:00 | Paris SG   | Nantes     |   1.18 |  15.39 |      1 |      2 |
+| 3535 | 2021-05-23 00:00:00 | Lyon       | Nice       |   1.21 |  12.69 |      2 |      3 |
+| 2592 | 2021-01-17 00:00:00 | Lyon       | Metz       |   1.28 |  10.56 |      0 |      1 |
+| 3093 | 2021-03-21 00:00:00 | Lille      | Nimes      |   1.32 |  10.5  |      1 |      2 |
+| 3540 | 2021-05-23 00:00:00 | St Etienne | Dijon      |   1.3  |   9.79 |      0 |      1 |
+
+  ────────────────────────────────────────────────────────────
+  I1 | 2020/21  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.626 | visit 1.426 | total 3.053 | std 1.74 | max 8
+  medio tiempo: local 0.679 | visit 0.624
+  resultados FT: H 155 (40.79%) | D 97 (25.53%) | A 128 (33.68%)
+  resultados HT: H 126 | D 145 | A 109
+  btts 59.74% | over1.5 82.89% | over2.5 56.58% | over3.5 36.32% | over4.5 20.0%
+  under1.5 17.11% | under2.5 43.42% | under3.5 63.68%
+  clean sheet local 24.74% | visit 20.79% | sin goles 5.26% | +5 goles 20.0%
+  remontada local 10 (2.63%) | visit 9 (2.37%)
+  odds avg: H 3.041 | D 4.137 | A 4.056 | CH 3.09 | CA 4.105 | overround 1.0481
+  mov mercado: H 0.0489 | D 0.0212 | A 0.0493
+  ud visit: 126 (13.49% ganan, avg 7.368) | ud local: 78 (7.69% ganan)
+  ud extremos: 42 | ganan 3 (7.14%)
+  sm local: 91 (25.27%) | visit: 104 (31.73%) | empate: 103 (19.42%)
+  top goles local:        {'Inter': 53, 'Napoli': 50, 'Atalanta': 49, 'Roma': 42, 'Juventus': 40}
+  top goles visit:        {'Milan': 43, 'Atalanta': 41, 'Juventus': 37, 'Inter': 36, 'Napoli': 36}
+  top clean sheets local: {'Roma': 9, 'Lazio': 7, 'Inter': 7, 'Milan': 7, 'Napoli': 6}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 3096 | 2021-03-21 00:00:00 | Juventus   | Benevento  |   1.18 |  15.04 |      0 |      1 |
+| 2514 | 2021-01-06 00:00:00 | Napoli     | Spezia     |   1.2  |  14.13 |      1 |      2 |
+| 2401 | 2020-12-22 00:00:00 | Juventus   | Fiorentina |   1.34 |   9.11 |      0 |      3 |
+
+  ────────────────────────────────────────────────────────────
+  SP1 | 2020/21  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.368 | visit 1.139 | total 2.508 | std 1.561 | max 7
+  medio tiempo: local 0.629 | visit 0.526
+  resultados FT: H 158 (41.58%) | D 109 (28.68%) | A 113 (29.74%)
+  resultados HT: H 120 | D 168 | A 92
+  btts 51.84% | over1.5 73.16% | over2.5 43.95% | over3.5 25.0% | over4.5 10.26%
+  under1.5 26.84% | under2.5 56.05% | under3.5 75.0%
+  clean sheet local 30.26% | visit 25.79% | sin goles 7.89% | +5 goles 10.26%
+  remontada local 5 (1.32%) | visit 8 (2.11%)
+  odds avg: H 2.854 | D 3.748 | A 4.121 | CH 2.942 | CA 4.249 | overround 1.0475
+  mov mercado: H 0.0884 | D 0.0438 | A 0.1284
+  ud visit: 138 (13.77% ganan, avg 6.828) | ud local: 63 (12.7% ganan)
+  ud extremos: 31 | ganan 4 (12.9%)
+  sm local: 74 (37.84%) | visit: 125 (28.8%) | empate: 95 (34.74%)
+  top goles local:        {'Barcelona': 44, 'Ath Madrid': 41, 'Valencia': 34, 'Sociedad': 34, 'Real Madrid': 33}
+  top goles visit:        {'Barcelona': 41, 'Real Madrid': 34, 'Villarreal': 31, 'Ath Madrid': 26, 'Sevilla': 26}
+  top clean sheets local: {'Sevilla': 11, 'Ath Madrid': 10, 'Real Madrid': 9, 'Getafe': 8, 'Granada': 7}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam    | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+-------------+------------+--------+--------+--------+--------|
+| 3327 | 2021-04-29 00:00:00 | Barcelona   | Granada    |   1.15 |  16.88 |      1 |      2 |
+| 1942 | 2020-10-17 00:00:00 | Real Madrid | Cadiz      |   1.22 |  13.22 |      0 |      1 |
+| 3483 | 2021-05-16 00:00:00 | Barcelona   | Celta      |   1.24 |  10.7  |      1 |      2 |
+| 2187 | 2020-11-28 00:00:00 | Real Madrid | Alaves     |   1.35 |   8.65 |      1 |      2 |
+
+======================================================================
+  TEMPORADA 2021/22  (1826 partidos)
+======================================================================
+
+--- goles generales 2021/22 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | FTHG        |  1.548 |        1 | 1.315 |     0 |     7 |     1 |     2 |  0.993 |  1.013 |
+|  1 | FTAG        |  1.263 |        1 | 1.198 |     0 |     6 |     0 |     2 |  1.001 |  0.874 |
+|  2 | HTHG        |  0.686 |        0 | 0.835 |     0 |     5 |     0 |     1 |  1.231 |  1.463 |
+|  3 | HTAG        |  0.584 |        0 | 0.799 |     0 |     6 |     0 |     1 |  1.482 |  2.708 |
+|  4 | total_goals |  2.811 |        3 | 1.701 |     0 |     9 |     2 |     4 |  0.488 | -0.103 |
+|  5 | ht_goals    |  1.269 |        1 | 1.123 |     0 |     6 |     0 |     2 |  0.775 |  0.237 |
+|  6 | goal_diff   |  0.285 |        0 | 1.854 |    -6 |     7 |    -1 |     1 |  0.131 |  0.598 |
+
+--- distribucion simulada vs real 2021/22 ---
+
+--- resultados FT 2021/22 ---
+|    | FTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | H     |     781 | 42.77 |
+|  1 | A     |     573 | 31.38 |
+|  2 | D     |     472 | 25.85 |
+
+--- resultados HT 2021/22 ---
+|    | HTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | D     |     717 | 39.27 |
+|  1 | H     |     617 | 33.79 |
+|  2 | A     |     492 | 26.94 |
+
+--- btts / over / under / clean sheets 2021/22 ---
+  btts: 989 (54.16%)
+  over15: 1401 (76.73%)
+  over25: 956 (52.35%)
+  over35: 587 (32.15%)
+  over45: 305 (16.7%)
+  under15: 425 (23.27%)
+  under25: 870 (47.65%)
+  under35: 1239 (67.85%)
+  clean_sheet_h: 562 (30.78%)
+  clean_sheet_a: 402 (22.02%)
+  high_scoring: 305 (16.7%)
+  goalless: 127 (6.96%)
+
+--- remontadas 2021/22 ---
+  local remonta (pierde HT, gana FT): 59 (3.23%)
+  visit remonta (pierde HT, gana FT): 46 (2.52%)
+  gana HT pero pierde FT (local):     46 (2.52%)
+  empate HT -> gana local FT:         240
+  empate HT -> gana visit FT:         210
+
+--- odds generales 2021/22 ---
+|    | column    |   mean |   median |   std |   min |    max |   q25 |   q75 |   skew |   kurt |
+|----+-----------+--------+----------+-------+-------+--------+-------+-------+--------+--------|
+|  0 | AvgH      |  2.814 |    2.275 | 1.925 |  1.07 | 22.54  | 1.672 | 3.2   |  3.485 | 18.859 |
+|  1 | AvgD      |  4.066 |    3.67  | 1.151 |  2.85 | 13.19  | 3.4   | 4.29  |  2.86  | 11.45  |
+|  2 | AvgA      |  4.386 |    3.295 | 3.503 |  1.1  | 31.99  | 2.28  | 5.2   |  2.869 | 11.548 |
+|  3 | AvgCH     |  2.832 |    2.245 | 1.993 |  1.06 | 20.93  | 1.66  | 3.24  |  3.52  | 19.155 |
+|  4 | AvgCD     |  4.075 |    3.63  | 1.259 |  2.78 | 14.83  | 3.35  | 4.3   |  2.91  | 11.65  |
+|  5 | AvgCA     |  4.52  |    3.405 | 3.638 |  1.11 | 32.54  | 2.28  | 5.41  |  2.808 | 10.991 |
+|  6 | overround |  1.044 |    1.044 | 0.003 |  1.02 |  1.055 | 1.042 | 1.046 | -0.172 |  1.052 |
+
+--- movimiento de mercado 2021/22 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | odds_move_H |  0.017 |    -0.01 | 0.394 | -2.29 |  4.68 | -0.09 |  0.08 |  2.322 | 27.981 |
+|  1 | odds_move_D |  0.009 |    -0.03 | 0.291 | -1.12 |  3.2  | -0.12 |  0.08 |  2.803 | 20.778 |
+|  2 | odds_move_A |  0.133 |     0.05 | 0.795 | -3.86 | 13.19 | -0.08 |  0.26 |  4.608 | 62.167 |
+
+--- underdogs 2021/22 ---
+  visitante (AvgA>4):  668 | ganan 97 (14.52%) | avg odd 7.555
+  local (AvgH>4):      279 | ganan 52 (18.64%) | avg odd 6.243
+  extremos (AvgA>8):   202 | ganan 19 (9.41%)
+
+--- underdogs extremos que ganaron en 2021/22 ---
+|      | Div   | Date                | HomeTeam      | AwayTeam       |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+-------+---------------------+---------------+----------------+--------+--------+--------+--------|
+| 4049 | E0    | 2021-10-30 00:00:00 | Man City      | Crystal Palace |   1.16 |  18.61 |      0 |      2 |
+| 3897 | D1    | 2021-10-03 00:00:00 | Bayern Munich | Ein Frankfurt  |   1.17 |  14.57 |      1 |      2 |
+| 4384 | D1    | 2021-12-18 00:00:00 | RB Leipzig    | Bielefeld      |   1.22 |  13.97 |      0 |      2 |
+| 5099 | SP1   | 2022-04-18 00:00:00 | Barcelona     | Cadiz          |   1.22 |  13.92 |      0 |      1 |
+| 4635 | I1    | 2022-02-06 00:00:00 | Atalanta      | Cagliari       |   1.23 |  12.32 |      1 |      2 |
+| 4428 | I1    | 2021-12-22 00:00:00 | Napoli        | Spezia         |   1.25 |  12.17 |      0 |      1 |
+| 3672 | I1    | 2021-08-28 00:00:00 | Juventus      | Empoli         |   1.26 |  11.51 |      0 |      1 |
+| 5351 | I1    | 2022-05-21 00:00:00 | Atalanta      | Empoli         |   1.22 |  11.29 |      0 |      1 |
+| 4722 | E0    | 2022-02-19 00:00:00 | Man City      | Tottenham      |   1.29 |  10.84 |      2 |      3 |
+| 4284 | SP1   | 2021-12-04 00:00:00 | Ath Madrid    | Mallorca       |   1.33 |  10.59 |      1 |      2 |
+| 4705 | SP1   | 2022-02-16 00:00:00 | Ath Madrid    | Levante        |   1.33 |  10.11 |      0 |      1 |
+| 4965 | E0    | 2022-04-02 00:00:00 | Chelsea       | Brentford      |   1.35 |  10.04 |      1 |      4 |
+| 5164 | SP1   | 2022-04-24 00:00:00 | Barcelona     | Vallecano      |   1.3  |  10.03 |      0 |      1 |
+| 4543 | I1    | 2022-01-17 00:00:00 | Milan         | Spezia         |   1.32 |   9.54 |      1 |      2 |
+| 4746 | I1    | 2022-02-20 00:00:00 | Inter         | Sassuolo       |   1.3  |   9.43 |      0 |      2 |
+| 4091 | SP1   | 2021-11-05 00:00:00 | Ath Bilbao    | Cadiz          |   1.37 |   9.42 |      0 |      1 |
+| 4351 | I1    | 2021-12-12 00:00:00 | Napoli        | Empoli         |   1.36 |   8.4  |      0 |      1 |
+| 4496 | I1    | 2022-01-09 00:00:00 | Verona        | Salernitana    |   1.38 |   8.16 |      1 |      2 |
+| 5176 | D1    | 2022-04-30 00:00:00 | Dortmund      | Bochum         |   1.36 |   8.01 |      3 |      4 |
+
+--- smart money 2021/22 ---
+  hacia local:     419 | gana 37.23%
+  hacia visitante: 413 | gana 25.42%
+  hacia empate:    508 | empata 25.39%
+
+--- partidos alta anotacion (>=5 goles) 2021/22: 305 (16.7%) ---
+|      | Div   | Date                | HomeTeam       | AwayTeam       |   FTHG |   FTAG | FTR   |
+|------+-------+---------------------+----------------+----------------+--------+--------+-------|
+| 4190 | D1    | 2021-11-27 00:00:00 | Greuther Furth | Hoffenheim     |      3 |      6 | A     |
+| 4431 | E0    | 2021-12-26 00:00:00 | Man City       | Leicester      |      6 |      3 | H     |
+| 5008 | F1    | 2022-04-08 00:00:00 | Lorient        | St Etienne     |      6 |      2 | H     |
+| 5168 | I1    | 2022-04-27 00:00:00 | Atalanta       | Torino         |      4 |      4 | D     |
+| 5155 | F1    | 2022-04-24 00:00:00 | Nantes         | Bordeaux       |      5 |      3 | H     |
+| 4268 | D1    | 2021-12-04 00:00:00 | Leverkusen     | Greuther Furth |      7 |      1 | H     |
+| 4492 | I1    | 2022-01-09 00:00:00 | Udinese        | Atalanta       |      2 |      6 | A     |
+| 4262 | I1    | 2021-12-02 00:00:00 | Lazio          | Udinese        |      4 |      4 | D     |
+| 5241 | SP1   | 2022-05-07 00:00:00 | Mallorca       | Granada        |      2 |      6 | A     |
+| 4012 | SP1   | 2021-10-24 00:00:00 | Sevilla        | Levante        |      5 |      3 | H     |
+
+  ────────────────────────────────────────────────────────────
+  D1 | 2021/22  (306 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.761 | visit 1.356 | total 3.118 | std 1.746 | max 9
+  medio tiempo: local 0.778 | visit 0.663
+  resultados FT: H 143 (46.73%) | D 73 (23.86%) | A 90 (29.41%)
+  resultados HT: H 109 | D 107 | A 90
+  btts 60.78% | over1.5 83.33% | over2.5 58.5% | over3.5 39.22% | over4.5 22.22%
+  under1.5 16.67% | under2.5 41.5% | under3.5 60.78%
+  clean sheet local 27.78% | visit 16.67% | sin goles 5.23% | +5 goles 22.22%
+  remontada local 11 (3.59%) | visit 5 (1.63%)
+  odds avg: H 2.877 | D 4.369 | A 4.475 | CH 2.845 | CA 4.672 | overround 1.0435
+  mov mercado: H -0.0319 | D 0.0417 | A 0.1966
+  ud visit: 106 (15.09% ganan, avg 8.152) | ud local: 47 (27.66% ganan)
+  ud extremos: 30 | ganan 3 (10.0%)
+  sm local: 88 (43.18%) | visit: 59 (35.59%) | empate: 68 (23.53%)
+  top goles local:        {'Dortmund': 52, 'Bayern Munich': 48, 'RB Leipzig': 43, 'Leverkusen': 39, 'Hoffenheim': 34}
+  top goles visit:        {'Bayern Munich': 49, 'Leverkusen': 41, 'Dortmund': 33, 'RB Leipzig': 29, 'Freiburg': 26}
+  top clean sheets local: {'Mainz': 9, 'Bayern Munich': 7, 'Wolfsburg': 7, 'RB Leipzig': 7, 'Union Berlin': 7}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam      | AwayTeam      |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+---------------+---------------+--------+--------+--------+--------|
+| 3897 | 2021-10-03 00:00:00 | Bayern Munich | Ein Frankfurt |   1.17 |  14.57 |      1 |      2 |
+| 4384 | 2021-12-18 00:00:00 | RB Leipzig    | Bielefeld     |   1.22 |  13.97 |      0 |      2 |
+| 5176 | 2022-04-30 00:00:00 | Dortmund      | Bochum        |   1.36 |   8.01 |      3 |      4 |
+
+  ────────────────────────────────────────────────────────────
+  E0 | 2021/22  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.513 | visit 1.305 | total 2.818 | std 1.626 | max 9
+  medio tiempo: local 0.684 | visit 0.589
+  resultados FT: H 163 (42.89%) | D 88 (23.16%) | A 129 (33.95%)
+  resultados HT: H 128 | D 151 | A 101
+  btts 50.0% | over1.5 77.11% | over2.5 53.95% | over3.5 32.63% | over4.5 16.84%
+  under1.5 22.89% | under2.5 46.05% | under3.5 67.37%
+  clean sheet local 31.32% | visit 24.47% | sin goles 5.79% | +5 goles 16.84%
+  remontada local 10 (2.63%) | visit 8 (2.11%)
+  odds avg: H 3.101 | D 4.268 | A 4.796 | CH 3.114 | CA 4.786 | overround 1.0407
+  mov mercado: H 0.0135 | D -0.01 | A -0.01
+  ud visit: 134 (14.18% ganan, avg 9.01) | ud local: 71 (16.9% ganan)
+  ud extremos: 55 | ganan 3 (5.45%)
+  sm local: 75 (30.67%) | visit: 107 (19.63%) | empate: 106 (19.81%)
+  top goles local:        {'Man City': 58, 'Liverpool': 49, 'Tottenham': 38, 'Chelsea': 37, 'Arsenal': 35}
+  top goles visit:        {'Liverpool': 45, 'Man City': 41, 'Chelsea': 39, 'Tottenham': 31, 'Leicester': 28}
+  top clean sheets local: {'Liverpool': 12, 'Man City': 11, 'Crystal Palace': 9, 'Tottenham': 8, 'Brentford': 7}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam       |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+----------------+--------+--------+--------+--------|
+| 4049 | 2021-10-30 00:00:00 | Man City   | Crystal Palace |   1.16 |  18.61 |      0 |      2 |
+| 4722 | 2022-02-19 00:00:00 | Man City   | Tottenham      |   1.29 |  10.84 |      2 |      3 |
+| 4965 | 2022-04-02 00:00:00 | Chelsea    | Brentford      |   1.35 |  10.04 |      1 |      4 |
+
+  ────────────────────────────────────────────────────────────
+  F1 | 2021/22  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.582 | visit 1.226 | total 2.808 | std 1.706 | max 8
+  medio tiempo: local 0.692 | visit 0.584
+  resultados FT: H 162 (42.63%) | D 102 (26.84%) | A 116 (30.53%)
+  resultados HT: H 124 | D 152 | A 104
+  btts 55.26% | over1.5 77.11% | over2.5 50.26% | over3.5 31.84% | over4.5 17.11%
+  under1.5 22.89% | under2.5 49.74% | under3.5 68.16%
+  clean sheet local 28.95% | visit 22.11% | sin goles 6.32% | +5 goles 17.11%
+  remontada local 19 (5.0%) | visit 12 (3.16%)
+  odds avg: H 2.673 | D 3.899 | A 4.024 | CH 2.706 | CA 4.187 | overround 1.0475
+  mov mercado: H 0.0328 | D 0.0148 | A 0.1631
+  ud visit: 128 (14.84% ganan, avg 6.679) | ud local: 50 (22.0% ganan)
+  ud extremos: 30 | ganan 0 (0.0%)
+  sm local: 84 (38.1%) | visit: 87 (24.14%) | empate: 100 (30.0%)
+  top goles local:        {'Rennes': 50, 'Paris SG': 49, 'Lyon': 42, 'Monaco': 38, 'Strasbourg': 36}
+  top goles visit:        {'Paris SG': 41, 'Rennes': 32, 'Marseille': 30, 'Bordeaux': 27, 'Monaco': 27}
+  top clean sheets local: {'Rennes': 11, 'Paris SG': 9, 'Monaco': 8, 'Lille': 7, 'Strasbourg': 7}
+
+  ────────────────────────────────────────────────────────────
+  I1 | 2021/22  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.503 | visit 1.363 | total 2.866 | std 1.669 | max 8
+  medio tiempo: local 0.666 | visit 0.632
+  resultados FT: H 148 (38.95%) | D 98 (25.79%) | A 134 (35.26%)
+  resultados HT: H 131 | D 132 | A 117
+  btts 57.37% | over1.5 78.16% | over2.5 55.79% | over3.5 32.63% | over4.5 15.0%
+  under1.5 21.84% | under2.5 44.21% | under3.5 67.37%
+  clean sheet local 27.63% | visit 20.79% | sin goles 5.79% | +5 goles 15.0%
+  remontada local 12 (3.16%) | visit 12 (3.16%)
+  odds avg: H 2.857 | D 4.15 | A 4.4 | CH 2.894 | CA 4.533 | overround 1.0448
+  mov mercado: H 0.0371 | D 0.0001 | A 0.1331
+  ud visit: 149 (18.12% ganan, avg 7.475) | ud local: 70 (10.0% ganan)
+  ud extremos: 50 | ganan 8 (16.0%)
+  sm local: 95 (36.84%) | visit: 78 (30.77%) | empate: 128 (25.78%)
+  top goles local:        {'Inter': 48, 'Lazio': 42, 'Fiorentina': 38, 'Napoli': 37, 'Verona': 34}
+  top goles visit:        {'Milan': 41, 'Napoli': 37, 'Sassuolo': 37, 'Inter': 36, 'Lazio': 35}
+  top clean sheets local: {'Milan': 11, 'Fiorentina': 10, 'Roma': 10, 'Inter': 8, 'Juventus': 8}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam    |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+-------------+--------+--------+--------+--------|
+| 4635 | 2022-02-06 00:00:00 | Atalanta   | Cagliari    |   1.23 |  12.32 |      1 |      2 |
+| 4428 | 2021-12-22 00:00:00 | Napoli     | Spezia      |   1.25 |  12.17 |      0 |      1 |
+| 3672 | 2021-08-28 00:00:00 | Juventus   | Empoli      |   1.26 |  11.51 |      0 |      1 |
+| 5351 | 2022-05-21 00:00:00 | Atalanta   | Empoli      |   1.22 |  11.29 |      0 |      1 |
+| 4543 | 2022-01-17 00:00:00 | Milan      | Spezia      |   1.32 |   9.54 |      1 |      2 |
+| 4746 | 2022-02-20 00:00:00 | Inter      | Sassuolo    |   1.3  |   9.43 |      0 |      2 |
+| 4351 | 2021-12-12 00:00:00 | Napoli     | Empoli      |   1.36 |   8.4  |      0 |      1 |
+| 4496 | 2022-01-09 00:00:00 | Verona     | Salernitana |   1.38 |   8.16 |      1 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  SP1 | 2021/22  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.421 | visit 1.082 | total 2.503 | std 1.723 | max 8
+  medio tiempo: local 0.626 | visit 0.466
+  resultados FT: H 165 (43.42%) | D 111 (29.21%) | A 104 (27.37%)
+  resultados HT: H 125 | D 175 | A 80
+  btts 48.68% | over1.5 69.21% | over2.5 44.47% | over3.5 25.79% | over4.5 13.42%
+  under1.5 30.79% | under2.5 55.53% | under3.5 74.21%
+  clean sheet local 37.63% | visit 25.0% | sin goles 11.32% | +5 goles 13.42%
+  remontada local 7 (1.84%) | visit 9 (2.37%)
+  odds avg: H 2.577 | D 3.703 | A 4.253 | CH 2.602 | CA 4.45 | overround 1.0445
+  mov mercado: H 0.0255 | D 0.0035 | A 0.197
+  ud visit: 151 (10.6% ganan, avg 6.668) | ud local: 41 (21.95% ganan)
+  ud extremos: 37 | ganan 5 (13.51%)
+  sm local: 77 (36.36%) | visit: 82 (21.95%) | empate: 106 (27.36%)
+  top goles local:        {'Real Madrid': 44, 'Villarreal': 40, 'Barcelona': 37, 'Sevilla': 36, 'Betis': 34}
+  top goles visit:        {'Real Madrid': 36, 'Ath Madrid': 32, 'Barcelona': 31, 'Betis': 28, 'Sociedad': 24}
+  top clean sheets local: {'Sociedad': 14, 'Real Madrid': 11, 'Getafe': 10, 'Ath Madrid': 9, 'Sevilla': 9}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 5099 | 2022-04-18 00:00:00 | Barcelona  | Cadiz      |   1.22 |  13.92 |      0 |      1 |
+| 4284 | 2021-12-04 00:00:00 | Ath Madrid | Mallorca   |   1.33 |  10.59 |      1 |      2 |
+| 4705 | 2022-02-16 00:00:00 | Ath Madrid | Levante    |   1.33 |  10.11 |      0 |      1 |
+| 5164 | 2022-04-24 00:00:00 | Barcelona  | Vallecano  |   1.3  |  10.03 |      0 |      1 |
+| 4091 | 2021-11-05 00:00:00 | Ath Bilbao | Cadiz      |   1.37 |   9.42 |      0 |      1 |
+
+======================================================================
+  TEMPORADA 2022/23  (1826 partidos)
+======================================================================
+
+--- goles generales 2022/23 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | FTHG        |  1.558 |        1 | 1.336 |     0 |     9 |     1 |     2 |  1.061 |  1.515 |
+|  1 | FTAG        |  1.208 |        1 | 1.124 |     0 |     7 |     0 |     2 |  1.126 |  1.93  |
+|  2 | HTHG        |  0.728 |        1 | 0.887 |     0 |     5 |     0 |     1 |  1.324 |  1.959 |
+|  3 | HTAG        |  0.542 |        0 | 0.752 |     0 |     5 |     0 |     1 |  1.542 |  2.938 |
+|  4 | total_goals |  2.766 |        3 | 1.673 |     0 |    10 |     2 |     4 |  0.677 |  0.467 |
+|  5 | ht_goals    |  1.269 |        1 | 1.134 |     0 |     6 |     0 |     2 |  0.907 |  0.696 |
+|  6 | goal_diff   |  0.35  |        0 | 1.815 |    -7 |     9 |    -1 |     1 |  0.096 |  0.942 |
+
+--- distribucion simulada vs real 2022/23 ---
+
+--- resultados FT 2022/23 ---
+|    | FTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | H     |     835 | 45.73 |
+|  1 | A     |     548 | 30.01 |
+|  2 | D     |     443 | 24.26 |
+
+--- resultados HT 2022/23 ---
+|    | HTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | D     |     733 | 40.14 |
+|  1 | H     |     643 | 35.21 |
+|  2 | A     |     450 | 24.64 |
+
+--- btts / over / under / clean sheets 2022/23 ---
+  btts: 980 (53.67%)
+  over15: 1398 (76.56%)
+  over25: 953 (52.19%)
+  over35: 526 (28.81%)
+  over45: 257 (14.07%)
+  under15: 428 (23.44%)
+  under25: 873 (47.81%)
+  under35: 1300 (71.19%)
+  clean_sheet_h: 545 (29.85%)
+  clean_sheet_a: 411 (22.51%)
+  high_scoring: 257 (14.07%)
+  goalless: 110 (6.02%)
+
+--- remontadas 2022/23 ---
+  local remonta (pierde HT, gana FT): 53 (2.9%)
+  visit remonta (pierde HT, gana FT): 36 (1.97%)
+  gana HT pero pierde FT (local):     36 (1.97%)
+  empate HT -> gana local FT:         269
+  empate HT -> gana visit FT:         206
+
+--- odds generales 2022/23 ---
+|    | column    |   mean |   median |   std |   min |    max |   q25 |   q75 |   skew |   kurt |
+|----+-----------+--------+----------+-------+-------+--------+-------+-------+--------+--------|
+|  0 | AvgH      |  2.731 |    2.25  | 1.671 | 1.07  | 15.62  | 1.7   | 3.09  |  2.829 | 11.564 |
+|  1 | AvgD      |  4.055 |    3.67  | 1.163 | 2.75  | 12.84  | 3.42  | 4.228 |  3.079 | 12.834 |
+|  2 | AvgA      |  4.335 |    3.265 | 3.452 | 1.16  | 37.57  | 2.352 | 5.018 |  3.18  | 15.075 |
+|  3 | AvgCH     |  2.758 |    2.26  | 1.698 | 1.06  | 18.11  | 1.7   | 3.18  |  2.775 | 11.528 |
+|  4 | AvgCD     |  4.024 |    3.63  | 1.211 | 2.64  | 14.68  | 3.362 | 4.2   |  3.205 | 14.456 |
+|  5 | AvgCA     |  4.352 |    3.31  | 3.406 | 1.15  | 32     | 2.34  | 5.137 |  3.066 | 13.676 |
+|  6 | overround |  1.044 |    1.044 | 0.003 | 1.035 |  1.055 | 1.042 | 1.046 |  0.116 | -0.127 |
+
+--- movimiento de mercado 2022/23 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | odds_move_H |  0.027 |     0.01 | 0.341 | -3.83 |  3.88 | -0.07 |  0.1  | -0.216 | 35.755 |
+|  1 | odds_move_D | -0.031 |    -0.04 | 0.296 | -2.7  |  4.16 | -0.12 |  0.05 |  2.352 | 44.854 |
+|  2 | odds_move_A |  0.017 |     0.01 | 0.781 | -6.86 | 10.69 | -0.13 |  0.17 |  0.733 | 38.798 |
+
+--- underdogs 2022/23 ---
+  visitante (AvgA>4):  663 | ganan 92 (13.88%) | avg odd 7.396
+  local (AvgH>4):      255 | ganan 46 (18.04%) | avg odd 5.982
+  extremos (AvgA>8):   184 | ganan 14 (7.61%)
+
+--- underdogs extremos que ganaron en 2022/23 ---
+|      | Div   | Date                | HomeTeam   | AwayTeam    |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+-------+---------------------+------------+-------------+--------+--------+--------+--------|
+| 6068 | E0    | 2022-11-12 00:00:00 | Man City   | Brentford   |   1.14 |  19.14 |      1 |      2 |
+| 6933 | F1    | 2023-04-30 00:00:00 | Paris SG   | Lorient     |   1.19 |  12.99 |      1 |      3 |
+| 7181 | F1    | 2023-06-03 00:00:00 | Paris SG   | Clermont    |   1.23 |  10.91 |      2 |      3 |
+| 6275 | I1    | 2023-01-23 00:00:00 | Inter      | Empoli      |   1.28 |  10.24 |      0 |      1 |
+| 5779 | F1    | 2022-10-08 00:00:00 | Marseille  | Ajaccio     |   1.36 |   9.77 |      1 |      2 |
+| 7165 | SP1   | 2023-05-28 00:00:00 | Ath Bilbao | Elche       |   1.32 |   9.45 |      0 |      1 |
+| 6450 | E0    | 2023-02-18 00:00:00 | Chelsea    | Southampton |   1.38 |   9.42 |      0 |      1 |
+| 5947 | E0    | 2022-10-29 00:00:00 | Liverpool  | Leeds       |   1.3  |   9.16 |      1 |      2 |
+| 5411 | D1    | 2022-08-13 00:00:00 | Leverkusen | Augsburg    |   1.33 |   9.07 |      1 |      2 |
+| 5404 | F1    | 2022-08-07 00:00:00 | Rennes     | Lorient     |   1.34 |   8.85 |      0 |      1 |
+| 7008 | E0    | 2023-05-08 00:00:00 | Brighton   | Everton     |   1.35 |   8.47 |      1 |      5 |
+| 6381 | SP1   | 2023-02-05 00:00:00 | Sociedad   | Valladolid  |   1.43 |   8.29 |      0 |      1 |
+| 7133 | D1    | 2023-05-27 00:00:00 | Wolfsburg  | Hertha      |   1.34 |   8.18 |      1 |      2 |
+| 5566 | F1    | 2022-08-31 00:00:00 | Monaco     | Troyes      |   1.35 |   8.16 |      2 |      4 |
+
+--- smart money 2022/23 ---
+  hacia local:     340 | gana 37.65%
+  hacia visitante: 511 | gana 24.27%
+  hacia empate:    557 | empata 22.98%
+
+--- partidos alta anotacion (>=5 goles) 2022/23: 257 (14.07%) ---
+|      | Div   | Date                | HomeTeam      | AwayTeam    |   FTHG |   FTAG | FTR   |
+|------+-------+---------------------+---------------+-------------+--------+--------+-------|
+| 6231 | I1    | 2023-01-15 00:00:00 | Atalanta      | Salernitana |      8 |      2 | H     |
+| 5519 | E0    | 2022-08-27 00:00:00 | Liverpool     | Bournemouth |      9 |      0 | H     |
+| 5744 | E0    | 2022-10-02 00:00:00 | Man City      | Man United  |      6 |      3 | H     |
+| 7001 | F1    | 2023-05-07 00:00:00 | Lyon          | Montpellier |      5 |      4 | H     |
+| 6589 | D1    | 2023-03-11 00:00:00 | Bayern Munich | Augsburg    |      5 |      3 | H     |
+| 6441 | SP1   | 2023-02-17 00:00:00 | Girona        | Almeria     |      6 |      2 | H     |
+| 5490 | F1    | 2022-08-21 00:00:00 | Lille         | Paris SG    |      1 |      7 | A     |
+| 7007 | E0    | 2023-05-08 00:00:00 | Fulham        | Leicester   |      5 |      3 | H     |
+| 6226 | F1    | 2023-01-15 00:00:00 | Monaco        | Ajaccio     |      7 |      1 | H     |
+| 5935 | D1    | 2022-10-29 00:00:00 | Bayern Munich | Mainz       |      6 |      2 | H     |
+
+  ────────────────────────────────────────────────────────────
+  D1 | 2022/23  (306 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.856 | visit 1.317 | total 3.173 | std 1.774 | max 8
+  medio tiempo: local 0.902 | visit 0.585
+  resultados FT: H 145 (47.39%) | D 75 (24.51%) | A 86 (28.1%)
+  resultados HT: H 120 | D 114 | A 72
+  btts 59.15% | over1.5 84.64% | over2.5 60.46% | over3.5 37.91% | over4.5 21.24%
+  under1.5 15.36% | under2.5 39.54% | under3.5 62.09%
+  clean sheet local 27.78% | visit 17.97% | sin goles 4.9% | +5 goles 21.24%
+  remontada local 9 (2.94%) | visit 7 (2.29%)
+  odds avg: H 2.644 | D 4.262 | A 4.136 | CH 2.639 | CA 4.157 | overround 1.0427
+  mov mercado: H -0.0046 | D -0.0454 | A 0.0211
+  ud visit: 105 (11.43% ganan, avg 7.028) | ud local: 29 (24.14% ganan)
+  ud extremos: 24 | ganan 2 (8.33%)
+  sm local: 57 (40.35%) | visit: 86 (20.93%) | empate: 106 (26.42%)
+  top goles local:        {'Dortmund': 55, 'Bayern Munich': 53, 'RB Leipzig': 38, 'Leverkusen': 35, 'Ein Frankfurt': 35}
+  top goles visit:        {'Bayern Munich': 39, 'Dortmund': 28, 'Augsburg': 26, 'RB Leipzig': 26, 'Werder Bremen': 25}
+  top clean sheets local: {'Union Berlin': 8, 'Bayern Munich': 7, "M'gladbach": 7, 'Dortmund': 7, 'RB Leipzig': 6}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 5411 | 2022-08-13 00:00:00 | Leverkusen | Augsburg   |   1.33 |   9.07 |      1 |      2 |
+| 7133 | 2023-05-27 00:00:00 | Wolfsburg  | Hertha     |   1.34 |   8.18 |      1 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  E0 | 2022/23  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.634 | visit 1.218 | total 2.853 | std 1.791 | max 9
+  medio tiempo: local 0.758 | visit 0.563
+  resultados FT: H 184 (48.42%) | D 87 (22.89%) | A 109 (28.68%)
+  resultados HT: H 138 | D 146 | A 96
+  btts 51.58% | over1.5 75.53% | over2.5 52.63% | over3.5 31.84% | over4.5 16.84%
+  under1.5 24.47% | under2.5 47.37% | under3.5 68.16%
+  clean sheet local 32.89% | visit 21.58% | sin goles 6.05% | +5 goles 16.84%
+  remontada local 12 (3.16%) | visit 8 (2.11%)
+  odds avg: H 2.872 | D 4.216 | A 4.567 | CH 2.886 | CA 4.492 | overround 1.0407
+  mov mercado: H 0.014 | D -0.0292 | A -0.0746
+  ud visit: 143 (11.89% ganan, avg 8.0) | ud local: 64 (21.88% ganan)
+  ud extremos: 45 | ganan 4 (8.89%)
+  sm local: 74 (40.54%) | visit: 117 (27.35%) | empate: 92 (18.48%)
+  top goles local:        {'Man City': 60, 'Arsenal': 53, 'Liverpool': 46, 'Tottenham': 37, 'Brighton': 37}
+  top goles visit:        {'Arsenal': 35, 'Brighton': 35, 'Man City': 34, 'Tottenham': 33, 'Newcastle': 32}
+  top clean sheets local: {'Man United': 11, 'Wolves': 10, 'Liverpool': 9, 'Brighton': 9, 'Newcastle': 9}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam    |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+-------------+--------+--------+--------+--------|
+| 6068 | 2022-11-12 00:00:00 | Man City   | Brentford   |   1.14 |  19.14 |      1 |      2 |
+| 6450 | 2023-02-18 00:00:00 | Chelsea    | Southampton |   1.38 |   9.42 |      0 |      1 |
+| 5947 | 2022-10-29 00:00:00 | Liverpool  | Leeds       |   1.3  |   9.16 |      1 |      2 |
+| 7008 | 2023-05-08 00:00:00 | Brighton   | Everton     |   1.35 |   8.47 |      1 |      5 |
+
+  ────────────────────────────────────────────────────────────
+  F1 | 2022/23  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.489 | visit 1.318 | total 2.808 | std 1.653 | max 9
+  medio tiempo: local 0.695 | visit 0.613
+  resultados FT: H 163 (42.89%) | D 92 (24.21%) | A 125 (32.89%)
+  resultados HT: H 127 | D 143 | A 110
+  btts 58.16% | over1.5 78.16% | over2.5 56.32% | over3.5 29.21% | over4.5 13.68%
+  under1.5 21.84% | under2.5 43.68% | under3.5 70.79%
+  clean sheet local 25.0% | visit 23.68% | sin goles 6.84% | +5 goles 13.68%
+  remontada local 15 (3.95%) | visit 9 (2.37%)
+  odds avg: H 2.729 | D 4.14 | A 4.355 | CH 2.827 | CA 4.36 | overround 1.0476
+  mov mercado: H 0.0974 | D -0.0235 | A 0.0054
+  ud visit: 129 (16.28% ganan, avg 7.745) | ud local: 54 (9.26% ganan)
+  ud extremos: 37 | ganan 5 (13.51%)
+  sm local: 54 (37.04%) | visit: 120 (26.67%) | empate: 126 (19.84%)
+  top goles local:        {'Paris SG': 45, 'Rennes': 43, 'Lens': 41, 'Lille': 40, 'Monaco': 37}
+  top goles visit:        {'Paris SG': 44, 'Montpellier': 36, 'Monaco': 33, 'Marseille': 32, 'Lyon': 30}
+  top clean sheets local: {'Rennes': 9, 'Lens': 8, 'Reims': 7, 'Brest': 6, 'Nice': 6}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 6933 | 2023-04-30 00:00:00 | Paris SG   | Lorient    |   1.19 |  12.99 |      1 |      3 |
+| 7181 | 2023-06-03 00:00:00 | Paris SG   | Clermont   |   1.23 |  10.91 |      2 |      3 |
+| 5779 | 2022-10-08 00:00:00 | Marseille  | Ajaccio    |   1.36 |   9.77 |      1 |      2 |
+| 5404 | 2022-08-07 00:00:00 | Rennes     | Lorient    |   1.34 |   8.85 |      0 |      1 |
+| 5566 | 2022-08-31 00:00:00 | Monaco     | Troyes     |   1.35 |   8.16 |      2 |      4 |
+
+  ────────────────────────────────────────────────────────────
+  I1 | 2022/23  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.413 | visit 1.15 | total 2.563 | std 1.527 | max 10
+  medio tiempo: local 0.642 | visit 0.513
+  resultados FT: H 161 (42.37%) | D 100 (26.32%) | A 119 (31.32%)
+  resultados HT: H 128 | D 157 | A 95
+  btts 50.26% | over1.5 75.26% | over2.5 45.53% | over3.5 24.21% | over4.5 9.47%
+  under1.5 24.74% | under2.5 54.47% | under3.5 75.79%
+  clean sheet local 30.53% | visit 24.47% | sin goles 5.26% | +5 goles 9.47%
+  remontada local 9 (2.37%) | visit 8 (2.11%)
+  odds avg: H 2.761 | D 3.884 | A 4.16 | CH 2.777 | CA 4.228 | overround 1.0452
+  mov mercado: H 0.0159 | D -0.0378 | A 0.0683
+  ud visit: 138 (13.77% ganan, avg 6.977) | ud local: 64 (17.19% ganan)
+  ud extremos: 39 | ganan 1 (2.56%)
+  sm local: 81 (33.33%) | visit: 90 (22.22%) | empate: 123 (26.02%)
+  top goles local:        {'Milan': 41, 'Napoli': 40, 'Atalanta': 38, 'Juventus': 38, 'Inter': 37}
+  top goles visit:        {'Napoli': 37, 'Inter': 34, 'Bologna': 29, 'Atalanta': 28, 'Lazio': 28}
+  top clean sheets local: {'Juventus': 10, 'Napoli': 9, 'Roma': 9, 'Lazio': 8, 'Inter': 8}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 6275 | 2023-01-23 00:00:00 | Inter      | Empoli     |   1.28 |  10.24 |      0 |      1 |
+
+  ────────────────────────────────────────────────────────────
+  SP1 | 2022/23  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.455 | visit 1.058 | total 2.513 | std 1.559 | max 8
+  medio tiempo: local 0.676 | visit 0.442
+  resultados FT: H 182 (47.89%) | D 89 (23.42%) | A 109 (28.68%)
+  resultados HT: H 130 | D 173 | A 77
+  btts 50.26% | over1.5 70.79% | over2.5 47.63% | over3.5 22.63% | over4.5 10.53%
+  under1.5 29.21% | under2.5 52.37% | under3.5 77.37%
+  clean sheet local 32.63% | visit 23.95% | sin goles 6.84% | +5 goles 10.53%
+  remontada local 8 (2.11%) | visit 4 (1.05%)
+  odds avg: H 2.63 | D 3.813 | A 4.417 | CH 2.638 | CA 4.484 | overround 1.0437
+  mov mercado: H 0.0078 | D -0.0238 | A 0.0666
+  ud visit: 148 (15.54% ganan, avg 7.162) | ud local: 44 (20.45% ganan)
+  ud extremos: 39 | ganan 2 (5.13%)
+  sm local: 74 (37.84%) | visit: 98 (22.45%) | empate: 110 (23.64%)
+  top goles local:        {'Real Madrid': 44, 'Ath Madrid': 41, 'Barcelona': 37, 'Villarreal': 36, 'Girona': 35}
+  top goles visit:        {'Barcelona': 33, 'Real Madrid': 31, 'Ath Madrid': 29, 'Ath Bilbao': 25, 'Sociedad': 25}
+  top clean sheets local: {'Barcelona': 16, 'Mallorca': 9, 'Sociedad': 8, 'Ath Bilbao': 8, 'Valladolid': 7}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 7165 | 2023-05-28 00:00:00 | Ath Bilbao | Elche      |   1.32 |   9.45 |      0 |      1 |
+| 6381 | 2023-02-05 00:00:00 | Sociedad   | Valladolid |   1.43 |   8.29 |      0 |      1 |
+
+======================================================================
+  TEMPORADA 2023/24  (1752 partidos)
+======================================================================
+
+--- goles generales 2023/24 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | FTHG        |  1.592 |        1 | 1.308 |     0 |     8 |     1 |     2 |  0.888 |  0.929 |
+|  1 | FTAG        |  1.293 |        1 | 1.191 |     0 |     8 |     0 |     2 |  1.013 |  1.352 |
+|  2 | HTHG        |  0.699 |        1 | 0.823 |     0 |     4 |     0 |     1 |  1.08  |  0.856 |
+|  3 | HTAG        |  0.575 |        0 | 0.771 |     0 |     5 |     0 |     1 |  1.469 |  2.79  |
+|  4 | total_goals |  2.885 |        3 | 1.705 |     0 |     9 |     2 |     4 |  0.484 | -0.043 |
+|  5 | ht_goals    |  1.275 |        1 | 1.103 |     0 |     6 |     0 |     2 |  0.758 |  0.382 |
+|  6 | goal_diff   |  0.299 |        0 | 1.83  |    -8 |     8 |    -1 |     1 |  0.048 |  0.978 |
+
+--- distribucion simulada vs real 2023/24 ---
+
+--- resultados FT 2023/24 ---
+|    | FTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | H     |     755 | 43.09 |
+|  1 | A     |     534 | 30.48 |
+|  2 | D     |     463 | 26.43 |
+
+--- resultados HT 2023/24 ---
+|    | HTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | D     |     716 | 40.87 |
+|  1 | H     |     590 | 33.68 |
+|  2 | A     |     446 | 25.46 |
+
+--- btts / over / under / clean sheets 2023/24 ---
+  btts: 975 (55.65%)
+  over15: 1374 (78.42%)
+  over25: 961 (54.85%)
+  over35: 583 (33.28%)
+  over45: 297 (16.95%)
+  under15: 378 (21.58%)
+  under25: 791 (45.15%)
+  under35: 1169 (66.72%)
+  clean_sheet_h: 514 (29.34%)
+  clean_sheet_a: 375 (21.4%)
+  high_scoring: 297 (16.95%)
+  goalless: 112 (6.39%)
+
+--- remontadas 2023/24 ---
+  local remonta (pierde HT, gana FT): 54 (3.08%)
+  visit remonta (pierde HT, gana FT): 44 (2.51%)
+  gana HT pero pierde FT (local):     44 (2.51%)
+  empate HT -> gana local FT:         258
+  empate HT -> gana visit FT:         180
+
+--- odds generales 2023/24 ---
+|    | column    |   mean |   median |   std |   min |    max |   q25 |   q75 |   skew |   kurt |
+|----+-----------+--------+----------+-------+-------+--------+-------+-------+--------+--------|
+|  0 | AvgH      |  2.699 |    2.23  | 1.665 | 1.06  | 18.02  | 1.68  | 3.1   |  3.223 | 17.364 |
+|  1 | AvgD      |  4.141 |    3.76  | 1.252 | 2.83  | 15.98  | 3.46  | 4.34  |  3.415 | 17.375 |
+|  2 | AvgA      |  4.332 |    3.31  | 3.359 | 1.14  | 30.37  | 2.31  | 5.042 |  3.024 | 13.3   |
+|  3 | AvgCH     |  2.718 |    2.21  | 1.695 | 1.07  | 16.8   | 1.68  | 3.16  |  3.056 | 14.935 |
+|  4 | AvgCD     |  4.123 |    3.74  | 1.299 | 1.72  | 14.54  | 3.4   | 4.33  |  3.195 | 14.68  |
+|  5 | AvgCA     |  4.425 |    3.38  | 3.464 | 1.14  | 30.83  | 2.31  | 5.16  |  2.902 | 11.873 |
+|  6 | overround |  1.044 |    1.044 | 0.003 | 1.035 |  1.055 | 1.042 | 1.046 |  0.212 | -0.171 |
+
+--- movimiento de mercado 2023/24 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | odds_move_H |  0.018 |     0    | 0.312 | -2.77 |  3.25 | -0.07 |  0.08 |  0.704 | 22.718 |
+|  1 | odds_move_D | -0.017 |    -0.04 | 0.288 | -4.18 |  2.58 | -0.12 |  0.06 | -0.903 | 38.179 |
+|  2 | odds_move_A |  0.093 |     0.03 | 0.705 | -9.75 |  6.55 | -0.11 |  0.22 | -0.024 | 38.029 |
+
+--- underdogs 2023/24 ---
+  visitante (AvgA>4):  651 | ganan 74 (11.37%) | avg odd 7.293
+  local (AvgH>4):      245 | ganan 29 (11.84%) | avg odd 5.882
+  extremos (AvgA>8):   168 | ganan 8 (4.76%)
+
+--- underdogs extremos que ganaron en 2023/24 ---
+|      | Div   | Date                | HomeTeam      | AwayTeam       |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+-------+---------------------+---------------+----------------+--------+--------+--------+--------|
+| 8132 | D1    | 2024-01-21 00:00:00 | Bayern Munich | Werder Bremen  |   1.09 |  24.26 |      0 |      1 |
+| 8656 | E0    | 2024-04-14 00:00:00 | Liverpool     | Crystal Palace |   1.21 |  13.35 |      0 |      1 |
+| 7767 | I1    | 2023-11-12 00:00:00 | Napoli        | Empoli         |   1.23 |  11.96 |      0 |      1 |
+| 8658 | E0    | 2024-04-14 00:00:00 | Arsenal       | Aston Villa    |   1.28 |   9.89 |      0 |      2 |
+| 8036 | E0    | 2023-12-28 00:00:00 | Arsenal       | West Ham       |   1.35 |   8.64 |      0 |      2 |
+| 7476 | I1    | 2023-09-27 00:00:00 | Inter         | Sassuolo       |   1.33 |   8.57 |      1 |      2 |
+| 7343 | E0    | 2023-09-02 00:00:00 | Chelsea       | Nott'm Forest  |   1.38 |   8.27 |      0 |      1 |
+| 8293 | I1    | 2024-02-12 00:00:00 | Juventus      | Udinese        |   1.42 |   8.25 |      0 |      1 |
+
+--- smart money 2023/24 ---
+  hacia local:     343 | gana 32.36%
+  hacia visitante: 445 | gana 24.27%
+  hacia empate:    479 | empata 25.05%
+
+--- partidos alta anotacion (>=5 goles) 2023/24: 297 (16.95%) ---
+|      | Div   | Date                | HomeTeam      | AwayTeam    |   FTHG |   FTAG | FTR   |
+|------+-------+---------------------+---------------+-------------+--------+--------+-------|
+| 8447 | D1    | 2024-03-09 00:00:00 | Bayern Munich | Mainz       |      8 |      1 | H     |
+| 8762 | F1    | 2024-04-28 00:00:00 | Rennes        | Brest       |      4 |      5 | A     |
+| 8931 | SP1   | 2024-05-19 00:00:00 | Villarreal    | Real Madrid |      4 |      4 | D     |
+| 8522 | F1    | 2024-03-17 00:00:00 | Montpellier   | Paris SG    |      2 |      6 | A     |
+| 7443 | SP1   | 2023-09-23 00:00:00 | Girona        | Mallorca    |      5 |      3 | H     |
+| 7352 | SP1   | 2023-09-02 00:00:00 | Sociedad      | Granada     |      5 |      3 | H     |
+| 7640 | D1    | 2023-10-28 00:00:00 | Bayern Munich | Darmstadt   |      8 |      0 | H     |
+| 7438 | F1    | 2023-09-23 00:00:00 | Nantes        | Lorient     |      5 |      3 | H     |
+| 8211 | E0    | 2024-02-03 00:00:00 | Newcastle     | Luton       |      4 |      4 | D     |
+| 7761 | E0    | 2023-11-12 00:00:00 | Chelsea       | Man City    |      4 |      4 | D     |
+
+  ────────────────────────────────────────────────────────────
+  D1 | 2023/24  (306 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.807 | visit 1.412 | total 3.219 | std 1.72 | max 9
+  medio tiempo: local 0.824 | visit 0.69
+  resultados FT: H 134 (43.79%) | D 81 (26.47%) | A 91 (29.74%)
+  resultados HT: H 109 | D 111 | A 86
+  btts 61.76% | over1.5 85.29% | over2.5 62.42% | over3.5 41.18% | over4.5 21.57%
+  under1.5 14.71% | under2.5 37.58% | under3.5 58.82%
+  clean sheet local 24.51% | visit 17.97% | sin goles 4.25% | +5 goles 21.57%
+  remontada local 13 (4.25%) | visit 8 (2.61%)
+  odds avg: H 2.721 | D 4.576 | A 4.54 | CH 2.706 | CA 4.628 | overround 1.042
+  mov mercado: H -0.0152 | D -0.026 | A 0.0879
+  ud visit: 104 (8.65% ganan, avg 8.341) | ud local: 40 (15.0% ganan)
+  ud extremos: 35 | ganan 1 (2.86%)
+  sm local: 69 (34.78%) | visit: 88 (15.91%) | empate: 90 (24.44%)
+  top goles local:        {'Bayern Munich': 53, 'Stuttgart': 50, 'Leverkusen': 47, 'RB Leipzig': 40, 'Dortmund': 37}
+  top goles visit:        {'Leverkusen': 42, 'Bayern Munich': 41, 'RB Leipzig': 37, 'Hoffenheim': 35, 'Dortmund': 31}
+  top clean sheets local: {'Bayern Munich': 8, 'RB Leipzig': 8, 'Leverkusen': 8, 'Stuttgart': 7, 'Mainz': 5}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam      | AwayTeam      |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+---------------+---------------+--------+--------+--------+--------|
+| 8132 | 2024-01-21 00:00:00 | Bayern Munich | Werder Bremen |   1.09 |  24.26 |      0 |      1 |
+
+  ────────────────────────────────────────────────────────────
+  E0 | 2023/24  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.8 | visit 1.479 | total 3.279 | std 1.657 | max 8
+  medio tiempo: local 0.734 | visit 0.626
+  resultados FT: H 175 (46.05%) | D 82 (21.58%) | A 123 (32.37%)
+  resultados HT: H 128 | D 153 | A 99
+  btts 61.58% | over1.5 86.05% | over2.5 64.74% | over3.5 43.68% | over4.5 22.63%
+  under1.5 13.95% | under2.5 35.26% | under3.5 56.32%
+  clean sheet local 23.42% | visit 17.89% | sin goles 2.89% | +5 goles 22.63%
+  remontada local 13 (3.42%) | visit 11 (2.89%)
+  odds avg: H 2.954 | D 4.602 | A 4.734 | CH 2.967 | CA 4.838 | overround 1.0414
+  mov mercado: H 0.013 | D 0.0088 | A 0.1041
+  ud visit: 144 (11.81% ganan, avg 8.53) | ud local: 69 (13.04% ganan)
+  ud extremos: 55 | ganan 4 (7.27%)
+  sm local: 82 (39.02%) | visit: 85 (28.24%) | empate: 101 (24.75%)
+  top goles local:        {'Man City': 51, 'Liverpool': 49, 'Newcastle': 49, 'Arsenal': 48, 'Aston Villa': 48}
+  top goles visit:        {'Man City': 45, 'Arsenal': 43, 'Liverpool': 37, 'Newcastle': 36, 'Tottenham': 36}
+  top clean sheets local: {'Everton': 9, 'Newcastle': 8, 'Arsenal': 7, 'Fulham': 6, 'Liverpool': 6}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam       |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+----------------+--------+--------+--------+--------|
+| 8656 | 2024-04-14 00:00:00 | Liverpool  | Crystal Palace |   1.21 |  13.35 |      0 |      1 |
+| 8658 | 2024-04-14 00:00:00 | Arsenal    | Aston Villa    |   1.28 |   9.89 |      0 |      2 |
+| 8036 | 2023-12-28 00:00:00 | Arsenal    | West Ham       |   1.35 |   8.64 |      0 |      2 |
+| 7343 | 2023-09-02 00:00:00 | Chelsea    | Nott'm Forest  |   1.38 |   8.27 |      0 |      1 |
+
+  ────────────────────────────────────────────────────────────
+  F1 | 2023/24  (306 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.448 | visit 1.252 | total 2.699 | std 1.672 | max 9
+  medio tiempo: local 0.67 | visit 0.536
+  resultados FT: H 120 (39.22%) | D 81 (26.47%) | A 105 (34.31%)
+  resultados HT: H 102 | D 134 | A 70
+  btts 53.92% | over1.5 75.49% | over2.5 52.94% | over3.5 28.76% | over4.5 12.42%
+  under1.5 24.51% | under2.5 47.06% | under3.5 71.24%
+  clean sheet local 31.37% | visit 23.53% | sin goles 8.82% | +5 goles 12.42%
+  remontada local 3 (0.98%) | visit 10 (3.27%)
+  odds avg: H 2.573 | D 3.875 | A 3.865 | CH 2.61 | CA 3.899 | overround 1.0468
+  mov mercado: H 0.0379 | D -0.0411 | A 0.0341
+  ud visit: 110 (15.45% ganan, avg 6.089) | ud local: 31 (9.68% ganan)
+  ud extremos: 14 | ganan 0 (0.0%)
+  sm local: 58 (32.76%) | visit: 99 (29.29%) | empate: 91 (26.37%)
+  top goles local:        {'Paris SG': 42, 'Lille': 34, 'Rennes': 34, 'Marseille': 31, 'Monaco': 30}
+  top goles visit:        {'Paris SG': 39, 'Monaco': 38, 'Brest': 28, 'Lyon': 24, 'Reims': 23}
+  top clean sheets local: {'Nice': 11, 'Brest': 9, 'Lille': 9, 'Monaco': 8, 'Montpellier': 7}
+
+  ────────────────────────────────────────────────────────────
+  I1 | 2023/24  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.434 | visit 1.176 | total 2.611 | std 1.584 | max 7
+  medio tiempo: local 0.629 | visit 0.5
+  resultados FT: H 159 (41.84%) | D 112 (29.47%) | A 109 (28.68%)
+  resultados HT: H 126 | D 157 | A 97
+  btts 52.37% | over1.5 74.47% | over2.5 49.21% | over3.5 26.32% | over4.5 12.37%
+  under1.5 25.53% | under2.5 50.79% | under3.5 73.68%
+  clean sheet local 32.89% | visit 22.63% | sin goles 7.89% | +5 goles 12.37%
+  remontada local 12 (3.16%) | visit 10 (2.63%)
+  odds avg: H 2.72 | D 3.838 | A 4.144 | CH 2.751 | CA 4.224 | overround 1.0453
+  mov mercado: H 0.0315 | D -0.0274 | A 0.0803
+  ud visit: 135 (8.89% ganan, avg 6.961) | ud local: 63 (12.7% ganan)
+  ud extremos: 29 | ganan 3 (10.34%)
+  sm local: 56 (26.79%) | visit: 76 (23.68%) | empate: 103 (27.18%)
+  top goles local:        {'Inter': 44, 'Atalanta': 42, 'Milan': 38, 'Roma': 38, 'Fiorentina': 37}
+  top goles visit:        {'Inter': 45, 'Milan': 38, 'Napoli': 31, 'Atalanta': 30, 'Juventus': 28}
+  top clean sheets local: {'Torino': 13, 'Bologna': 11, 'Inter': 11, 'Atalanta': 10, 'Juventus': 10}
+  underdogs extremos que ganaron:
+|      | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|------+---------------------+------------+------------+--------+--------+--------+--------|
+| 7767 | 2023-11-12 00:00:00 | Napoli     | Empoli     |   1.23 |  11.96 |      0 |      1 |
+| 7476 | 2023-09-27 00:00:00 | Inter      | Sassuolo   |   1.33 |   8.57 |      1 |      2 |
+| 8293 | 2024-02-12 00:00:00 | Juventus   | Udinese    |   1.42 |   8.25 |      0 |      1 |
+
+  ────────────────────────────────────────────────────────────
+  SP1 | 2023/24  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.484 | visit 1.161 | total 2.645 | std 1.773 | max 8
+  medio tiempo: local 0.658 | visit 0.539
+  resultados FT: H 167 (43.95%) | D 107 (28.16%) | A 106 (27.89%)
+  resultados HT: H 125 | D 161 | A 94
+  btts 49.47% | over1.5 71.58% | over2.5 46.05% | over3.5 27.11% | over4.5 15.79%
+  under1.5 28.42% | under2.5 53.95% | under3.5 72.89%
+  clean sheet local 33.95% | visit 24.74% | sin goles 8.16% | +5 goles 15.79%
+  remontada local 13 (3.42%) | visit 5 (1.32%)
+  odds avg: H 2.51 | D 3.845 | A 4.327 | CH 2.531 | CA 4.473 | overround 1.0432
+  mov mercado: H 0.0216 | D -0.0064 | A 0.1464
+  ud visit: 158 (12.03% ganan, avg 6.6) | ud local: 42 (7.14% ganan)
+  ud extremos: 35 | ganan 0 (0.0%)
+  sm local: 78 (26.92%) | visit: 97 (23.71%) | empate: 94 (22.34%)
+  top goles local:        {'Girona': 53, 'Real Madrid': 48, 'Barcelona': 43, 'Ath Madrid': 42, 'Ath Bilbao': 42}
+  top goles visit:        {'Real Madrid': 39, 'Barcelona': 36, 'Girona': 32, 'Villarreal': 29, 'Ath Madrid': 28}
+  top clean sheets local: {'Real Madrid': 12, 'Barcelona': 11, 'Valencia': 10, 'Ath Bilbao': 9, 'Girona': 8}
+
+======================================================================
+  TEMPORADA 2024/25  (1751 partidos)
+======================================================================
+
+--- goles generales 2024/25 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | FTHG        |  1.5   |        1 | 1.281 |     0 |     8 |     1 |     2 |  0.975 |  1.231 |
+|  1 | FTAG        |  1.327 |        1 | 1.177 |     0 |     6 |     0 |     2 |  0.945 |  0.917 |
+|  2 | HTHG        |  0.689 |        0 | 0.856 |     0 |     6 |     0 |     1 |  1.435 |  2.676 |
+|  3 | HTAG        |  0.583 |        0 | 0.78  |     0 |     5 |     0 |     1 |  1.485 |  2.795 |
+|  4 | total_goals |  2.828 |        3 | 1.655 |     0 |     9 |     2 |     4 |  0.509 |  0.025 |
+|  5 | ht_goals    |  1.272 |        1 | 1.14  |     0 |     8 |     0 |     2 |  1.076 |  1.779 |
+|  6 | goal_diff   |  0.173 |        0 | 1.82  |    -6 |     8 |    -1 |     1 |  0.017 |  0.753 |
+
+--- distribucion simulada vs real 2024/25 ---
+
+--- resultados FT 2024/25 ---
+|    | FTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | H     |     736 | 42.03 |
+|  1 | A     |     578 | 33.01 |
+|  2 | D     |     437 | 24.96 |
+
+--- resultados HT 2024/25 ---
+|    | HTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | D     |     683 | 39.01 |
+|  1 | H     |     589 | 33.64 |
+|  2 | A     |     479 | 27.36 |
+
+--- btts / over / under / clean sheets 2024/25 ---
+  btts: 968 (55.28%)
+  over15: 1363 (77.84%)
+  over25: 936 (53.46%)
+  over35: 559 (31.92%)
+  over45: 274 (15.65%)
+  under15: 388 (22.16%)
+  under25: 815 (46.54%)
+  under35: 1192 (68.08%)
+  clean_sheet_h: 474 (27.07%)
+  clean_sheet_a: 410 (23.42%)
+  high_scoring: 274 (15.65%)
+  goalless: 101 (5.77%)
+
+--- remontadas 2024/25 ---
+  local remonta (pierde HT, gana FT): 58 (3.31%)
+  visit remonta (pierde HT, gana FT): 48 (2.74%)
+  gana HT pero pierde FT (local):     48 (2.74%)
+  empate HT -> gana local FT:         239
+  empate HT -> gana visit FT:         209
+
+--- odds generales 2024/25 ---
+|    | column    |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-----------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | AvgH      |  2.724 |    2.23  | 1.692 | 1.05  | 16.45 | 1.67  | 3.13  |  2.72  | 11.053 |
+|  1 | AvgD      |  4.124 |    3.73  | 1.268 | 2.65  | 16.44 | 3.42  | 4.36  |  3.175 | 15.214 |
+|  2 | AvgA      |  4.381 |    3.32  | 3.372 | 1.13  | 38.04 | 2.325 | 5.07  |  2.852 | 12.924 |
+|  3 | AvgCH     |  2.777 |    2.26  | 1.77  | 1.04  | 15.78 | 1.67  | 3.215 |  2.599 |  9.515 |
+|  4 | AvgCD     |  4.094 |    3.69  | 1.297 | 2.56  | 18.08 | 3.36  | 4.36  |  3.054 | 15.215 |
+|  5 | AvgCA     |  4.484 |    3.37  | 3.571 | 1.15  | 43.76 | 2.29  | 5.21  |  3.06  | 15.854 |
+|  6 | overround |  1.048 |    1.048 | 0.004 | 1.036 |  1.06 | 1.045 | 1.051 | -0.008 | -0.528 |
+
+--- movimiento de mercado 2024/25 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | odds_move_H |  0.053 |     0.02 | 0.406 | -6.28 |  3.97 | -0.06 |  0.13 | -2.83  | 72.879 |
+|  1 | odds_move_D | -0.03  |    -0.04 | 0.31  | -2.92 |  2.47 | -0.14 |  0.06 | -0.618 | 20.28  |
+|  2 | odds_move_A |  0.104 |     0.02 | 0.767 | -5.03 |  8.38 | -0.12 |  0.24 |  2.208 | 22.287 |
+
+--- underdogs 2024/25 ---
+  visitante (AvgA>4):  671 | ganan 96 (14.31%) | avg odd 7.32
+  local (AvgH>4):      269 | ganan 32 (11.9%) | avg odd 5.869
+  extremos (AvgA>8):   199 | ganan 12 (6.03%)
+
+--- underdogs extremos que ganaron en 2024/25 ---
+|       | Div   | Date                | HomeTeam      | AwayTeam      |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+-------+---------------------+---------------+---------------+--------+--------+--------+--------|
+| 10189 | D1    | 2025-03-08 00:00:00 | Bayern Munich | Bochum        |   1.11 |  18.52 |      2 |      3 |
+|  9698 | SP1   | 2024-12-15 00:00:00 | Barcelona     | Leganes       |   1.13 |  18.38 |      0 |      1 |
+|  9570 | SP1   | 2024-11-30 00:00:00 | Barcelona     | Las Palmas    |   1.16 |  14.85 |      1 |      2 |
+|  9408 | F1    | 2024-11-01 00:00:00 | Monaco        | Angers        |   1.21 |  13.02 |      0 |      1 |
+|  9112 | E0    | 2024-09-14 00:00:00 | Liverpool     | Nott'm Forest |   1.22 |  12.4  |      0 |      1 |
+| 10101 | E0    | 2025-02-22 00:00:00 | Arsenal       | West Ham      |   1.25 |  11.63 |      0 |      1 |
+| 10192 | D1    | 2025-03-08 00:00:00 | Leverkusen    | Werder Bremen |   1.26 |  10.53 |      0 |      2 |
+|  9483 | E0    | 2024-11-10 00:00:00 | Tottenham     | Ipswich       |   1.26 |   9.98 |      1 |      2 |
+| 10350 | SP1   | 2025-04-05 00:00:00 | Real Madrid   | Valencia      |   1.3  |   9.44 |      1 |      2 |
+| 10014 | F1    | 2025-02-08 00:00:00 | Lille         | Le Havre      |   1.35 |   9.17 |      1 |      2 |
+| 10692 | E0    | 2025-05-25 00:00:00 | Newcastle     | Everton       |   1.32 |   8.77 |      0 |      1 |
+| 10160 | F1    | 2025-03-01 00:00:00 | Lens          | Le Havre      |   1.37 |   8.23 |      3 |      4 |
+
+--- smart money 2024/25 ---
+  hacia local:     296 | gana 32.43%
+  hacia visitante: 472 | gana 28.18%
+  hacia empate:    572 | empata 25.7%
+
+--- partidos alta anotacion (>=5 goles) 2024/25: 274 (15.65%) ---
+|       | Div   | Date                | HomeTeam      | AwayTeam   |   FTHG |   FTAG | FTR   |
+|-------+-------+---------------------+---------------+------------+--------+--------+-------|
+|  9412 | D1    | 2024-11-02 00:00:00 | Ein Frankfurt | Bochum     |      7 |      2 | H     |
+|  9731 | E0    | 2024-12-22 00:00:00 | Tottenham     | Liverpool  |      3 |      6 | A     |
+| 10431 | D1    | 2025-04-19 00:00:00 | Union Berlin  | Stuttgart  |      4 |      4 | D     |
+|  9151 | F1    | 2024-09-20 00:00:00 | Nice          | St Etienne |      8 |      0 | H     |
+| 10527 | D1    | 2025-05-03 00:00:00 | M'gladbach    | Hoffenheim |      4 |      4 | D     |
+| 10059 | F1    | 2025-02-15 00:00:00 | Monaco        | Nantes     |      7 |      1 | H     |
+|  9390 | I1    | 2024-10-27 00:00:00 | Inter         | Juventus   |      4 |      4 | D     |
+|  9949 | SP1   | 2025-01-26 00:00:00 | Barcelona     | Valencia   |      7 |      1 | H     |
+|  9025 | E0    | 2024-08-25 00:00:00 | Wolves        | Chelsea    |      2 |      6 | A     |
+| 10132 | SP1   | 2025-02-23 00:00:00 | Ath Bilbao    | Valladolid |      7 |      1 | H     |
+
+  ────────────────────────────────────────────────────────────
+  D1 | 2024/25  (305 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.636 | visit 1.502 | total 3.138 | std 1.828 | max 9
+  medio tiempo: local 0.757 | visit 0.708
+  resultados FT: H 118 (38.69%) | D 77 (25.25%) | A 110 (36.07%)
+  resultados HT: H 102 | D 105 | A 98
+  btts 57.05% | over1.5 80.66% | over2.5 60.0% | over3.5 42.95% | over4.5 21.31%
+  under1.5 19.34% | under2.5 40.0% | under3.5 57.05%
+  clean sheet local 25.57% | visit 24.59% | sin goles 7.21% | +5 goles 21.31%
+  remontada local 8 (2.62%) | visit 7 (2.3%)
+  odds avg: H 2.666 | D 4.452 | A 4.513 | CH 2.74 | CA 4.617 | overround 1.0469
+  mov mercado: H 0.0746 | D -0.034 | A 0.104
+  ud visit: 114 (17.54% ganan, avg 7.797) | ud local: 39 (7.69% ganan)
+  ud extremos: 36 | ganan 2 (5.56%)
+  sm local: 57 (29.82%) | visit: 86 (32.56%) | empate: 91 (34.07%)
+  top goles local:        {'Bayern Munich': 53, 'Dortmund': 44, 'Ein Frankfurt': 41, 'Leverkusen': 36, 'Stuttgart': 35}
+  top goles visit:        {'Bayern Munich': 46, 'Leverkusen': 36, 'Werder Bremen': 33, 'Mainz': 31, 'Wolfsburg': 29}
+  top clean sheets local: {'Bayern Munich': 9, 'Augsburg': 6, 'Ein Frankfurt': 6, 'RB Leipzig': 6, 'Werder Bremen': 6}
+  underdogs extremos que ganaron:
+|       | Date                | HomeTeam      | AwayTeam      |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+---------------------+---------------+---------------+--------+--------+--------+--------|
+| 10189 | 2025-03-08 00:00:00 | Bayern Munich | Bochum        |   1.11 |  18.52 |      2 |      3 |
+| 10192 | 2025-03-08 00:00:00 | Leverkusen    | Werder Bremen |   1.26 |  10.53 |      0 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  E0 | 2024/25  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.513 | visit 1.421 | total 2.934 | std 1.617 | max 9
+  medio tiempo: local 0.753 | visit 0.611
+  resultados FT: H 155 (40.79%) | D 93 (24.47%) | A 132 (34.74%)
+  resultados HT: H 142 | D 135 | A 103
+  btts 57.37% | over1.5 81.32% | over2.5 56.58% | over3.5 34.21% | over4.5 15.53%
+  under1.5 18.68% | under2.5 43.42% | under3.5 65.79%
+  clean sheet local 22.89% | visit 23.95% | sin goles 4.21% | +5 goles 15.53%
+  remontada local 14 (3.68%) | visit 15 (3.95%)
+  odds avg: H 2.77 | D 4.392 | A 4.407 | CH 2.802 | CA 4.522 | overround 1.0449
+  mov mercado: H 0.0316 | D -0.0254 | A 0.1152
+  ud visit: 140 (14.29% ganan, avg 7.695) | ud local: 63 (9.52% ganan)
+  ud extremos: 46 | ganan 4 (8.7%)
+  sm local: 64 (26.56%) | visit: 96 (26.04%) | empate: 126 (27.78%)
+  top goles local:        {'Man City': 43, 'Liverpool': 42, 'Brentford': 40, 'Newcastle': 40, 'Tottenham': 35}
+  top goles visit:        {'Liverpool': 44, 'Brighton': 36, 'Bournemouth': 35, 'Arsenal': 34, "Nott'm Forest": 32}
+  top clean sheets local: {"Nott'm Forest": 8, 'Newcastle': 8, 'Arsenal': 7, 'Bournemouth': 7, 'Liverpool': 6}
+  underdogs extremos que ganaron:
+|       | Date                | HomeTeam   | AwayTeam      |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+---------------------+------------+---------------+--------+--------+--------+--------|
+|  9112 | 2024-09-14 00:00:00 | Liverpool  | Nott'm Forest |   1.22 |  12.4  |      0 |      1 |
+| 10101 | 2025-02-22 00:00:00 | Arsenal    | West Ham      |   1.25 |  11.63 |      0 |      1 |
+|  9483 | 2024-11-10 00:00:00 | Tottenham  | Ipswich       |   1.26 |   9.98 |      1 |      2 |
+| 10692 | 2025-05-25 00:00:00 | Newcastle  | Everton       |   1.32 |   8.77 |      0 |      1 |
+
+  ────────────────────────────────────────────────────────────
+  F1 | 2024/25  (306 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.608 | visit 1.369 | total 2.977 | std 1.652 | max 8
+  medio tiempo: local 0.693 | visit 0.618
+  resultados FT: H 143 (46.73%) | D 62 (20.26%) | A 101 (33.01%)
+  resultados HT: H 104 | D 110 | A 92
+  btts 56.86% | over1.5 82.35% | over2.5 55.56% | over3.5 35.29% | over4.5 17.65%
+  under1.5 17.65% | under2.5 44.44% | under3.5 64.71%
+  clean sheet local 26.8% | visit 20.92% | sin goles 4.58% | +5 goles 17.65%
+  remontada local 13 (4.25%) | visit 2 (0.65%)
+  odds avg: H 2.704 | D 4.089 | A 4.107 | CH 2.745 | CA 4.276 | overround 1.0505
+  mov mercado: H 0.0405 | D 0.0153 | A 0.1685
+  ud visit: 113 (15.04% ganan, avg 6.777) | ud local: 44 (15.91% ganan)
+  ud extremos: 24 | ganan 3 (12.5%)
+  sm local: 55 (43.64%) | visit: 82 (34.15%) | empate: 88 (12.5%)
+  top goles local:        {'Paris SG': 45, 'Marseille': 41, 'Nice': 38, 'Monaco': 38, 'Lyon': 37}
+  top goles visit:        {'Paris SG': 47, 'Marseille': 33, 'Nice': 28, 'Lyon': 28, 'Rennes': 26}
+  top clean sheets local: {'Rennes': 8, 'Lens': 8, 'Monaco': 7, 'Auxerre': 7, 'Brest': 7}
+  underdogs extremos que ganaron:
+|       | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+---------------------+------------+------------+--------+--------+--------+--------|
+|  9408 | 2024-11-01 00:00:00 | Monaco     | Angers     |   1.21 |  13.02 |      0 |      1 |
+| 10014 | 2025-02-08 00:00:00 | Lille      | Le Havre   |   1.35 |   9.17 |      1 |      2 |
+| 10160 | 2025-03-01 00:00:00 | Lens       | Le Havre   |   1.37 |   8.23 |      3 |      4 |
+
+  ────────────────────────────────────────────────────────────
+  I1 | 2024/25  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.339 | visit 1.221 | total 2.561 | std 1.511 | max 8
+  medio tiempo: local 0.558 | visit 0.558
+  resultados FT: H 151 (39.74%) | D 108 (28.42%) | A 121 (31.84%)
+  resultados HT: H 108 | D 164 | A 108
+  btts 51.58% | over1.5 73.95% | over2.5 48.16% | over3.5 26.05% | over4.5 12.11%
+  under1.5 26.05% | under2.5 51.84% | under3.5 73.95%
+  clean sheet local 29.21% | visit 26.58% | sin goles 7.37% | +5 goles 12.11%
+  remontada local 13 (3.42%) | visit 11 (2.89%)
+  odds avg: H 2.803 | D 3.836 | A 4.259 | CH 2.894 | CA 4.245 | overround 1.049
+  mov mercado: H 0.091 | D -0.079 | A -0.0139
+  ud visit: 146 (12.33% ganan, avg 7.023) | ud local: 72 (11.11% ganan)
+  ud extremos: 43 | ganan 0 (0.0%)
+  sm local: 46 (19.57%) | visit: 116 (18.97%) | empate: 146 (28.08%)
+  top goles local:        {'Inter': 40, 'Roma': 37, 'Atalanta': 36, 'Bologna': 33, 'Lazio': 33}
+  top goles visit:        {'Atalanta': 42, 'Inter': 39, 'Milan': 31, 'Lazio': 28, 'Fiorentina': 28}
+  top clean sheets local: {'Juventus': 11, 'Napoli': 9, 'Milan': 8, 'Roma': 8, 'Fiorentina': 7}
+
+  ────────────────────────────────────────────────────────────
+  SP1 | 2024/25  (380 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.453 | visit 1.166 | total 2.618 | std 1.626 | max 8
+  medio tiempo: local 0.7 | visit 0.453
+  resultados FT: H 169 (44.47%) | D 97 (25.53%) | A 114 (30.0%)
+  resultados HT: H 133 | D 169 | A 78
+  btts 54.21% | over1.5 72.37% | over2.5 48.68% | over3.5 23.95% | over4.5 13.16%
+  under1.5 27.63% | under2.5 51.32% | under3.5 76.05%
+  clean sheet local 30.53% | visit 20.79% | sin goles 5.53% | +5 goles 13.16%
+  remontada local 10 (2.63%) | visit 13 (3.42%)
+  odds avg: H 2.663 | D 3.91 | A 4.59 | CH 2.691 | CA 4.747 | overround 1.0475
+  mov mercado: H 0.0282 | D -0.0176 | A 0.1578
+  ud visit: 158 (13.29% ganan, avg 7.305) | ud local: 51 (15.69% ganan)
+  ud extremos: 50 | ganan 3 (6.0%)
+  sm local: 74 (39.19%) | visit: 92 (32.61%) | empate: 121 (23.97%)
+  top goles local:        {'Barcelona': 52, 'Real Madrid': 45, 'Villarreal': 43, 'Ath Madrid': 42, 'Osasuna': 33}
+  top goles visit:        {'Barcelona': 50, 'Real Madrid': 33, 'Villarreal': 28, 'Celta': 27, 'Ath Madrid': 26}
+  top clean sheets local: {'Ath Madrid': 10, 'Ath Bilbao': 8, 'Real Madrid': 8, 'Alaves': 7, 'Barcelona': 7}
+  underdogs extremos que ganaron:
+|       | Date                | HomeTeam    | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+---------------------+-------------+------------+--------+--------+--------+--------|
+|  9698 | 2024-12-15 00:00:00 | Barcelona   | Leganes    |   1.13 |  18.38 |      0 |      1 |
+|  9570 | 2024-11-30 00:00:00 | Barcelona   | Las Palmas |   1.16 |  14.85 |      1 |      2 |
+| 10350 | 2025-04-05 00:00:00 | Real Madrid | Valencia   |   1.3  |   9.44 |      1 |      2 |
+
+======================================================================
+  TEMPORADA 2025/26  (1145 partidos)
+======================================================================
+
+--- goles generales 2025/26 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | FTHG        |  1.529 |        1 | 1.281 |     0 |     8 |     1 |     2 |  0.877 |  0.901 |
+|  1 | FTAG        |  1.224 |        1 | 1.15  |     0 |     7 |     0 |     2 |  1.038 |  1.343 |
+|  2 | HTHG        |  0.65  |        0 | 0.797 |     0 |     5 |     0 |     1 |  1.179 |  1.353 |
+|  3 | HTAG        |  0.532 |        0 | 0.762 |     0 |     5 |     0 |     1 |  1.611 |  3.173 |
+|  4 | total_goals |  2.753 |        3 | 1.655 |     0 |    10 |     2 |     4 |  0.607 |  0.587 |
+|  5 | ht_goals    |  1.182 |        1 | 1.073 |     0 |     5 |     0 |     2 |  0.883 |  0.595 |
+|  6 | goal_diff   |  0.306 |        0 | 1.785 |    -6 |     7 |    -1 |     1 |  0.092 |  0.535 |
+
+--- distribucion simulada vs real 2025/26 ---
+
+--- resultados FT 2025/26 ---
+|    | FTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | H     |     506 | 44.19 |
+|  1 | A     |     348 | 30.39 |
+|  2 | D     |     291 | 25.41 |
+
+--- resultados HT 2025/26 ---
+|    | HTR   |   count |   pct |
+|----+-------+---------+-------|
+|  0 | D     |     458 | 40    |
+|  1 | H     |     393 | 34.32 |
+|  2 | A     |     294 | 25.68 |
+
+--- btts / over / under / clean sheets 2025/26 ---
+  btts: 606 (52.93%)
+  over15: 876 (76.51%)
+  over25: 605 (52.84%)
+  over35: 344 (30.04%)
+  over45: 157 (13.71%)
+  under15: 269 (23.49%)
+  under25: 540 (47.16%)
+  under35: 801 (69.96%)
+  clean_sheet_h: 353 (30.83%)
+  clean_sheet_a: 265 (23.14%)
+  high_scoring: 157 (13.71%)
+  goalless: 79 (6.9%)
+
+--- remontadas 2025/26 ---
+  local remonta (pierde HT, gana FT): 23 (2.01%)
+  visit remonta (pierde HT, gana FT): 28 (2.45%)
+  gana HT pero pierde FT (local):     28 (2.45%)
+  empate HT -> gana local FT:         168
+  empate HT -> gana visit FT:         116
+
+--- odds generales 2025/26 ---
+|    | column    |   mean |   median |   std |   min |    max |   q25 |   q75 |   skew |   kurt |
+|----+-----------+--------+----------+-------+-------+--------+-------+-------+--------+--------|
+|  0 | AvgH      |  2.694 |    2.24  | 1.605 | 1.06  | 15.28  | 1.72  | 3.04  |  2.622 |  9.531 |
+|  1 | AvgD      |  3.918 |    3.59  | 1.057 | 2.74  | 11.91  | 3.3   | 4.09  |  2.971 | 12.633 |
+|  2 | AvgA      |  4.109 |    3.26  | 3.01  | 1.13  | 26.44  | 2.29  | 4.65  |  2.84  | 11.345 |
+|  3 | AvgCH     |  2.756 |    2.25  | 1.69  | 1.06  | 13.66  | 1.73  | 3.11  |  2.671 |  9.588 |
+|  4 | AvgCD     |  3.884 |    3.58  | 1.091 | 2.67  | 12.59  | 3.26  | 4.08  |  2.987 | 13.128 |
+|  5 | AvgCA     |  4.095 |    3.24  | 2.967 | 1.16  | 29.25  | 2.31  | 4.67  |  2.896 | 12.592 |
+|  6 | overround |  1.062 |    1.063 | 0.005 | 0.994 |  1.077 | 1.059 | 1.066 | -2.288 | 25.62  |
+
+--- movimiento de mercado 2025/26 ---
+|    | column      |   mean |   median |   std |   min |   max |   q25 |   q75 |   skew |   kurt |
+|----+-------------+--------+----------+-------+-------+-------+-------+-------+--------+--------|
+|  0 | odds_move_H |  0.062 |     0.03 | 0.333 | -2.22 |  4.41 | -0.05 |  0.13 |  3.443 | 38.653 |
+|  1 | odds_move_D | -0.034 |    -0.04 | 0.239 | -1.65 |  1.85 | -0.12 |  0.04 |  1.065 | 14.455 |
+|  2 | odds_move_A | -0.013 |     0    | 0.618 | -5.61 |  5.46 | -0.16 |  0.15 | -0.433 | 23.94  |
+
+--- underdogs 2025/26 ---
+  visitante (AvgA>4):  400 | ganan 53 (13.25%) | avg odd 6.933
+  local (AvgH>4):      149 | ganan 22 (14.77%) | avg odd 6.028
+  extremos (AvgA>8):   98 | ganan 6 (6.12%)
+
+--- underdogs extremos que ganaron en 2025/26 ---
+|       | Div   | Date                | HomeTeam      | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+-------+---------------------+---------------+------------+--------+--------+--------+--------|
+| 11660 | D1    | 2026-01-24 00:00:00 | Bayern Munich | Augsburg   |   1.09 |  20.62 |      1 |      2 |
+| 11537 | F1    | 2026-01-04 00:00:00 | Marseille     | Nantes     |   1.22 |  11.34 |      0 |      2 |
+| 10826 | I1    | 2025-08-31 00:00:00 | Inter         | Udinese    |   1.31 |   9.22 |      1 |      2 |
+| 11394 | SP1   | 2025-12-07 00:00:00 | Real Madrid   | Celta      |   1.29 |   8.81 |      0 |      2 |
+| 10755 | I1    | 2025-08-23 00:00:00 | Milan         | Cremonese  |   1.34 |   8.57 |      1 |      2 |
+| 11092 | E0    | 2025-10-25 00:00:00 | Chelsea       | Sunderland |   1.37 |   8.31 |      1 |      2 |
+
+--- smart money 2025/26 ---
+  hacia local:     180 | gana 30.0%
+  hacia visitante: 352 | gana 24.43%
+  hacia empate:    345 | empata 24.06%
+
+--- partidos alta anotacion (>=5 goles) 2025/26: 157 (13.71%) ---
+|       | Div   | Date                | HomeTeam      | AwayTeam      |   FTHG |   FTAG | FTR   |
+|-------+-------+---------------------+---------------+---------------+--------+--------+-------|
+| 10944 | D1    | 2025-09-27 00:00:00 | M'gladbach    | Ein Frankfurt |      4 |      6 | A     |
+| 11341 | E0    | 2025-12-02 00:00:00 | Fulham        | Man City      |      4 |      5 | A     |
+| 11586 | D1    | 2026-01-11 00:00:00 | Bayern Munich | Wolfsburg     |      8 |      1 | H     |
+| 10803 | F1    | 2025-08-30 00:00:00 | Toulouse      | Paris SG      |      3 |      6 | A     |
+| 10801 | F1    | 2025-08-30 00:00:00 | Lorient       | Lille         |      1 |      7 | A     |
+| 11051 | F1    | 2025-10-18 00:00:00 | Marseille     | Le Havre      |      6 |      2 | H     |
+| 11444 | E0    | 2025-12-15 00:00:00 | Man United    | Bournemouth   |      4 |      4 | D     |
+| 11377 | SP1   | 2025-12-06 00:00:00 | Betis         | Barcelona     |      3 |      5 | A     |
+| 11248 | D1    | 2025-11-22 00:00:00 | Bayern Munich | Freiburg      |      6 |      2 | H     |
+| 11136 | F1    | 2025-10-29 00:00:00 | Nantes        | Monaco        |      3 |      5 | A     |
+
+  ────────────────────────────────────────────────────────────
+  D1 | 2025/26  (197 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.756 | visit 1.431 | total 3.188 | std 1.79 | max 10
+  medio tiempo: local 0.772 | visit 0.65
+  resultados FT: H 91 (46.19%) | D 46 (23.35%) | A 60 (30.46%)
+  resultados HT: H 71 | D 71 | A 55
+  btts 57.87% | over1.5 82.74% | over2.5 63.45% | over3.5 41.12% | over4.5 19.29%
+  under1.5 17.26% | under2.5 36.55% | under3.5 58.88%
+  clean sheet local 26.9% | visit 20.3% | sin goles 5.08% | +5 goles 19.29%
+  remontada local 6 (3.05%) | visit 4 (2.03%)
+  odds avg: H 2.625 | D 4.223 | A 4.092 | CH 2.617 | CA 4.064 | overround 1.0663
+  mov mercado: H -0.0084 | D -0.0377 | A -0.0275
+  ud visit: 67 (8.96% ganan, avg 6.971) | ud local: 19 (5.26% ganan)
+  ud extremos: 12 | ganan 1 (8.33%)
+  sm local: 39 (25.64%) | visit: 57 (26.32%) | empate: 49 (16.33%)
+  top goles local:        {'Bayern Munich': 45, 'Hoffenheim': 27, 'Dortmund': 26, 'RB Leipzig': 25, 'Leverkusen': 24}
+  top goles visit:        {'Bayern Munich': 37, 'Ein Frankfurt': 24, 'Stuttgart': 24, 'Dortmund': 21, 'Hoffenheim': 20}
+  top clean sheets local: {'Dortmund': 7, 'Leverkusen': 6, 'Stuttgart': 5, 'Augsburg': 4, 'Bayern Munich': 4}
+  underdogs extremos que ganaron:
+|       | Date                | HomeTeam      | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+---------------------+---------------+------------+--------+--------+--------+--------|
+| 11660 | 2026-01-24 00:00:00 | Bayern Munich | Augsburg   |   1.09 |  20.62 |      1 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  E0 | 2025/26  (261 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.544 | visit 1.238 | total 2.782 | std 1.579 | max 9
+  medio tiempo: local 0.705 | visit 0.49
+  resultados FT: H 112 (42.91%) | D 70 (26.82%) | A 79 (30.27%)
+  resultados HT: H 104 | D 94 | A 63
+  btts 55.94% | over1.5 80.46% | over2.5 54.41% | over3.5 29.12% | over4.5 14.18%
+  under1.5 19.54% | under2.5 45.59% | under3.5 70.88%
+  clean sheet local 28.74% | visit 22.22% | sin goles 6.9% | +5 goles 14.18%
+  remontada local 8 (3.07%) | visit 9 (3.45%)
+  odds avg: H 2.668 | D 3.954 | A 4.028 | CH 2.714 | CA 3.946 | overround 1.0557
+  mov mercado: H 0.0467 | D -0.0515 | A -0.082
+  ud visit: 91 (16.48% ganan, avg 6.764) | ud local: 34 (14.71% ganan)
+  ud extremos: 23 | ganan 1 (4.35%)
+  sm local: 41 (24.39%) | visit: 96 (26.04%) | empate: 85 (30.59%)
+  top goles local:        {'Man City': 32, 'Arsenal': 31, 'Man United': 25, 'Brentford': 24, 'Newcastle': 24}
+  top goles visit:        {'Chelsea': 25, 'Bournemouth': 23, 'Man City': 22, 'Man United': 22, 'Arsenal': 21}
+  top clean sheets local: {'Arsenal': 7, 'Man City': 7, 'Chelsea': 5, 'Aston Villa': 5, 'Sunderland': 5}
+  underdogs extremos que ganaron:
+|       | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+---------------------+------------+------------+--------+--------+--------+--------|
+| 11092 | 2025-10-25 00:00:00 | Chelsea    | Sunderland |   1.37 |   8.31 |      1 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  F1 | 2025/26  (198 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.636 | visit 1.187 | total 2.823 | std 1.897 | max 9
+  medio tiempo: local 0.616 | visit 0.586
+  resultados FT: H 98 (49.49%) | D 44 (22.22%) | A 56 (28.28%)
+  resultados HT: H 66 | D 76 | A 56
+  btts 49.49% | over1.5 70.2% | over2.5 52.02% | over3.5 33.33% | over4.5 17.68%
+  under1.5 29.8% | under2.5 47.98% | under3.5 66.67%
+  clean sheet local 36.87% | visit 20.71% | sin goles 7.07% | +5 goles 17.68%
+  remontada local 3 (1.52%) | visit 2 (1.01%)
+  odds avg: H 2.685 | D 3.98 | A 3.981 | CH 2.777 | CA 4.014 | overround 1.0651
+  mov mercado: H 0.0922 | D 0.0079 | A 0.0323
+  ud visit: 69 (8.7% ganan, avg 6.659) | ud local: 26 (15.38% ganan)
+  ud extremos: 16 | ganan 1 (6.25%)
+  sm local: 34 (41.18%) | visit: 69 (18.84%) | empate: 51 (17.65%)
+  top goles local:        {'Marseille': 29, 'Paris SG': 27, 'Monaco': 25, 'Lorient': 22, 'Rennes': 22}
+  top goles visit:        {'Paris SG': 22, 'Lens': 21, 'Strasbourg': 19, 'Marseille': 19, 'Lyon': 17}
+  top clean sheets local: {'Paris SG': 8, 'Lyon': 7, 'Strasbourg': 6, 'Lens': 6, 'Brest': 5}
+  underdogs extremos que ganaron:
+|       | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+---------------------+------------+------------+--------+--------+--------+--------|
+| 11537 | 2026-01-04 00:00:00 | Marseille  | Nantes     |   1.22 |  11.34 |      0 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  I1 | 2025/26  (250 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.264 | visit 1.172 | total 2.436 | std 1.539 | max 8
+  medio tiempo: local 0.548 | visit 0.508
+  resultados FT: H 93 (37.2%) | D 71 (28.4%) | A 86 (34.4%)
+  resultados HT: H 68 | D 115 | A 67
+  btts 47.2% | over1.5 70.0% | over2.5 46.4% | over3.5 24.4% | over4.5 8.8%
+  under1.5 30.0% | under2.5 53.6% | under3.5 75.6%
+  clean sheet local 32.0% | visit 30.8% | sin goles 10.0% | +5 goles 8.8%
+  remontada local 3 (1.2%) | visit 4 (1.6%)
+  odds avg: H 2.814 | D 3.639 | A 4.117 | CH 2.942 | CA 4.129 | overround 1.0625
+  mov mercado: H 0.128 | D -0.0616 | A 0.0122
+  ud visit: 91 (14.29% ganan, avg 6.871) | ud local: 40 (17.5% ganan)
+  ud extremos: 21 | ganan 2 (9.52%)
+  sm local: 26 (23.08%) | visit: 78 (28.21%) | empate: 96 (31.25%)
+  top goles local:        {'Inter': 36, 'Juventus': 25, 'Como': 21, 'Napoli': 21, 'Atalanta': 20}
+  top goles visit:        {'Inter': 24, 'Milan': 23, 'Bologna': 22, 'Como': 18, 'Juventus': 18}
+  top clean sheets local: {'Como': 7, 'Roma': 6, 'Inter': 5, 'Atalanta': 5, 'Juventus': 5}
+  underdogs extremos que ganaron:
+|       | Date                | HomeTeam   | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+---------------------+------------+------------+--------+--------+--------+--------|
+| 10826 | 2025-08-31 00:00:00 | Inter      | Udinese    |   1.31 |   9.22 |      1 |      2 |
+| 10755 | 2025-08-23 00:00:00 | Milan      | Cremonese  |   1.34 |   8.57 |      1 |      2 |
+
+  ────────────────────────────────────────────────────────────
+  SP1 | 2025/26  (239 partidos)
+  ────────────────────────────────────────────────────────────
+  goles: local 1.515 | visit 1.121 | total 2.636 | std 1.437 | max 8
+  medio tiempo: local 0.623 | visit 0.46
+  resultados FT: H 112 (46.86%) | D 60 (25.1%) | A 67 (28.03%)
+  resultados HT: H 84 | D 102 | A 53
+  btts 54.39% | over1.5 79.08% | over2.5 49.79% | over3.5 25.1% | over4.5 10.46%
+  under1.5 20.92% | under2.5 50.21% | under3.5 74.9%
+  clean sheet local 30.13% | visit 20.5% | sin goles 5.02% | +5 goles 10.46%
+  remontada local 3 (1.26%) | visit 9 (3.77%)
+  odds avg: H 2.664 | D 3.867 | A 4.308 | CH 2.707 | CA 4.317 | overround 1.0627
+  mov mercado: H 0.0425 | D -0.019 | A 0.0086
+  ud visit: 82 (15.85% ganan, avg 7.387) | ud local: 30 (16.67% ganan)
+  ud extremos: 26 | ganan 1 (3.85%)
+  sm local: 40 (35.0%) | visit: 52 (21.15%) | empate: 64 (15.62%)
+  top goles local:        {'Barcelona': 34, 'Real Madrid': 29, 'Villarreal': 27, 'Ath Madrid': 26, 'Betis': 22}
+  top goles visit:        {'Barcelona': 30, 'Real Madrid': 24, 'Villarreal': 18, 'Betis': 17, 'Levante': 15}
+  top clean sheets local: {'Barcelona': 6, 'Ath Madrid': 6, 'Oviedo': 6, 'Elche': 6, 'Villarreal': 5}
+  underdogs extremos que ganaron:
+|       | Date                | HomeTeam    | AwayTeam   |   AvgH |   AvgA |   FTHG |   FTAG |
+|-------+---------------------+-------------+------------+--------+--------+--------+--------|
+| 11394 | 2025-12-07 00:00:00 | Real Madrid | Celta      |   1.29 |   8.81 |      0 |      2 |
+
+======================================================================
+  COMPARACION ENTRE TEMPORADAS
+======================================================================
+
+=== goles por temporada ===
+|    | season   |   partidos |   avg_local |   avg_visitante |   avg_total |   std_total |   max_goles |   avg_ht_local |   avg_ht_visit |
+|----+----------+------------+-------------+-----------------+-------------+-------------+-------------+----------------+----------------|
+|  0 | 2019/20  |       1725 |       1.544 |           1.248 |       2.792 |       1.617 |           9 |          0.681 |          0.545 |
+|  1 | 2020/21  |       1826 |       1.476 |           1.324 |       2.801 |       1.678 |           9 |          0.663 |          0.601 |
+|  2 | 2021/22  |       1826 |       1.548 |           1.263 |       2.811 |       1.701 |           9 |          0.686 |          0.584 |
+|  3 | 2022/23  |       1826 |       1.558 |           1.208 |       2.766 |       1.673 |          10 |          0.728 |          0.542 |
+|  4 | 2023/24  |       1752 |       1.592 |           1.293 |       2.885 |       1.705 |           9 |          0.699 |          0.575 |
+|  5 | 2024/25  |       1751 |       1.5   |           1.327 |       2.828 |       1.655 |           9 |          0.689 |          0.583 |
+|  6 | 2025/26  |       1145 |       1.529 |           1.224 |       2.753 |       1.655 |          10 |          0.65  |          0.532 |
+
+=== btts / over / under por temporada ===
+|    | season   |   btts |   over15 |   over25 |   over35 |   over45 |   under15 |   under25 |   under35 |
+|----+----------+--------+----------+----------+----------+----------+-----------+-----------+-----------|
+|  0 | 2019/20  |  54.03 |    78.14 |    54.55 |    30.03 |    13.86 |     21.86 |     45.45 |     69.97 |
+|  1 | 2020/21  |  54.76 |    77.77 |    52.46 |    30.83 |    15.5  |     22.23 |     47.54 |     69.17 |
+|  2 | 2021/22  |  54.16 |    76.73 |    52.35 |    32.15 |    16.7  |     23.27 |     47.65 |     67.85 |
+|  3 | 2022/23  |  53.67 |    76.56 |    52.19 |    28.81 |    14.07 |     23.44 |     47.81 |     71.19 |
+|  4 | 2023/24  |  55.65 |    78.42 |    54.85 |    33.28 |    16.95 |     21.58 |     45.15 |     66.72 |
+|  5 | 2024/25  |  55.28 |    77.84 |    53.46 |    31.92 |    15.65 |     22.16 |     46.54 |     68.08 |
+|  6 | 2025/26  |  52.93 |    76.51 |    52.84 |    30.04 |    13.71 |     23.49 |     47.16 |     69.96 |
+
+=== clean sheets y partidos especiales por temporada ===
+|    | season   |   clean_sheet_h |   clean_sheet_a |   high_scoring |   goalless |
+|----+----------+-----------------+-----------------+----------------+------------|
+|  0 | 2019/20  |           30.61 |           21.62 |          13.86 |       6.26 |
+|  1 | 2020/21  |           27.05 |           24.97 |          15.5  |       6.79 |
+|  2 | 2021/22  |           30.78 |           22.02 |          16.7  |       6.96 |
+|  3 | 2022/23  |           29.85 |           22.51 |          14.07 |       6.02 |
+|  4 | 2023/24  |           29.34 |           21.4  |          16.95 |       6.39 |
+|  5 | 2024/25  |           27.07 |           23.42 |          15.65 |       5.77 |
+|  6 | 2025/26  |           30.83 |           23.14 |          13.71 |       6.9  |
+
+=== resultados FT por temporada ===
+|    | season   |   H |   pct_H |   D |   pct_D |   A |   pct_A |
+|----+----------+-----+---------+-----+---------+-----+---------|
+|  0 | 2019/20  | 761 |   44.12 | 420 |   24.35 | 544 |   31.54 |
+|  1 | 2020/21  | 728 |   39.87 | 465 |   25.47 | 633 |   34.67 |
+|  2 | 2021/22  | 781 |   42.77 | 472 |   25.85 | 573 |   31.38 |
+|  3 | 2022/23  | 835 |   45.73 | 443 |   24.26 | 548 |   30.01 |
+|  4 | 2023/24  | 755 |   43.09 | 463 |   26.43 | 534 |   30.48 |
+|  5 | 2024/25  | 736 |   42.03 | 437 |   24.96 | 578 |   33.01 |
+|  6 | 2025/26  | 506 |   44.19 | 291 |   25.41 | 348 |   30.39 |
+
+=== resultados HT por temporada ===
+|    | season   |   ht_H |   ht_D |   ht_A |
+|----+----------+--------+--------+--------|
+|  0 | 2019/20  |    575 |    699 |    451 |
+|  1 | 2020/21  |    582 |    731 |    513 |
+|  2 | 2021/22  |    617 |    717 |    492 |
+|  3 | 2022/23  |    643 |    733 |    450 |
+|  4 | 2023/24  |    590 |    716 |    446 |
+|  5 | 2024/25  |    589 |    683 |    479 |
+|  6 | 2025/26  |    393 |    458 |    294 |
+
+=== remontadas por temporada ===
+|    | season   |   remontada_local |   pct_remontada_local |   remontada_visit |   pct_remontada_visit |   ht_win_ft_lose |   pct_ht_win_ft_lose |
+|----+----------+-------------------+-----------------------+-------------------+-----------------------+------------------+----------------------|
+|  0 | 2019/20  |                60 |                  3.48 |                48 |                  2.78 |               48 |                 2.78 |
+|  1 | 2020/21  |                49 |                  2.68 |                40 |                  2.19 |               40 |                 2.19 |
+|  2 | 2021/22  |                59 |                  3.23 |                46 |                  2.52 |               46 |                 2.52 |
+|  3 | 2022/23  |                53 |                  2.9  |                36 |                  1.97 |               36 |                 1.97 |
+|  4 | 2023/24  |                54 |                  3.08 |                44 |                  2.51 |               44 |                 2.51 |
+|  5 | 2024/25  |                58 |                  3.31 |                48 |                  2.74 |               48 |                 2.74 |
+|  6 | 2025/26  |                23 |                  2.01 |                28 |                  2.45 |               28 |                 2.45 |
+
+=== odds y overround por temporada ===
+|    | season   |   avg_AvgH |   avg_AvgD |   avg_AvgA |   avg_AvgCH |   avg_AvgCA |   avg_overround |
+|----+----------+------------+------------+------------+-------------+-------------+-----------------|
+|  0 | 2019/20  |      2.779 |      4.084 |      4.526 |       2.821 |       4.594 |          1.0481 |
+|  1 | 2020/21  |      2.964 |      4.017 |      4.107 |       3.027 |       4.106 |          1.0476 |
+|  2 | 2021/22  |      2.814 |      4.066 |      4.386 |       2.832 |       4.52  |          1.0442 |
+|  3 | 2022/23  |      2.731 |      4.055 |      4.335 |       2.758 |       4.352 |          1.044  |
+|  4 | 2023/24  |      2.699 |      4.141 |      4.332 |       2.718 |       4.425 |          1.0437 |
+|  5 | 2024/25  |      2.724 |      4.124 |      4.381 |       2.777 |       4.484 |          1.0477 |
+|  6 | 2025/26  |      2.694 |      3.918 |      4.109 |       2.756 |       4.095 |          1.0621 |
+
+=== underdogs por temporada ===
+|    | season   |   ud_away_total |   ud_away_wins |   ud_away_pct |   ud_away_avg_odd |   ud_home_total |   ud_home_wins |   ud_home_pct |   ud_extreme_total |   ud_extreme_pct |
+|----+----------+-----------------+----------------+---------------+-------------------+-----------------+----------------+---------------+--------------------+------------------|
+|  0 | 2019/20  |             626 |             91 |         14.54 |             7.878 |             250 |             44 |         17.6  |                203 |             8.87 |
+|  1 | 2020/21  |             597 |             94 |         15.75 |             7.368 |             317 |             44 |         13.88 |                167 |            13.77 |
+|  2 | 2021/22  |             668 |             97 |         14.52 |             7.555 |             279 |             52 |         18.64 |                202 |             9.41 |
+|  3 | 2022/23  |             663 |             92 |         13.88 |             7.396 |             255 |             46 |         18.04 |                184 |             7.61 |
+|  4 | 2023/24  |             651 |             74 |         11.37 |             7.293 |             245 |             29 |         11.84 |                168 |             4.76 |
+|  5 | 2024/25  |             671 |             96 |         14.31 |             7.32  |             269 |             32 |         11.9  |                199 |             6.03 |
+|  6 | 2025/26  |             400 |             53 |         13.25 |             6.933 |             149 |             22 |         14.77 |                 98 |             6.12 |
+
+=== smart money por temporada ===
+|    | season   |   sm_local_partidos |   sm_local_gana_pct |   sm_visit_partidos |   sm_visit_gana_pct |   sm_draw_partidos |   sm_draw_gana_pct |
+|----+----------+---------------------+---------------------+---------------------+---------------------+--------------------+--------------------|
+|  0 | 2019/20  |                 343 |               39.65 |                 520 |               25.77 |                377 |              23.34 |
+|  1 | 2020/21  |                 369 |               32.25 |                 592 |               30.24 |                478 |              25.52 |
+|  2 | 2021/22  |                 419 |               37.23 |                 413 |               25.42 |                508 |              25.39 |
+|  3 | 2022/23  |                 340 |               37.65 |                 511 |               24.27 |                557 |              22.98 |
+|  4 | 2023/24  |                 343 |               32.36 |                 445 |               24.27 |                479 |              25.05 |
+|  5 | 2024/25  |                 296 |               32.43 |                 472 |               28.18 |                572 |              25.7  |
+|  6 | 2025/26  |                 180 |               30    |                 352 |               24.43 |                345 |              24.06 |
+
+======================================================================
+  COMPARACION ENTRE LIGAS (todo el periodo)
+======================================================================
+
+=== goles por liga ===
+|    | Div   |   partidos |   avg_local |   avg_visitante |   avg_total |   std_total |   max_goles |   avg_ht_local |   avg_ht_visit |
+|----+-------+------------+-------------+-----------------+-------------+-------------+-------------+----------------+----------------|
+|  0 | D1    |       2032 |       1.735 |           1.417 |       3.152 |       1.74  |          10 |          0.774 |          0.656 |
+|  1 | E0    |       2541 |       1.554 |           1.319 |       2.873 |       1.663 |           9 |          0.715 |          0.58  |
+|  2 | F1    |       2229 |       1.514 |           1.26  |       2.774 |       1.668 |           9 |          0.677 |          0.577 |
+|  3 | I1    |       2530 |       1.467 |           1.28  |       2.747 |       1.628 |          10 |          0.639 |          0.566 |
+|  4 | SP1   |       2519 |       1.444 |           1.109 |       2.553 |       1.616 |           8 |          0.646 |          0.478 |
+
+=== skewness y kurtosis de goles por liga ===
+|    | liga   |   skew |   kurt |   mean |   std |
+|----+--------+--------+--------+--------+-------|
+|  0 | D1     |  0.397 | -0.074 |  3.152 | 1.74  |
+|  1 | E0     |  0.549 |  0.256 |  2.873 | 1.663 |
+|  2 | F1     |  0.535 |  0.141 |  2.774 | 1.668 |
+|  3 | I1     |  0.536 |  0.18  |  2.747 | 1.628 |
+|  4 | SP1    |  0.656 |  0.271 |  2.553 | 1.616 |
+
+=== btts / over / under por liga ===
+|    | Div   |   btts |   over15 |   over25 |   over35 |   over45 |   under15 |   under25 |   under35 |   clean_sheet_h |   clean_sheet_a |   high_scoring |   goalless |
+|----+-------+--------+----------+----------+----------+----------+-----------+-----------+-----------+-----------------+-----------------+----------------+------------|
+|  0 | D1    |  59.35 |    83.51 |    61.12 |    40.01 |    20.72 |     16.49 |     38.88 |     59.99 |           26.08 |           19.78 |          20.72 |       5.22 |
+|  1 | E0    |  53.68 |    79.06 |    54.94 |    32.51 |    16.1  |     20.94 |     45.06 |     67.49 |           28.77 |           23.1  |          16.1  |       5.55 |
+|  2 | F1    |  54.24 |    76.45 |    52.85 |    30.55 |    14.8  |     23.55 |     47.15 |     69.45 |           29.21 |           23.37 |          14.8  |       6.82 |
+|  3 | I1    |  54.74 |    77    |    52.37 |    29.37 |    13.75 |     23    |     47.63 |     70.63 |           28.58 |           23.24 |          13.75 |       6.56 |
+|  4 | SP1   |  51.05 |    72.33 |    46.41 |    24.49 |    12.07 |     27.67 |     53.59 |     75.51 |           33.15 |           23.58 |          12.07 |       7.78 |
+
+=== resultados por liga ===
+|    | Div   |   A |   D |    H |   total |   pct_H |   pct_D |   pct_A |
+|----+-------+-----+-----+------+---------+---------+---------+---------|
+|  0 | D1    | 648 | 501 |  883 |    2032 |   43.45 |   24.66 |   31.89 |
+|  1 | E0    | 841 | 595 | 1105 |    2541 |   43.49 |   23.42 |   33.1  |
+|  2 | F1    | 721 | 546 |  962 |    2229 |   43.16 |   24.5  |   32.35 |
+|  3 | I1    | 834 | 671 | 1025 |    2530 |   40.51 |   26.52 |   32.96 |
+|  4 | SP1   | 714 | 678 | 1127 |    2519 |   44.74 |   26.92 |   28.34 |
+
+=== remontadas por liga ===
+|    | liga   |   remontada_local |   pct_remontada_local |   remontada_visit |   pct_remontada_visit |   ht_win_ft_lose |   pct_ht_win_ft_lose |
+|----+--------+-------------------+-----------------------+-------------------+-----------------------+------------------+----------------------|
+|  0 | D1     |                66 |                  3.25 |                42 |                  2.07 |               42 |                 2.07 |
+|  1 | E0     |                80 |                  3.15 |                68 |                  2.68 |               68 |                 2.68 |
+|  2 | F1     |                71 |                  3.19 |                53 |                  2.38 |               53 |                 2.38 |
+|  3 | I1     |                82 |                  3.24 |                71 |                  2.81 |               71 |                 2.81 |
+|  4 | SP1    |                57 |                  2.26 |                56 |                  2.22 |               56 |                 2.22 |
+
+=== odds por liga ===
+|    | Div   |   AvgH |   AvgD |   AvgA |   AvgCH |   AvgCD |   AvgCA |   overround |
+|----+-------+--------+--------+--------+---------+---------+---------+-------------|
+|  0 | D1    |  2.79  |  4.383 |  4.355 |   2.811 |   4.378 |   4.394 |       1.047 |
+|  1 | E0    |  2.926 |  4.272 |  4.534 |   2.954 |   4.27  |   4.537 |       1.044 |
+|  2 | F1    |  2.689 |  3.952 |  4.117 |   2.745 |   3.946 |   4.188 |       1.051 |
+|  3 | I1    |  2.832 |  3.952 |  4.215 |   2.889 |   3.936 |   4.275 |       1.049 |
+|  4 | SP1   |  2.642 |  3.811 |  4.36  |   2.675 |   3.811 |   4.488 |       1.047 |
+
+=== movimiento de mercado por liga ===
+|    | ('Div', '')   |   ('odds_move_H', 'mean') |   ('odds_move_H', 'std') |   ('odds_move_D', 'mean') |   ('odds_move_D', 'std') |   ('odds_move_A', 'mean') |   ('odds_move_A', 'std') |
+|----+---------------+---------------------------+--------------------------+---------------------------+--------------------------+---------------------------+--------------------------|
+|  0 | D1            |                    0.0215 |                   0.3927 |                   -0.0047 |                   0.3328 |                    0.0387 |                   0.7984 |
+|  1 | E0            |                    0.028  |                   0.4242 |                   -0.0018 |                   0.3236 |                    0.0029 |                   0.7539 |
+|  2 | F1            |                    0.0557 |                   0.4081 |                   -0.0058 |                   0.3347 |                    0.0714 |                   0.8123 |
+|  3 | I1            |                    0.0569 |                   0.386  |                   -0.0166 |                   0.2815 |                    0.0602 |                   0.7327 |
+|  4 | SP1           |                    0.0324 |                   0.3635 |                   -0.0002 |                   0.2767 |                    0.128  |                   0.7998 |
+
+=== underdogs por liga ===
+  D1 — ud visit: 700 (12.71% ganan, avg 7.791) | ud local: 275 (18.55% ganan) | extremos: 203 (6.9%)
+  E0 — ud visit: 919 (14.47% ganan, avg 8.145) | ud local: 438 (16.44% ganan) | extremos: 313 (10.54%)
+  F1 — ud visit: 758 (15.3% ganan, avg 6.954) | ud local: 280 (14.29% ganan) | extremos: 173 (8.67%)
+  I1 — ud visit: 914 (14.11% ganan, avg 7.233) | ud local: 454 (11.89% ganan) | extremos: 273 (8.06%)
+  SP1 — ud visit: 985 (13.2% ganan, avg 6.998) | ud local: 317 (16.4% ganan) | extremos: 259 (6.18%)
+
+=== smart money por liga ===
+  D1 — local: 421 (36.34%) | visit: 574 (23.52%) | empate: 545 (25.14%)
+  E0 — local: 482 (32.37%) | visit: 759 (26.88%) | empate: 685 (22.77%)
+  F1 — local: 409 (39.85%) | visit: 669 (28.7%) | empate: 627 (22.97%)
+  I1 — local: 473 (30.23%) | visit: 666 (26.13%) | empate: 791 (26.8%)
+  SP1 — local: 505 (36.63%) | visit: 637 (25.75%) | empate: 668 (25.15%)
+
+=== top 15 goleadores totales ===
+|     | equipo        |   goles_local |   goles_visit |   total |
+|-----+---------------+---------------+---------------+---------|
+|  13 | Bayern Munich |           369 |           294 |     663 |
+|  82 | Man City      |           344 |           256 |     600 |
+| 101 | Paris SG      |           296 |           266 |     562 |
+|  12 | Barcelona     |           299 |           255 |     554 |
+|  61 | Inter         |           298 |           255 |     553 |
+|  75 | Liverpool     |           288 |           247 |     535 |
+|  37 | Dortmund      |           300 |           213 |     513 |
+| 105 | Real Madrid   |           283 |           227 |     510 |
+|   7 | Atalanta      |           267 |           236 |     503 |
+|   5 | Arsenal       |           262 |           210 |     472 |
+|  73 | Leverkusen    |           247 |           208 |     455 |
+|  91 | Napoli        |           235 |           215 |     450 |
+| 104 | RB Leipzig    |           246 |           203 |     449 |
+|  86 | Milan         |           217 |           231 |     448 |
+| 125 | Tottenham     |           235 |           207 |     442 |
+
+=== mayor % victorias local (min 50 partidos) ===
+|    | HomeTeam      |   partidos |   victorias |   pct_win |
+|----+---------------+------------+-------------+-----------|
+|  0 | Bayern Munich |        113 |          87 |     76.99 |
+|  1 | Real Madrid   |        126 |          97 |     76.98 |
+|  2 | Man City      |        127 |          97 |     76.38 |
+|  3 | Barcelona     |        125 |          94 |     75.2  |
+|  4 | Paris SG      |        115 |          86 |     74.78 |
+|  5 | Inter         |        127 |          93 |     73.23 |
+|  6 | Ath Madrid    |        126 |          92 |     73.02 |
+|  7 | Liverpool     |        127 |          92 |     72.44 |
+|  8 | Dortmund      |        113 |          79 |     69.91 |
+|  9 | Juventus      |        126 |          82 |     65.08 |
+| 10 | Arsenal       |        127 |          81 |     63.78 |
+| 11 | Roma          |        126 |          77 |     61.11 |
+| 12 | RB Leipzig    |        113 |          68 |     60.18 |
+| 13 | Monaco        |        117 |          70 |     59.83 |
+| 14 | Napoli        |        126 |          75 |     59.52 |
+
+=== mayor % victorias visitante (min 50 partidos) ===
+|    | AwayTeam      |   partidos |   victorias |   pct_win |
+|----+---------------+------------+-------------+-----------|
+|  0 | Paris SG      |        116 |          79 |     68.1  |
+|  1 | Bayern Munich |        113 |          74 |     65.49 |
+|  2 | Inter         |        126 |          80 |     63.49 |
+|  3 | Real Madrid   |        126 |          78 |     61.9  |
+|  4 | Man City      |        127 |          78 |     61.42 |
+|  5 | Barcelona     |        127 |          77 |     60.63 |
+|  6 | Milan         |        127 |          74 |     58.27 |
+|  7 | Napoli        |        127 |          71 |     55.91 |
+|  8 | Atalanta      |        126 |          68 |     53.97 |
+|  9 | Liverpool     |        127 |          68 |     53.54 |
+| 10 | Leverkusen    |        112 |          59 |     52.68 |
+| 11 | Arsenal       |        128 |          64 |     50    |
+| 12 | Dortmund      |        113 |          56 |     49.56 |
+| 13 | Marseille     |        116 |          56 |     48.28 |
+| 14 | Lazio         |        126 |          59 |     46.83 |
+
+=== mayor % empates (min 50 partidos) ===
+|    | HomeTeam       |   partidos |   empates |   pct_draw |
+|----+----------------+------------+-----------+------------|
+|  0 | Cadiz          |         76 |        29 |      38.16 |
+|  1 | Elche          |         70 |        26 |      37.14 |
+|  2 | Brighton       |        127 |        47 |      37.01 |
+|  3 | Vallecano      |         87 |        32 |      36.78 |
+|  4 | Levante        |         69 |        25 |      36.23 |
+|  5 | Udinese        |        127 |        44 |      34.65 |
+|  6 | Torino         |        127 |        43 |      33.86 |
+|  7 | Valencia       |        126 |        42 |      33.33 |
+|  8 | Crystal Palace |        127 |        42 |      33.07 |
+|  9 | Valladolid     |         76 |        25 |      32.89 |
+| 10 | Ein Frankfurt  |        113 |        37 |      32.74 |
+| 11 | Lecce          |         89 |        29 |      32.58 |
+| 12 | Reims          |        105 |        34 |      32.38 |
+| 13 | Getafe         |        126 |        40 |      31.75 |
+| 14 | Bologna        |        126 |        40 |      31.75 |
+
+=== clean sheets local (min 50 partidos) ===
+|    | HomeTeam      |   partidos |   cs |   pct_cs |
+|----+---------------+------------+------+----------|
+|  0 | Real Madrid   |        126 |   62 |    49.21 |
+|  1 | Barcelona     |        125 |   59 |    47.2  |
+|  2 | Juventus      |        126 |   58 |    46.03 |
+|  3 | Ath Madrid    |        126 |   56 |    44.44 |
+|  4 | Man City      |        127 |   56 |    44.09 |
+|  5 | Milan         |        126 |   53 |    42.06 |
+|  6 | Paris SG      |        115 |   48 |    41.74 |
+|  7 | Inter         |        127 |   53 |    41.73 |
+|  8 | Bayern Munich |        113 |   47 |    41.59 |
+|  9 | Roma          |        126 |   52 |    41.27 |
+
+=== clean sheets visitante (min 50 partidos) ===
+|    | AwayTeam    |   partidos |   cs |   pct_cs |
+|----+-------------+------------+------+----------|
+|  0 | Inter       |        126 |   53 |    42.06 |
+|  1 | Arsenal     |        128 |   52 |    40.62 |
+|  2 | Man City    |        127 |   51 |    40.16 |
+|  3 | Real Madrid |        126 |   50 |    39.68 |
+|  4 | Napoli      |        127 |   48 |    37.8  |
+|  5 | Barcelona   |        127 |   46 |    36.22 |
+|  6 | Liverpool   |        127 |   45 |    35.43 |
+|  7 | Paris SG    |        116 |   41 |    35.34 |
+|  8 | Ath Madrid  |        126 |   44 |    34.92 |
+|  9 | Atalanta    |        126 |   42 |    33.33 |
+
+=== partidos sin goles por liga ===
+|    | Div   |   total_goalless |   pct_goalless |
+|----+-------+------------------+----------------|
+|  0 | D1    |              106 |           5.22 |
+|  1 | E0    |              141 |           5.55 |
+|  2 | F1    |              152 |           6.82 |
+|  3 | I1    |              166 |           6.56 |
+|  4 | SP1   |              196 |           7.78 |
+
+=== partidos alta anotacion (>=5 goles) por liga ===
+|    | Div   |   total_high |   pct_high |
+|----+-------+--------------+------------|
+|  0 | D1    |          421 |      20.72 |
+|  1 | E0    |          409 |      16.1  |
+|  2 | F1    |          330 |      14.8  |
+|  3 | I1    |          348 |      13.75 |
+|  4 | SP1   |          304 |      12.07 |
+
+=== correlacion general ===
+               total_goals   FTHG   FTAG  ...  over25  clean_sheet_h  clean_sheet_a
+total_goals          1.000  0.715  0.631  ...   0.800         -0.444         -0.457
+FTHG                 0.715  1.000 -0.091  ...   0.569          0.059         -0.640
+FTAG                 0.631 -0.091  1.000  ...   0.509         -0.698          0.059
+AvgH                 0.019 -0.270  0.326  ...   0.021         -0.196          0.211
+AvgA                 0.108  0.351 -0.236  ...   0.071          0.188         -0.190
+AvgD                 0.190  0.266 -0.024  ...   0.140          0.064         -0.105
+overround           -0.022 -0.024 -0.005  ...  -0.010         -0.005          0.017
+odds_move_H         -0.005 -0.068  0.069  ...  -0.011         -0.041          0.058
+odds_move_A          0.014  0.045 -0.031  ...   0.020          0.019         -0.020
+imp_prob_H           0.070  0.379 -0.321  ...   0.047          0.228         -0.249
+imp_prob_A          -0.017 -0.340  0.353  ...  -0.005         -0.235          0.241
+btts                 0.574  0.333  0.449  ...   0.535         -0.703         -0.592
+over25               0.800  0.569  0.509  ...   1.000         -0.380         -0.387
+clean_sheet_h       -0.444  0.059 -0.698  ...  -0.380          1.000         -0.012
+clean_sheet_a       -0.457 -0.640  0.059  ...  -0.387         -0.012          1.000
+
+[15 rows x 15 columns]
+
+=== por mes (goles y resultados) ===
+|    |   month |   partidos |   avg_total |   pct_H |   pct_D |   pct_A |   pct_btts |   pct_over25 |
+|----+---------+------------+-------------+---------+---------+---------+------------+--------------|
+|  0 |       1 |       1315 |       2.751 |   0.408 |   0.26  |   0.332 |      0.546 |        0.518 |
+|  1 |       2 |       1359 |       2.749 |   0.428 |   0.254 |   0.319 |      0.515 |        0.522 |
+|  2 |       3 |        869 |       2.611 |   0.423 |   0.255 |   0.321 |      0.506 |        0.466 |
+|  3 |       4 |       1131 |       2.861 |   0.439 |   0.242 |   0.318 |      0.569 |        0.549 |
+|  4 |       5 |       1027 |       2.979 |   0.432 |   0.232 |   0.336 |      0.562 |        0.569 |
+|  5 |       6 |        183 |       2.814 |   0.41  |   0.24  |   0.35  |      0.552 |        0.541 |
+|  6 |       7 |        211 |       2.877 |   0.455 |   0.223 |   0.322 |      0.54  |        0.578 |
+|  7 |       8 |        887 |       2.811 |   0.415 |   0.273 |   0.312 |      0.538 |        0.519 |
+|  8 |       9 |       1158 |       2.864 |   0.423 |   0.25  |   0.326 |      0.552 |        0.549 |
+|  9 |      10 |       1287 |       2.831 |   0.46  |   0.262 |   0.278 |      0.552 |        0.542 |
+| 10 |      11 |       1120 |       2.794 |   0.438 |   0.251 |   0.311 |      0.561 |        0.534 |
+| 11 |      12 |       1304 |       2.798 |   0.433 |   0.252 |   0.315 |      0.538 |        0.535 |
+
+--- generando graficas ---
+diagrama ER guardado en img/er_diagram.png
+guardadas imagenes en img/

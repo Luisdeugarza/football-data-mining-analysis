@@ -5,29 +5,13 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
 import os
-from typing import List, Tuple
+from typing import List
 
 def print_tabulate(df: pd.DataFrame):
     print(tabulate(df, headers=df.columns, tablefmt="orgtbl"))
 
 def get_cmap(n, name="hsv"):
     return matplotlib.colormaps.get_cmap(name).resampled(n)
-
-# distribuciones simuladas
-def normalize_distribution(dist: np.ndarray, n: int) -> np.ndarray:
-    b = dist - dist.min() + 1e-6
-    c = (b / b.sum()) * n
-    return np.round(c)
-
-def create_distribution(mean: float, size: int) -> np.ndarray:
-    return normalize_distribution(np.random.standard_normal(size), mean * size)
-
-def simulate_goals_distribution(avg_local: float, avg_visit: float, n: int = 500) -> pd.DataFrame:
-    """Genera distribución simulada de goles comparada con la real."""
-    local_sim  = create_distribution(avg_local, n)
-    visit_sim  = create_distribution(avg_visit, n)
-    total_sim  = local_sim + visit_sim
-    return pd.DataFrame({"local_sim": local_sim, "visit_sim": visit_sim, "total_sim": total_sim})
 
 # funciones auxiliares
 def describe_numeric(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
@@ -161,21 +145,6 @@ def top_scorers(df, col_team, col_goals, n=5):
     t = df.groupby(col_team)[col_goals].sum().sort_values(ascending=False).head(n)
     return {k: int(v) for k, v in t.items()}
 
-def plot_simulated_vs_real(file_path: str, real_series: pd.Series,
-                           avg: float, label: str, color_real: str, color_sim: str):
-    """Compara histograma real con distribución simulada."""
-    sim = create_distribution(avg, len(real_series))
-    fig, ax = plt.subplots(figsize=(8, 4))
-    bins = range(0, int(real_series.max()) + 2)
-    ax.hist(real_series, bins=bins, alpha=0.6, label=f"real {label}", color=color_real,
-            density=True, align="left", edgecolor="white")
-    ax.hist(sim, bins=bins, alpha=0.5, label=f"simulado (mean={avg})", color=color_sim,
-            density=True, align="left", edgecolor="white")
-    ax.set_xlabel("goles"); ax.set_ylabel("densidad"); ax.legend()
-    ax.set_title(f"Real vs Simulado — {label}")
-    plt.tight_layout()
-    plt.savefig(file_path); plt.close()
-
 def draw_er_diagram(file_path: str):
     fig, ax = plt.subplots(figsize=(14, 9))
     ax.set_xlim(0, 14); ax.set_ylim(0, 9); ax.axis("off")
@@ -222,7 +191,6 @@ def draw_er_diagram(file_path: str):
 
 # setup
 os.makedirs("img", exist_ok=True)
-np.random.seed(42)
 
 df = pd.read_csv("../Practica 1/data/clean/football_clean.csv", parse_dates=["Date"])
 pd.set_option("display.float_format", lambda x: f"{x:.3f}")
@@ -276,7 +244,7 @@ season_labels = {
 resumen_temporadas      = []
 resumen_ligas_temporada = []
 
-#INICIO DEL CICLO
+#INICIO DEL CICLO: TEMPORADA -> LIGA
 for temporada in temporadas:
     slabel = season_labels.get(temporada, str(temporada))
     df_t   = df[df["Season"] == temporada]
@@ -292,17 +260,6 @@ for temporada in temporadas:
 
     # distribución simulada vs real
     print(f"\n--- distribucion simulada vs real {slabel} ---")
-    sim_df = simulate_goals_distribution(g_t["avg_local"], g_t["avg_visitante"], n=len(df_t))
-    sim_stats = pd.DataFrame({
-        "variable": ["total_real", "total_simulado"],
-        "mean":   [round(df_t["total_goals"].mean(), 3), round(sim_df["total_sim"].mean(), 3)],
-        "std":    [round(df_t["total_goals"].std(),  3), round(sim_df["total_sim"].std(),  3)],
-        "min":    [int(df_t["total_goals"].min()),       int(sim_df["total_sim"].min())],
-        "max":    [int(df_t["total_goals"].max()),       int(sim_df["total_sim"].max())],
-    })
-    print_tabulate(sim_stats)
-
-    # resultados
     print(f"\n--- resultados FT {slabel} ---")
     print_tabulate(describe_categorical(df_t, "FTR"))
     print(f"\n--- resultados HT {slabel} ---")
@@ -379,10 +336,8 @@ for temporada in temporadas:
         cb_tl = stats_comeback(df_tl)
 
         # distribución simulada por liga/temporada
-        sim_tl = simulate_goals_distribution(g["avg_local"], g["avg_visitante"], n=len(df_tl))
 
         print(f"  goles: local {g['avg_local']} | visit {g['avg_visitante']} | total {g['avg_total']} | std {g['std_total']} | max {g['max_goles']}")
-        print(f"  sim total: mean {round(sim_tl['total_sim'].mean(),3)} | std {round(sim_tl['total_sim'].std(),3)}  (real mean {g['avg_total']})")
         print(f"  medio tiempo: local {g['avg_ht_local']} | visit {g['avg_ht_visit']}")
         print(f"  resultados FT: H {r['H']} ({r['pct_H']}%) | D {r['D']} ({r['pct_D']}%) | A {r['A']} ({r['pct_A']}%)")
         print(f"  resultados HT: H {r['ht_H']} | D {r['ht_D']} | A {r['ht_A']}")
@@ -443,21 +398,6 @@ print_tabulate(df_rt[["season","ud_away_total","ud_away_wins","ud_away_pct","ud_
 print("\n=== smart money por temporada ===")
 print_tabulate(df_rt[["season","sm_local_partidos","sm_local_gana_pct","sm_visit_partidos","sm_visit_gana_pct","sm_draw_partidos","sm_draw_gana_pct"]])
 
-# distribución simulada global por temporada
-print("\n=== distribucion simulada global vs real por temporada ===")
-sim_rows = []
-for row in resumen_temporadas:
-    sim = simulate_goals_distribution(row["avg_local"], row["avg_visitante"], n=row["partidos"])
-    sim_rows.append({
-        "season":        row["season"],
-        "real_mean":     row["avg_total"],
-        "sim_mean":      round(sim["total_sim"].mean(), 3),
-        "real_std":      row["std_total"],
-        "sim_std":       round(sim["total_sim"].std(), 3),
-        "diff_mean":     round(abs(row["avg_total"] - sim["total_sim"].mean()), 4),
-    })
-print_tabulate(pd.DataFrame(sim_rows))
-
 #entre ligas
 print(f"\n{'='*70}")
 print("  COMPARACION ENTRE LIGAS (todo el periodo)")
@@ -480,22 +420,6 @@ for liga in ligas:
     sk_rows.append({"liga": liga, "skew": round(s.skew(),3), "kurt": round(s.kurt(),3),
                     "mean": round(s.mean(),3), "std": round(s.std(),3)})
 print_tabulate(pd.DataFrame(sk_rows))
-
-print("\n=== distribucion simulada vs real por liga ===")
-sim_liga_rows = []
-for liga in ligas:
-    sub = df[df["Div"] == liga]
-    g_l = stats_goals(sub)
-    sim = simulate_goals_distribution(g_l["avg_local"], g_l["avg_visitante"], n=g_l["partidos"])
-    sim_liga_rows.append({
-        "liga":      liga,
-        "real_mean": g_l["avg_total"],
-        "sim_mean":  round(sim["total_sim"].mean(), 3),
-        "real_std":  g_l["std_total"],
-        "sim_std":   round(sim["total_sim"].std(), 3),
-        "diff_mean": round(abs(g_l["avg_total"] - sim["total_sim"].mean()), 4),
-    })
-print_tabulate(pd.DataFrame(sim_liga_rows))
 
 print("\n=== btts / over / under por liga ===")
 gf_liga = df.groupby("Div")[goal_flags].mean().round(4) * 100
@@ -592,9 +516,6 @@ gm = df.groupby("month").agg(
 ).round(3).reset_index()
 print_tabulate(gm)
 
-# ============================================================
-# GRAFICAS
-# ============================================================
 print("\n--- generando graficas ---")
 cmap = get_cmap(len(ligas) + 1)
 
@@ -666,37 +587,5 @@ fig, ax = plt.subplots(figsize=(10, 5))
 ax.hist(df["total_goals"], bins=range(0,15), edgecolor="black", align="left")
 ax.set_xlabel("goles en el partido"); ax.set_ylabel("frecuencia")
 plt.savefig("img/distribucion_goles_totales.png"); plt.close()
-
-# boxplots 
-fig, ax = plt.subplots(figsize=(10, 6))
-df.boxplot(column="total_goals", by="Div", ax=ax)
-ax.set_title("Distribucion de goles por liga"); plt.suptitle("")
-plt.savefig("img/boxplot_goles_por_liga.png"); plt.close()
-
-fig, ax = plt.subplots(figsize=(10, 6))
-df.boxplot(column="AvgH", by="Div", ax=ax)
-ax.set_title("Distribucion odds local por liga"); plt.suptitle("")
-plt.savefig("img/boxplot_odds_H_por_liga.png"); plt.close()
-
-fig, ax = plt.subplots(figsize=(10, 6))
-df.boxplot(column="odds_move_H", by="Div", ax=ax)
-ax.set_title("Movimiento mercado local por liga"); plt.suptitle("")
-plt.savefig("img/boxplot_mov_H_por_liga.png"); plt.close()
-
-fig, ax = plt.subplots(figsize=(12, 6))
-df.boxplot(column="total_goals", by="Season_label", ax=ax)
-ax.set_title("Distribucion de goles por temporada"); plt.suptitle("")
-plt.xticks(rotation=45)
-plt.savefig("img/boxplot_goles_por_temporada.png"); plt.close()
-
-# real vs simulado por liga (una grafica por liga)
-for liga in ligas:
-    sub = df[df["Div"] == liga]
-    g_l = stats_goals(sub)
-    plot_simulated_vs_real(
-        f"img/sim_vs_real_{liga}.png",
-        sub["total_goals"], g_l["avg_total"],
-        liga, "#2ecc71", "#e74c3c"
-    )
 
 print("guardadas imagenes en img/")

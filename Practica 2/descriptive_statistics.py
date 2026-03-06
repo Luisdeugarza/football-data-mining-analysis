@@ -7,27 +7,39 @@ import numpy as np
 import os
 from typing import List
 
+DAY_NAMES = {0:"Lunes",1:"Martes",2:"Miercoles",3:"Jueves",4:"Viernes",5:"Sabado",6:"Domingo"}
+
 def print_tabulate(df: pd.DataFrame):
     print(tabulate(df, headers=df.columns, tablefmt="orgtbl"))
 
 def get_cmap(n, name="hsv"):
     return matplotlib.colormaps.get_cmap(name).resampled(n)
 
-# funciones auxiliares
 def describe_numeric(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
     stats = []
     for col in columns:
         if col in df.columns:
-            s = df[col].dropna()
+            s    = df[col].dropna()
+            q25  = s.quantile(0.25)
+            q75  = s.quantile(0.75)
+            mean = s.mean()
+            std  = s.std()
             stats.append({
                 "column":  col,
-                "mean":    round(s.mean(), 3),
+                "mean":    round(mean, 3),
+                "mode":    round(float(s.mode()[0]), 3) if not s.mode().empty else None,
                 "median":  round(s.median(), 3),
-                "std":     round(s.std(), 3),
+                "var":     round(s.var(), 3),
+                "std":     round(std, 3),
+                "cv_pct":  round(std / mean * 100, 2) if mean != 0 else None,
                 "min":     round(s.min(), 3),
                 "max":     round(s.max(), 3),
-                "q25":     round(s.quantile(0.25), 3),
-                "q75":     round(s.quantile(0.75), 3),
+                "range":   round(s.max() - s.min(), 3),
+                "q25":     round(q25, 3),
+                "q75":     round(q75, 3),
+                "iqr":     round(q75 - q25, 3),
+                "p10":     round(s.quantile(0.10), 3),
+                "p90":     round(s.quantile(0.90), 3),
                 "skew":    round(s.skew(), 3),
                 "kurt":    round(s.kurt(), 3),
             })
@@ -39,18 +51,54 @@ def describe_categorical(df: pd.DataFrame, column: str) -> pd.DataFrame:
     counts["pct"] = round(counts["count"] / len(df) * 100, 2)
     return counts
 
-def scatter_group_by(file_path: str, df: pd.DataFrame, x_column: str, y_column: str, label_column: str):
-    fig, ax = plt.subplots(figsize=(10, 6))
-    labels = pd.unique(df[label_column])
-    cmap = get_cmap(len(labels) + 1)
-    for i, label in enumerate(labels):
-        filter_df = df[df[label_column] == label]
-        ax.scatter(filter_df[x_column], filter_df[y_column], label=label, color=cmap(i), alpha=0.5, s=10)
-    ax.set_xlabel(x_column)
-    ax.set_ylabel(y_column)
-    ax.legend()
-    plt.savefig(file_path)
-    plt.close()
+def stats_distribution(df: pd.DataFrame, col: str, bins: list) -> pd.DataFrame:
+    labels = [f"{bins[i]}-{bins[i+1]}" for i in range(len(bins)-1)]
+    cut = pd.cut(df[col], bins=bins, labels=labels, right=False)
+    freq = cut.value_counts().sort_index().reset_index()
+    freq.columns = ["rango", "freq"]
+    freq["freq_pct"]  = round(freq["freq"] / freq["freq"].sum() * 100, 2)
+    freq["freq_acum"] = round(freq["freq_pct"].cumsum(), 2)
+    return freq
+
+def stats_odds_mode(df: pd.DataFrame) -> dict:
+    """Moda de cuotas ganadoras redondeadas a 1 decimal, apertura y cierre."""
+    def mode_val(series):
+        if series.empty:
+            return None, 0
+        rounded = series.round(1)
+        m = rounded.value_counts()
+        return float(m.index[0]), int(m.iloc[0])
+
+    def median_val(series):
+        return round(float(series.median()), 3) if not series.empty else None
+
+    h_wins = df[df["FTR"] == "H"]
+    a_wins = df[df["FTR"] == "A"]
+    d_wins = df[df["FTR"] == "D"]
+    ud_a_w = df[(df["is_underdog_away"] == 1) & (df["away_win"] == 1)]
+    ud_h_w = df[(df["is_underdog_home"] == 1) & (df["home_win"] == 1)]
+
+    return {
+        "moda_ap_H":       mode_val(h_wins["AvgH"])[0],
+        "cnt_moda_ap_H":   mode_val(h_wins["AvgH"])[1],
+        "median_ap_H":     median_val(h_wins["AvgH"]),
+        "moda_ap_A":       mode_val(a_wins["AvgA"])[0],
+        "cnt_moda_ap_A":   mode_val(a_wins["AvgA"])[1],
+        "median_ap_A":     median_val(a_wins["AvgA"]),
+        "moda_ap_D":       mode_val(d_wins["AvgD"])[0],
+        "median_ap_D":     median_val(d_wins["AvgD"]),
+        "moda_ci_H":       mode_val(h_wins["AvgCH"])[0],
+        "cnt_moda_ci_H":   mode_val(h_wins["AvgCH"])[1],
+        "median_ci_H":     median_val(h_wins["AvgCH"]),
+        "moda_ci_A":       mode_val(a_wins["AvgCA"])[0],
+        "cnt_moda_ci_A":   mode_val(a_wins["AvgCA"])[1],
+        "median_ci_A":     median_val(a_wins["AvgCA"]),
+        "moda_ud_away_ap": mode_val(ud_a_w["AvgA"])[0],
+        "cnt_moda_ud_away":mode_val(ud_a_w["AvgA"])[1],
+        "median_ud_away":  median_val(ud_a_w["AvgA"]),
+        "moda_ud_home_ap": mode_val(ud_h_w["AvgH"])[0],
+        "median_ud_home":  median_val(ud_h_w["AvgH"]),
+    }
 
 def stats_goals(df):
     return {
@@ -68,8 +116,8 @@ def stats_flags(df, goal_flags):
     return {f: round(df[f].mean() * 100, 2) for f in goal_flags}
 
 def stats_results(df):
-    ftr  = df["FTR"].value_counts()
-    htr  = df["HTR"].value_counts() if "HTR" in df.columns else {}
+    ftr   = df["FTR"].value_counts()
+    htr   = df["HTR"].value_counts() if "HTR" in df.columns else {}
     total = len(df)
     return {
         "H":    int(ftr.get("H", 0)), "pct_H": round(ftr.get("H", 0)/total*100, 2),
@@ -117,8 +165,10 @@ def stats_smart_money(df):
     return {
         "sm_local_partidos":  len(sh),
         "sm_local_gana_pct":  round(sh["home_win"].mean()*100, 2) if len(sh) else 0,
+        "sm_local_avg_goles": round(sh["total_goals"].mean(), 3) if len(sh) else 0,
         "sm_visit_partidos":  len(sa),
         "sm_visit_gana_pct":  round(sa["away_win"].mean()*100, 2) if len(sa) else 0,
+        "sm_visit_avg_goles": round(sa["total_goals"].mean(), 3) if len(sa) else 0,
         "sm_draw_partidos":   len(sd),
         "sm_draw_gana_pct":   round(sd["draw"].mean()*100, 2) if len(sd) else 0,
     }
@@ -131,19 +181,95 @@ def stats_comeback(df):
     ht_draw_ft_win_a = df[(df["HTR"] == "D") & (df["FTR"] == "A")]
     total = len(df)
     return {
-        "remontada_local":      len(ht_lose_ft_win_h),
-        "pct_remontada_local":  round(len(ht_lose_ft_win_h)/total*100, 2),
-        "remontada_visit":      len(ht_lose_ft_win_a),
-        "pct_remontada_visit":  round(len(ht_lose_ft_win_a)/total*100, 2),
-        "ht_win_ft_lose":       len(ht_win_ft_lose_h),
-        "pct_ht_win_ft_lose":   round(len(ht_win_ft_lose_h)/total*100, 2),
-        "ht_draw_ft_win_h":     len(ht_draw_ft_win_h),
-        "ht_draw_ft_win_a":     len(ht_draw_ft_win_a),
+        "remontada_local":     len(ht_lose_ft_win_h),
+        "pct_remontada_local": round(len(ht_lose_ft_win_h)/total*100, 2),
+        "remontada_visit":     len(ht_lose_ft_win_a),
+        "pct_remontada_visit": round(len(ht_lose_ft_win_a)/total*100, 2),
+        "ht_win_ft_lose":      len(ht_win_ft_lose_h),
+        "pct_ht_win_ft_lose":  round(len(ht_win_ft_lose_h)/total*100, 2),
+        "ht_draw_ft_win_h":    len(ht_draw_ft_win_h),
+        "ht_draw_ft_win_a":    len(ht_draw_ft_win_a),
     }
 
 def top_scorers(df, col_team, col_goals, n=5):
     t = df.groupby(col_team)[col_goals].sum().sort_values(ascending=False).head(n)
     return {k: int(v) for k, v in t.items()}
+
+def calc_standings(df_sub):
+    """Tabla de posiciones calculada por puntos desde los resultados."""
+    home = df_sub.groupby("HomeTeam").apply(
+        lambda x: pd.Series({
+            "pts_h": int((x["FTR"]=="H").sum()*3 + (x["FTR"]=="D").sum()),
+            "pj_h":  len(x),
+            "gf_h":  int(x["FTHG"].sum()),
+            "gc_h":  int(x["FTAG"].sum()),
+        })
+    ).reset_index().rename(columns={"HomeTeam":"equipo"})
+
+    away = df_sub.groupby("AwayTeam").apply(
+        lambda x: pd.Series({
+            "pts_a": int((x["FTR"]=="A").sum()*3 + (x["FTR"]=="D").sum()),
+            "pj_a":  len(x),
+            "gf_a":  int(x["FTAG"].sum()),
+            "gc_a":  int(x["FTHG"].sum()),
+        })
+    ).reset_index().rename(columns={"AwayTeam":"equipo"})
+
+    t = home.merge(away, on="equipo", how="outer").fillna(0)
+    t["pts"] = t["pts_h"] + t["pts_a"]
+    t["pj"]  = t["pj_h"]  + t["pj_a"]
+    t["gf"]  = t["gf_h"]  + t["gf_a"]
+    t["gc"]  = t["gc_h"]  + t["gc_a"]
+    t["dg"]  = t["gf"] - t["gc"]
+    return t[["equipo","pts","pj","gf","gc","dg"]].sort_values("pts", ascending=False).reset_index(drop=True)
+
+def stats_segment(df, label):
+    return {
+        "segmento":   label,
+        "partidos":   len(df),
+        "avg_goles":  round(df["total_goals"].mean(), 3),
+        "std_goles":  round(df["total_goals"].std(), 3),
+        "pct_H":      round(df["home_win"].mean()*100, 2),
+        "pct_D":      round(df["draw"].mean()*100, 2),
+        "pct_A":      round(df["away_win"].mean()*100, 2),
+        "pct_over25": round(df["over25"].mean()*100, 2),
+        "pct_btts":   round(df["btts"].mean()*100, 2),
+        "avg_AvgH":   round(df["AvgH"].mean(), 3),
+        "avg_AvgA":   round(df["AvgA"].mean(), 3),
+    }
+
+def stats_implied_vs_real(df):
+    return {
+        "imp_H_mean": round(df["imp_prob_H"].mean()*100, 2),
+        "real_H_pct": round(df["home_win"].mean()*100, 2),
+        "diff_H":     round((df["imp_prob_H"].mean() - df["home_win"].mean())*100, 2),
+        "imp_A_mean": round(df["imp_prob_A"].mean()*100, 2),
+        "real_A_pct": round(df["away_win"].mean()*100, 2),
+        "diff_A":     round((df["imp_prob_A"].mean() - df["away_win"].mean())*100, 2),
+        "imp_D_mean": round(df["imp_prob_D"].mean()*100, 2),
+        "real_D_pct": round(df["draw"].mean()*100, 2),
+        "diff_D":     round((df["imp_prob_D"].mean() - df["draw"].mean())*100, 2),
+    }
+
+def stats_win_rate_by_odd_range(df):
+    """Tasa de acierto real vs implied probability por rango de odd local."""
+    bins   = [1.0, 1.3, 1.5, 1.75, 2.0, 2.5, 3.0, 4.0, 6.0, 25.0]
+    labels = [f"{bins[i]}-{bins[i+1]}" for i in range(len(bins)-1)]
+    df2 = df.copy()
+    df2["odd_range_H"] = pd.cut(df2["AvgH"], bins=bins, labels=labels, right=False)
+    rows = []
+    for rng in labels:
+        sub = df2[df2["odd_range_H"] == rng]
+        if len(sub) < 5:
+            continue
+        rows.append({
+            "rango_odd_H": rng,
+            "partidos":    len(sub),
+            "imp_prob_%":  round(1 / sub["AvgH"].mean() * 100, 2),
+            "real_win_%":  round(sub["home_win"].mean() * 100, 2),
+            "diferencia":  round(sub["home_win"].mean()*100 - 1/sub["AvgH"].mean()*100, 2),
+        })
+    return pd.DataFrame(rows)
 
 def draw_er_diagram(file_path: str):
     fig, ax = plt.subplots(figsize=(14, 9))
@@ -175,56 +301,75 @@ def draw_er_diagram(file_path: str):
     entity(ax, 12, 7,   "Odds",   ["B365H/D/A","MaxH/D/A","AvgH/D/A","B365CH/D/A","MaxCH/D/A","AvgCH/D/A"])
     entity(ax, 2,  2,   "League", ["Div (E0/SP1/D1/I1/F1)"])
     entity(ax, 12, 2,   "Season", ["Season (1920..2526)"])
-    relation(ax, 4.3, 6.1, "plays");       relation(ax, 9.7, 6.1, "has odds")
-    relation(ax, 4.3, 3.2, "belongs to");  relation(ax, 9.7, 3.2, "played in")
-    arrow(ax, 2,6.7, 3.5,6.3);  arrow(ax, 5.1,6.1, 5.9,5.1)
+    relation(ax, 4.3, 6.1, "plays");      relation(ax, 9.7, 6.1, "has odds")
+    relation(ax, 4.3, 3.2, "belongs to"); relation(ax, 9.7, 3.2, "played in")
+    arrow(ax, 2,6.7, 3.5,6.3);   arrow(ax, 5.1,6.1, 5.9,5.1)
     arrow(ax, 12,6.7, 10.5,6.3); arrow(ax, 8.8,5.5, 10.3,6.1, "1:1")
-    arrow(ax, 2,2.7, 3.5,3.1);  arrow(ax, 5.1,3.2, 5.9,3.9, "N:1")
+    arrow(ax, 2,2.7, 3.5,3.1);   arrow(ax, 5.1,3.2, 5.9,3.9, "N:1")
     arrow(ax, 12,2.7, 10.5,3.1); arrow(ax, 8.8,3.9, 10.3,3.2, "N:1")
     for x,y,t in [(3,6.6,"N"),(5.5,5.6,"1"),(11,6.6,"1"),(3,2.9,"N"),(11,2.9,"N")]:
         ax.text(x, y, t, fontsize=8, color="#e74c3c", fontweight="bold")
-    ax.set_title("Diagrama Entidad-Relacion — European Football Dataset",
+    ax.set_title("Diagrama Entidad-Relacion - European Football Dataset",
                  fontsize=13, fontweight="bold", pad=15)
     plt.tight_layout()
     plt.savefig(file_path, dpi=150, bbox_inches="tight"); plt.close()
     print(f"diagrama ER guardado en {file_path}")
 
-# setup
+def scatter_group_by(file_path, df, x_column, y_column, label_column):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    labels = pd.unique(df[label_column])
+    cmap = get_cmap(len(labels) + 1)
+    for i, label in enumerate(labels):
+        sub = df[df[label_column] == label]
+        ax.scatter(sub[x_column], sub[y_column], label=label, color=cmap(i), alpha=0.5, s=10)
+    ax.set_xlabel(x_column); ax.set_ylabel(y_column); ax.legend()
+    plt.savefig(file_path); plt.close()
+
+# ============================================================
+# SETUP
+# ============================================================
 os.makedirs("img", exist_ok=True)
 
 df = pd.read_csv("../Practica 1/data/clean/football_clean.csv", parse_dates=["Date"])
 pd.set_option("display.float_format", lambda x: f"{x:.3f}")
 
-df["total_goals"]      = df["FTHG"] + df["FTAG"]
-df["ht_goals"]         = df["HTHG"] + df["HTAG"]
-df["goal_diff"]        = df["FTHG"] - df["FTAG"]
-df["home_win"]         = (df["FTR"] == "H").astype(int)
-df["draw"]             = (df["FTR"] == "D").astype(int)
-df["away_win"]         = (df["FTR"] == "A").astype(int)
-df["btts"]             = ((df["FTHG"] > 0) & (df["FTAG"] > 0)).astype(int)
-df["over15"]           = (df["total_goals"] > 1).astype(int)
-df["over25"]           = (df["total_goals"] > 2).astype(int)
-df["over35"]           = (df["total_goals"] > 3).astype(int)
-df["over45"]           = (df["total_goals"] > 4).astype(int)
-df["under15"]          = (df["total_goals"] <= 1).astype(int)
-df["under25"]          = (df["total_goals"] <= 2).astype(int)
-df["under35"]          = (df["total_goals"] <= 3).astype(int)
-df["clean_sheet_h"]    = (df["FTAG"] == 0).astype(int)
-df["clean_sheet_a"]    = (df["FTHG"] == 0).astype(int)
-df["high_scoring"]     = (df["total_goals"] >= 5).astype(int)
-df["goalless"]         = (df["total_goals"] == 0).astype(int)
-df["imp_prob_H"]       = round(1 / df["AvgH"], 4)
-df["imp_prob_D"]       = round(1 / df["AvgD"], 4)
-df["imp_prob_A"]       = round(1 / df["AvgA"], 4)
-df["overround"]        = round(df["imp_prob_H"] + df["imp_prob_D"] + df["imp_prob_A"], 4)
-df["odds_move_H"]      = round(df["AvgCH"] - df["AvgH"], 4)
-df["odds_move_A"]      = round(df["AvgCA"] - df["AvgA"], 4)
-df["odds_move_D"]      = round(df["AvgCD"] - df["AvgD"], 4)
-df["is_underdog_away"] = (df["AvgA"] > 4).astype(int)
-df["is_underdog_home"] = (df["AvgH"] > 4).astype(int)
-df["odds_margin_ha"]   = round(df["AvgH"] - df["AvgA"], 3)
-df["month"]            = df["Date"].dt.month
-df["Season_label"]     = df["Season"].map({
+df["total_goals"]       = df["FTHG"] + df["FTAG"]
+df["ht_goals"]          = df["HTHG"] + df["HTAG"]
+df["second_half_goals"] = df["total_goals"] - df["ht_goals"]
+df["goal_diff"]         = df["FTHG"] - df["FTAG"]
+df["home_win"]          = (df["FTR"] == "H").astype(int)
+df["draw"]              = (df["FTR"] == "D").astype(int)
+df["away_win"]          = (df["FTR"] == "A").astype(int)
+df["btts"]              = ((df["FTHG"] > 0) & (df["FTAG"] > 0)).astype(int)
+df["over15"]            = (df["total_goals"] > 1).astype(int)
+df["over25"]            = (df["total_goals"] > 2).astype(int)
+df["over35"]            = (df["total_goals"] > 3).astype(int)
+df["over45"]            = (df["total_goals"] > 4).astype(int)
+df["under15"]           = (df["total_goals"] <= 1).astype(int)
+df["under25"]           = (df["total_goals"] <= 2).astype(int)
+df["under35"]           = (df["total_goals"] <= 3).astype(int)
+df["clean_sheet_h"]     = (df["FTAG"] == 0).astype(int)
+df["clean_sheet_a"]     = (df["FTHG"] == 0).astype(int)
+df["high_scoring"]      = (df["total_goals"] >= 5).astype(int)
+df["goalless"]          = (df["total_goals"] == 0).astype(int)
+df["imp_prob_H"]        = round(1 / df["AvgH"], 4)
+df["imp_prob_D"]        = round(1 / df["AvgD"], 4)
+df["imp_prob_A"]        = round(1 / df["AvgA"], 4)
+df["overround"]         = round(df["imp_prob_H"] + df["imp_prob_D"] + df["imp_prob_A"], 4)
+df["odds_move_H"]       = round(df["AvgCH"] - df["AvgH"], 4)
+df["odds_move_A"]       = round(df["AvgCA"] - df["AvgA"], 4)
+df["odds_move_D"]       = round(df["AvgCD"] - df["AvgD"], 4)
+df["is_underdog_away"]  = (df["AvgA"] > 4).astype(int)
+df["is_underdog_home"]  = (df["AvgH"] > 4).astype(int)
+df["odds_margin_ha"]    = round(df["AvgH"] - df["AvgA"], 3)
+df["month"]             = df["Date"].dt.month
+df["dayofweek"]         = df["Date"].dt.dayofweek
+df["day_name"]          = df["dayofweek"].map(DAY_NAMES)
+df["is_weekend"]        = df["dayofweek"].isin([5, 6]).astype(int)
+df["day_type"]          = df["dayofweek"].map(
+    lambda d: "Finde" if d in [5,6] else "Viernes" if d == 4 else "Entresemana"
+)
+df["Season_label"]      = df["Season"].map({
     1920:"2019/20", 2021:"2020/21", 2122:"2021/22",
     2223:"2022/23", 2324:"2023/24", 2425:"2024/25", 2526:"2025/26"
 })
@@ -244,7 +389,9 @@ season_labels = {
 resumen_temporadas      = []
 resumen_ligas_temporada = []
 
-#INICIO DEL CICLO: TEMPORADA -> LIGA
+# ============================================================
+# CICLO PRINCIPAL: temporada > liga
+# ============================================================
 for temporada in temporadas:
     slabel = season_labels.get(temporada, str(temporada))
     df_t   = df[df["Season"] == temporada]
@@ -254,23 +401,22 @@ for temporada in temporadas:
     print(f"  TEMPORADA {slabel}  ({len(df_t)} partidos)")
     print(f"{'='*70}")
 
-    # estadísticas numéricas con skew y kurtosis
     print(f"\n--- goles generales {slabel} ---")
-    print_tabulate(describe_numeric(df_t, ["FTHG","FTAG","HTHG","HTAG","total_goals","ht_goals","goal_diff"]))
+    print_tabulate(describe_numeric(df_t, ["FTHG","FTAG","HTHG","HTAG","total_goals","ht_goals","second_half_goals","goal_diff"]))
 
-    # distribución simulada vs real
-    print(f"\n--- distribucion simulada vs real {slabel} ---")
+    print(f"\n--- correlacion HT vs FT goles {slabel} ---")
+    print(f"  corr ht_goals vs total_goals:       {round(df_t['ht_goals'].corr(df_t['total_goals']), 4)}")
+    print(f"  corr ht_goals vs second_half_goals: {round(df_t['ht_goals'].corr(df_t['second_half_goals']), 4)}")
+
     print(f"\n--- resultados FT {slabel} ---")
     print_tabulate(describe_categorical(df_t, "FTR"))
     print(f"\n--- resultados HT {slabel} ---")
     print_tabulate(describe_categorical(df_t, "HTR"))
 
-    # flags
     print(f"\n--- btts / over / under / clean sheets {slabel} ---")
     for flag in goal_flags:
         print(f"  {flag}: {int(df_t[flag].sum())} ({round(df_t[flag].mean()*100,2)}%)")
 
-    # remontadas
     print(f"\n--- remontadas {slabel} ---")
     cb = stats_comeback(df_t)
     print(f"  local remonta (pierde HT, gana FT): {cb['remontada_local']} ({cb['pct_remontada_local']}%)")
@@ -279,13 +425,12 @@ for temporada in temporadas:
     print(f"  empate HT -> gana local FT:         {cb['ht_draw_ft_win_h']}")
     print(f"  empate HT -> gana visit FT:         {cb['ht_draw_ft_win_a']}")
 
-    # odds
     print(f"\n--- odds generales {slabel} ---")
     print_tabulate(describe_numeric(df_t, ["AvgH","AvgD","AvgA","AvgCH","AvgCD","AvgCA","overround"]))
+
     print(f"\n--- movimiento de mercado {slabel} ---")
     print_tabulate(describe_numeric(df_t, ["odds_move_H","odds_move_D","odds_move_A"]))
 
-    # underdogs
     ud_t = stats_underdogs(df_t)
     print(f"\n--- underdogs {slabel} ---")
     print(f"  visitante (AvgA>4):  {ud_t['ud_away_total']} | ganan {ud_t['ud_away_wins']} ({ud_t['ud_away_pct']}%) | avg odd {ud_t['ud_away_avg_odd']}")
@@ -297,48 +442,69 @@ for temporada in temporadas:
         print(f"\n--- underdogs extremos que ganaron en {slabel} ---")
         print_tabulate(ude_t[["Div","Date","HomeTeam","AwayTeam","AvgH","AvgA","FTHG","FTAG"]].sort_values("AvgA", ascending=False))
 
-    # smart money
     sm_t = stats_smart_money(df_t)
     print(f"\n--- smart money {slabel} ---")
-    print(f"  hacia local:     {sm_t['sm_local_partidos']} | gana {sm_t['sm_local_gana_pct']}%")
-    print(f"  hacia visitante: {sm_t['sm_visit_partidos']} | gana {sm_t['sm_visit_gana_pct']}%")
+    print(f"  hacia local:     {sm_t['sm_local_partidos']} | gana {sm_t['sm_local_gana_pct']}% | avg goles {sm_t['sm_local_avg_goles']}")
+    print(f"  hacia visitante: {sm_t['sm_visit_partidos']} | gana {sm_t['sm_visit_gana_pct']}% | avg goles {sm_t['sm_visit_avg_goles']}")
     print(f"  hacia empate:    {sm_t['sm_draw_partidos']} | empata {sm_t['sm_draw_gana_pct']}%")
 
-    # alta anotacion
+    om_t = stats_odds_mode(df_t)
+    print(f"\n--- moda y mediana de cuotas ganadoras {slabel} ---")
+    print(f"  local gana    | apertura: moda {om_t['moda_ap_H']} (x{om_t['cnt_moda_ap_H']}) median {om_t['median_ap_H']} | cierre: moda {om_t['moda_ci_H']} median {om_t['median_ci_H']}")
+    print(f"  visitante gana| apertura: moda {om_t['moda_ap_A']} (x{om_t['cnt_moda_ap_A']}) median {om_t['median_ap_A']} | cierre: moda {om_t['moda_ci_A']} median {om_t['median_ci_A']}")
+    print(f"  empate        | apertura: moda {om_t['moda_ap_D']} median {om_t['median_ap_D']}")
+    print(f"  ud visit gana | apertura: moda {om_t['moda_ud_away_ap']} (x{om_t['cnt_moda_ud_away']}) median {om_t['median_ud_away']}")
+    print(f"  ud local gana | apertura: moda {om_t['moda_ud_home_ap']} median {om_t['median_ud_home']}")
+
+    iv_t = stats_implied_vs_real(df_t)
+    print(f"\n--- implied probability vs resultado real {slabel} ---")
+    print(f"  local:     implied {iv_t['imp_H_mean']}% | real {iv_t['real_H_pct']}% | diff {iv_t['diff_H']}%")
+    print(f"  visitante: implied {iv_t['imp_A_mean']}% | real {iv_t['real_A_pct']}% | diff {iv_t['diff_A']}%")
+    print(f"  empate:    implied {iv_t['imp_D_mean']}% | real {iv_t['real_D_pct']}% | diff {iv_t['diff_D']}%")
+
+    print(f"\n--- distribucion goles totales {slabel} ---")
+    print_tabulate(stats_distribution(df_t, "total_goals", [0,1,2,3,4,5,6,7,8,9,10,20]))
+
+    print(f"\n--- distribucion odds local apertura {slabel} ---")
+    print_tabulate(stats_distribution(df_t, "AvgH", [1.0,1.3,1.5,1.75,2.0,2.5,3.0,4.0,6.0,25.0]))
+
+    print(f"\n--- distribucion odds visitante apertura {slabel} ---")
+    print_tabulate(stats_distribution(df_t, "AvgA", [1.0,1.5,2.0,2.5,3.0,4.0,6.0,10.0,40.0]))
+
     ha = df_t[df_t["high_scoring"] == 1]
     print(f"\n--- partidos alta anotacion (>=5 goles) {slabel}: {len(ha)} ({round(df_t['high_scoring'].mean()*100,2)}%) ---")
     if len(ha):
         print_tabulate(ha.sort_values("total_goals", ascending=False).head(10)[["Div","Date","HomeTeam","AwayTeam","FTHG","FTAG","FTR"]])
 
-    # acumular
     row_t = {"season": slabel}
     row_t.update(g_t); row_t.update(stats_flags(df_t, goal_flags))
     row_t.update(stats_results(df_t)); row_t.update(stats_odds(df_t))
     row_t.update(ud_t); row_t.update(sm_t); row_t.update(cb)
     resumen_temporadas.append(row_t)
 
-    # ciclo interior: liga dentro de la temporada
+    # ---- ciclo interior: liga dentro de la temporada ----
     for liga in ligas:
         df_tl = df_t[df_t["Div"] == liga]
         if df_tl.empty:
             continue
 
-        print(f"\n  {'─'*60}")
+        print(f"\n  {'-'*60}")
         print(f"  {liga} | {slabel}  ({len(df_tl)} partidos)")
-        print(f"  {'─'*60}")
+        print(f"  {'-'*60}")
 
-        g  = stats_goals(df_tl)
-        r  = stats_results(df_tl)
-        f  = stats_flags(df_tl, goal_flags)
-        o  = stats_odds(df_tl)
-        ud = stats_underdogs(df_tl)
-        sm = stats_smart_money(df_tl)
+        g     = stats_goals(df_tl)
+        r     = stats_results(df_tl)
+        f     = stats_flags(df_tl, goal_flags)
+        o     = stats_odds(df_tl)
+        ud    = stats_underdogs(df_tl)
+        sm    = stats_smart_money(df_tl)
         cb_tl = stats_comeback(df_tl)
-
-        # distribución simulada por liga/temporada
+        om_tl = stats_odds_mode(df_tl)
+        iv_tl = stats_implied_vs_real(df_tl)
 
         print(f"  goles: local {g['avg_local']} | visit {g['avg_visitante']} | total {g['avg_total']} | std {g['std_total']} | max {g['max_goles']}")
         print(f"  medio tiempo: local {g['avg_ht_local']} | visit {g['avg_ht_visit']}")
+        print(f"  corr HT vs FT: {round(df_tl['ht_goals'].corr(df_tl['total_goals']), 3)}")
         print(f"  resultados FT: H {r['H']} ({r['pct_H']}%) | D {r['D']} ({r['pct_D']}%) | A {r['A']} ({r['pct_A']}%)")
         print(f"  resultados HT: H {r['ht_H']} | D {r['ht_D']} | A {r['ht_A']}")
         print(f"  btts {f['btts']}% | over1.5 {f['over15']}% | over2.5 {f['over25']}% | over3.5 {f['over35']}% | over4.5 {f['over45']}%")
@@ -347,12 +513,33 @@ for temporada in temporadas:
         print(f"  remontada local {cb_tl['remontada_local']} ({cb_tl['pct_remontada_local']}%) | visit {cb_tl['remontada_visit']} ({cb_tl['pct_remontada_visit']}%)")
         print(f"  odds avg: H {o['avg_AvgH']} | D {o['avg_AvgD']} | A {o['avg_AvgA']} | CH {o['avg_AvgCH']} | CA {o['avg_AvgCA']} | overround {o['avg_overround']}")
         print(f"  mov mercado: H {round(df_tl['odds_move_H'].mean(),4)} | D {round(df_tl['odds_move_D'].mean(),4)} | A {round(df_tl['odds_move_A'].mean(),4)}")
-        print(f"  ud visit: {ud['ud_away_total']} ({ud['ud_away_pct']}% ganan, avg {ud['ud_away_avg_odd']}) | ud local: {ud['ud_home_total']} ({ud['ud_home_pct']}% ganan)")
-        print(f"  ud extremos: {ud['ud_extreme_total']} | ganan {ud['ud_extreme_wins']} ({ud['ud_extreme_pct']}%)")
-        print(f"  sm local: {sm['sm_local_partidos']} ({sm['sm_local_gana_pct']}%) | visit: {sm['sm_visit_partidos']} ({sm['sm_visit_gana_pct']}%) | empate: {sm['sm_draw_partidos']} ({sm['sm_draw_gana_pct']}%)")
+        print(f"  implied vs real: H {iv_tl['imp_H_mean']}% vs {iv_tl['real_H_pct']}% (diff {iv_tl['diff_H']}%) | A {iv_tl['imp_A_mean']}% vs {iv_tl['real_A_pct']}% (diff {iv_tl['diff_A']}%)")
+        print(f"  ud visit: {ud['ud_away_total']} ({ud['ud_away_pct']}% ganan) | ud local: {ud['ud_home_total']} ({ud['ud_home_pct']}% ganan) | extremos: {ud['ud_extreme_total']} ({ud['ud_extreme_pct']}%)")
+        print(f"  sm local: {sm['sm_local_partidos']} ({sm['sm_local_gana_pct']}%, {sm['sm_local_avg_goles']} goles) | visit: {sm['sm_visit_partidos']} ({sm['sm_visit_gana_pct']}%, {sm['sm_visit_avg_goles']} goles)")
+        print(f"  moda odd local  | ap: {om_tl['moda_ap_H']} med {om_tl['median_ap_H']} | ci: {om_tl['moda_ci_H']} med {om_tl['median_ci_H']}")
+        print(f"  moda odd visit  | ap: {om_tl['moda_ap_A']} med {om_tl['median_ap_A']} | ci: {om_tl['moda_ci_A']} med {om_tl['median_ci_A']}")
+        print(f"  moda odd ud visit gana | ap: {om_tl['moda_ud_away_ap']} med {om_tl['median_ud_away']}")
         print(f"  top goles local:        {top_scorers(df_tl, 'HomeTeam', 'FTHG')}")
         print(f"  top goles visit:        {top_scorers(df_tl, 'AwayTeam', 'FTAG')}")
         print(f"  top clean sheets local: {top_scorers(df_tl, 'HomeTeam', 'clean_sheet_h')}")
+
+        standing = calc_standings(df_tl)
+        print(f"  tabla de posiciones {liga} {slabel}:")
+        print_tabulate(standing.reset_index().rename(columns={"index":"pos"}))
+
+        n_eq     = len(standing)
+        top5     = list(standing.head(5)["equipo"])
+        bot5     = list(standing.tail(5)["equipo"])
+        mid      = list(standing.iloc[5:n_eq-5]["equipo"]) if n_eq > 10 else []
+        segs     = [
+            stats_segment(df_tl, "todos"),
+            stats_segment(df_tl[df_tl["HomeTeam"].isin(top5)|df_tl["AwayTeam"].isin(top5)], "top5"),
+            stats_segment(df_tl[df_tl["HomeTeam"].isin(bot5)|df_tl["AwayTeam"].isin(bot5)], "bottom5"),
+        ]
+        if mid:
+            segs.append(stats_segment(df_tl[df_tl["HomeTeam"].isin(mid)|df_tl["AwayTeam"].isin(mid)], "medio"))
+        print(f"  top5 vs bottom5 vs media:")
+        print_tabulate(pd.DataFrame(segs))
 
         ude_tl = df_tl[(df_tl["AvgA"] > 8) & (df_tl["away_win"] == 1)]
         if len(ude_tl):
@@ -364,7 +551,9 @@ for temporada in temporadas:
         row_tl.update(o); row_tl.update(ud); row_tl.update(sm); row_tl.update(cb_tl)
         resumen_ligas_temporada.append(row_tl)
 
-#entre temporadas
+# ============================================================
+# COMPARACION ENTRE TEMPORADAS
+# ============================================================
 print(f"\n{'='*70}")
 print("  COMPARACION ENTRE TEMPORADAS")
 print(f"{'='*70}")
@@ -396,9 +585,11 @@ print("\n=== underdogs por temporada ===")
 print_tabulate(df_rt[["season","ud_away_total","ud_away_wins","ud_away_pct","ud_away_avg_odd","ud_home_total","ud_home_wins","ud_home_pct","ud_extreme_total","ud_extreme_pct"]])
 
 print("\n=== smart money por temporada ===")
-print_tabulate(df_rt[["season","sm_local_partidos","sm_local_gana_pct","sm_visit_partidos","sm_visit_gana_pct","sm_draw_partidos","sm_draw_gana_pct"]])
+print_tabulate(df_rt[["season","sm_local_partidos","sm_local_gana_pct","sm_local_avg_goles","sm_visit_partidos","sm_visit_gana_pct","sm_visit_avg_goles"]])
 
-#entre ligas
+# ============================================================
+# COMPARACION ENTRE LIGAS
+# ============================================================
 print(f"\n{'='*70}")
 print("  COMPARACION ENTRE LIGAS (todo el periodo)")
 print(f"{'='*70}")
@@ -413,13 +604,68 @@ gl = df.groupby("Div").agg(
 ).round(3).reset_index()
 print_tabulate(gl)
 
-print("\n=== skewness y kurtosis de goles por liga ===")
-sk_rows = []
+print("\n=== varianza y dispersion de goles por liga ===")
+var_rows = []
 for liga in ligas:
     s = df[df["Div"] == liga]["total_goals"]
-    sk_rows.append({"liga": liga, "skew": round(s.skew(),3), "kurt": round(s.kurt(),3),
-                    "mean": round(s.mean(),3), "std": round(s.std(),3)})
-print_tabulate(pd.DataFrame(sk_rows))
+    var_rows.append({
+        "liga":   liga,
+        "mean":   round(s.mean(), 3),
+        "var":    round(s.var(), 3),
+        "std":    round(s.std(), 3),
+        "cv_pct": round(s.std()/s.mean()*100, 2),
+        "iqr":    round(s.quantile(0.75)-s.quantile(0.25), 3),
+        "p10":    round(s.quantile(0.10), 3),
+        "p90":    round(s.quantile(0.90), 3),
+        "skew":   round(s.skew(), 3),
+        "kurt":   round(s.kurt(), 3),
+    })
+print_tabulate(pd.DataFrame(var_rows))
+
+print("\n=== varianza y CV de odds por liga ===")
+var_odds = []
+for liga in ligas:
+    sub = df[df["Div"] == liga]
+    var_odds.append({
+        "liga":      liga,
+        "var_AvgH":  round(sub["AvgH"].var(), 3),
+        "cv_AvgH":   round(sub["AvgH"].std()/sub["AvgH"].mean()*100, 2),
+        "iqr_AvgH":  round(sub["AvgH"].quantile(0.75)-sub["AvgH"].quantile(0.25), 3),
+        "skew_AvgH": round(sub["AvgH"].skew(), 3),
+        "var_AvgA":  round(sub["AvgA"].var(), 3),
+        "cv_AvgA":   round(sub["AvgA"].std()/sub["AvgA"].mean()*100, 2),
+        "iqr_AvgA":  round(sub["AvgA"].quantile(0.75)-sub["AvgA"].quantile(0.25), 3),
+        "skew_AvgA": round(sub["AvgA"].skew(), 3),
+    })
+print_tabulate(pd.DataFrame(var_odds))
+
+print("\n=== distribucion de goles totales (todo el periodo) ===")
+print_tabulate(stats_distribution(df, "total_goals", [0,1,2,3,4,5,6,7,8,9,10,20]))
+
+print("\n=== distribucion odds local por rango ===")
+print_tabulate(stats_distribution(df, "AvgH", [1.0,1.3,1.5,1.75,2.0,2.5,3.0,4.0,6.0,25.0]))
+
+print("\n=== distribucion odds visitante por rango ===")
+print_tabulate(stats_distribution(df, "AvgA", [1.0,1.5,2.0,2.5,3.0,4.0,6.0,10.0,40.0]))
+
+print("\n=== tasa de acierto real vs implied probability por rango de odd local ===")
+print_tabulate(stats_win_rate_by_odd_range(df))
+
+print("\n=== implied probability vs resultado real por liga ===")
+iv_rows = []
+for liga in ligas:
+    iv = stats_implied_vs_real(df[df["Div"] == liga])
+    iv["liga"] = liga
+    iv_rows.append(iv)
+print_tabulate(pd.DataFrame(iv_rows)[["liga","imp_H_mean","real_H_pct","diff_H","imp_A_mean","real_A_pct","diff_A","imp_D_mean","real_D_pct","diff_D"]])
+
+print("\n=== moda y mediana de cuotas ganadoras por liga ===")
+om_liga = []
+for liga in ligas:
+    om = stats_odds_mode(df[df["Div"] == liga])
+    om["liga"] = liga
+    om_liga.append(om)
+print_tabulate(pd.DataFrame(om_liga)[["liga","moda_ap_H","median_ap_H","moda_ci_H","median_ci_H","moda_ap_A","median_ap_A","moda_ud_away_ap","median_ud_away"]])
 
 print("\n=== btts / over / under por liga ===")
 gf_liga = df.groupby("Div")[goal_flags].mean().round(4) * 100
@@ -440,12 +686,10 @@ for liga in ligas:
 print_tabulate(pd.DataFrame(cb_liga)[["liga","remontada_local","pct_remontada_local","remontada_visit","pct_remontada_visit","ht_win_ft_lose","pct_ht_win_ft_lose"]])
 
 print("\n=== odds por liga ===")
-ol = df.groupby("Div")[["AvgH","AvgD","AvgA","AvgCH","AvgCD","AvgCA","overround"]].mean().round(3).reset_index()
-print_tabulate(ol)
+print_tabulate(df.groupby("Div")[["AvgH","AvgD","AvgA","AvgCH","AvgCD","AvgCA","overround"]].mean().round(3).reset_index())
 
 print("\n=== movimiento de mercado por liga ===")
-ml = df.groupby("Div")[["odds_move_H","odds_move_D","odds_move_A"]].agg(["mean","std"]).round(4).reset_index()
-print_tabulate(ml)
+print_tabulate(df.groupby("Div")[["odds_move_H","odds_move_D","odds_move_A"]].agg(["mean","std"]).round(4).reset_index())
 
 print("\n=== underdogs por liga ===")
 for liga in ligas:
@@ -455,7 +699,78 @@ for liga in ligas:
 print("\n=== smart money por liga ===")
 for liga in ligas:
     sm = stats_smart_money(df[df["Div"] == liga])
-    print(f"  {liga} — local: {sm['sm_local_partidos']} ({sm['sm_local_gana_pct']}%) | visit: {sm['sm_visit_partidos']} ({sm['sm_visit_gana_pct']}%) | empate: {sm['sm_draw_partidos']} ({sm['sm_draw_gana_pct']}%)")
+    print(f"  {liga} — local: {sm['sm_local_partidos']} ({sm['sm_local_gana_pct']}%, avg {sm['sm_local_avg_goles']} goles) | visit: {sm['sm_visit_partidos']} ({sm['sm_visit_gana_pct']}%, avg {sm['sm_visit_avg_goles']} goles)")
+
+print("\n=== correlacion HT vs FT goles por liga ===")
+for liga in ligas:
+    sub = df[df["Div"] == liga]
+    print(f"  {liga} — corr HT vs total: {round(sub['ht_goals'].corr(sub['total_goals']),4)} | corr HT vs 2do tiempo: {round(sub['ht_goals'].corr(sub['second_half_goals']),4)}")
+
+print("\n=== top 5 vs bottom 5 vs media global por liga (todo el periodo) ===")
+for liga in ligas:
+    sub      = df[df["Div"] == liga]
+    stnd     = calc_standings(sub)
+    n_eq     = len(stnd)
+    top5     = list(stnd.head(5)["equipo"])
+    bot5     = list(stnd.tail(5)["equipo"])
+    mid      = list(stnd.iloc[5:n_eq-5]["equipo"]) if n_eq > 10 else []
+    segs     = [
+        stats_segment(sub, "todos"),
+        stats_segment(sub[sub["HomeTeam"].isin(top5)|sub["AwayTeam"].isin(top5)], "top5"),
+        stats_segment(sub[sub["HomeTeam"].isin(bot5)|sub["AwayTeam"].isin(bot5)], "bottom5"),
+    ]
+    if mid:
+        segs.append(stats_segment(sub[sub["HomeTeam"].isin(mid)|sub["AwayTeam"].isin(mid)], "medio"))
+    print(f"\n  {liga}:")
+    print_tabulate(pd.DataFrame(segs))
+
+print("\n=== analisis por dia de la semana ===")
+day_order  = ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"]
+day_stats  = df.groupby("day_name").agg(
+    partidos=("total_goals","count"),
+    avg_goles=("total_goals","mean"),
+    var_goles=("total_goals","var"),
+    pct_H=("home_win","mean"),
+    pct_D=("draw","mean"),
+    pct_A=("away_win","mean"),
+    pct_btts=("btts","mean"),
+    pct_over25=("over25","mean"),
+).round(3)
+for col in ["pct_H","pct_D","pct_A","pct_btts","pct_over25"]:
+    day_stats[col] = round(day_stats[col]*100, 2)
+day_stats = day_stats.reindex([d for d in day_order if d in day_stats.index]).reset_index()
+print_tabulate(day_stats)
+
+print("\n=== fin de semana vs entresemana vs viernes ===")
+dtype_stats = df.groupby("day_type").agg(
+    partidos=("total_goals","count"),
+    avg_goles=("total_goals","mean"),
+    var_goles=("total_goals","var"),
+    pct_H=("home_win","mean"),
+    pct_D=("draw","mean"),
+    pct_A=("away_win","mean"),
+    pct_btts=("btts","mean"),
+    pct_over25=("over25","mean"),
+).round(3).reset_index()
+for col in ["pct_H","pct_D","pct_A","pct_btts","pct_over25"]:
+    dtype_stats[col] = round(dtype_stats[col]*100, 2)
+print_tabulate(dtype_stats)
+
+print("\n=== correlacion dia de la semana vs goles / resultado ===")
+print(round(df[["dayofweek","total_goals","home_win","draw","away_win","over25","btts"]].corr(), 3))
+
+print("\n=== varianza de goles por mes ===")
+gm_var = df.groupby("month").agg(
+    partidos=("total_goals","count"),
+    avg_goles=("total_goals","mean"),
+    var_goles=("total_goals","var"),
+    std_goles=("total_goals","std"),
+    pct_over25=("over25","mean"),
+    pct_H=("home_win","mean"),
+).round(3).reset_index()
+gm_var["pct_over25"] = round(gm_var["pct_over25"]*100, 2)
+gm_var["pct_H"]      = round(gm_var["pct_H"]*100, 2)
+print_tabulate(gm_var)
 
 print("\n=== top 15 goleadores totales ===")
 hg = df.groupby("HomeTeam")["FTHG"].sum().reset_index().rename(columns={"HomeTeam":"equipo","FTHG":"goles_local"})
@@ -490,69 +805,108 @@ cs_a = df.groupby("AwayTeam").agg(partidos=("clean_sheet_a","count"), cs=("clean
 cs_a = cs_a[cs_a["partidos"] >= 50]; cs_a["pct_cs"] = round(cs_a["cs"]/cs_a["partidos"]*100, 2)
 print_tabulate(cs_a.sort_values("pct_cs", ascending=False).head(10).reset_index())
 
-print("\n=== partidos sin goles por liga ===")
-gl0 = df.groupby("Div")["goalless"].agg(["sum","mean"]).reset_index()
-gl0.columns = ["Div","total_goalless","pct_goalless"]
-gl0["pct_goalless"] = round(gl0["pct_goalless"]*100, 2)
-print_tabulate(gl0)
+print("\n=== SP1: btts segun tamano de jornada y dia de la semana ===")
+sp1 = df[df["Div"] == "SP1"].copy()
+partidos_por_fecha = sp1.groupby("Date").size().reset_index(name="partidos_ese_dia")
+sp1 = sp1.merge(partidos_por_fecha, on="Date")
+sp1["tipo_jornada"] = sp1["partidos_ese_dia"].map(
+    lambda n: "1-unico" if n == 1 else "2-3 pocos" if n <= 3 else "4-6 media" if n <= 6 else "7+ completa"
+)
 
-print("\n=== partidos alta anotacion (>=5 goles) por liga ===")
-ha_l = df.groupby("Div")["high_scoring"].agg(["sum","mean"]).reset_index()
-ha_l.columns = ["Div","total_high","pct_high"]
-ha_l["pct_high"] = round(ha_l["pct_high"]*100, 2)
-print_tabulate(ha_l)
+print("\n  por tipo de jornada:")
+tj = sp1.groupby("tipo_jornada").agg(
+    partidos=("btts","count"),
+    pct_btts=("btts","mean"),
+    pct_over25=("over25","mean"),
+    avg_goles=("total_goals","mean"),
+).round(3).reset_index()
+tj["pct_btts"]   = round(tj["pct_btts"]*100, 2)
+tj["pct_over25"] = round(tj["pct_over25"]*100, 2)
+print_tabulate(tj)
+
+print("\n  por dia de la semana (SP1):")
+day_order = ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"]
+sp1_day = sp1.groupby("day_name").agg(
+    partidos=("btts","count"),
+    pct_btts=("btts","mean"),
+    pct_over25=("over25","mean"),
+    avg_goles=("total_goals","mean"),
+).round(3)
+sp1_day["pct_btts"]   = round(sp1_day["pct_btts"]*100, 2)
+sp1_day["pct_over25"] = round(sp1_day["pct_over25"]*100, 2)
+sp1_day = sp1_day.reindex([d for d in day_order if d in sp1_day.index]).reset_index()
+print_tabulate(sp1_day)
+
+print("\n  partidos unicos (1 partido ese dia) por dia SP1:")
+solos_sp1 = sp1[sp1["partidos_ese_dia"] == 1]
+if len(solos_sp1):
+    solos_day = solos_sp1.groupby("day_name").agg(
+        partidos=("btts","count"),
+        pct_btts=("btts","mean"),
+        pct_over25=("over25","mean"),
+        avg_goles=("total_goals","mean"),
+    ).round(3)
+    solos_day["pct_btts"]   = round(solos_day["pct_btts"]*100, 2)
+    solos_day["pct_over25"] = round(solos_day["pct_over25"]*100, 2)
+    solos_day = solos_day.reindex([d for d in day_order if d in solos_day.index]).reset_index()
+    print_tabulate(solos_day)
+    print(f"  total partidos unicos SP1: {len(solos_sp1)} | pct_btts global: {round(solos_sp1['btts'].mean()*100,2)}% vs media liga {round(sp1['btts'].mean()*100,2)}%")
+else:
+    print("  no hay partidos con jornada de 1 en SP1")
+
+print("\n  cruce: dia x tipo de jornada (SP1):")
+cross = sp1.groupby(["day_name","tipo_jornada"]).agg(
+    partidos=("btts","count"),
+    pct_btts=("btts","mean"),
+    avg_goles=("total_goals","mean"),
+).round(3).reset_index()
+cross["pct_btts"]   = round(cross["pct_btts"]*100, 2)
+print_tabulate(cross)
 
 print("\n=== correlacion general ===")
-corr_cols = ["total_goals","FTHG","FTAG","AvgH","AvgA","AvgD",
-             "overround","odds_move_H","odds_move_A","imp_prob_H","imp_prob_A",
-             "btts","over25","clean_sheet_h","clean_sheet_a"]
+corr_cols = ["total_goals","FTHG","FTAG","ht_goals","second_half_goals",
+             "AvgH","AvgA","AvgD","overround","odds_move_H","odds_move_A",
+             "imp_prob_H","imp_prob_A","btts","over25","clean_sheet_h","clean_sheet_a"]
 print(round(df[corr_cols].corr(), 3))
 
-print("\n=== por mes (goles y resultados) ===")
-gm = df.groupby("month").agg(
-    partidos=("total_goals","count"), avg_total=("total_goals","mean"),
-    pct_H=("home_win","mean"), pct_D=("draw","mean"), pct_A=("away_win","mean"),
-    pct_btts=("btts","mean"), pct_over25=("over25","mean"),
-).round(3).reset_index()
-print_tabulate(gm)
-
+# ============================================================
+# GRAFICAS
+# ============================================================
 print("\n--- generando graficas ---")
 cmap = get_cmap(len(ligas) + 1)
 
 draw_er_diagram("img/er_diagram.png")
 
-scatter_group_by("img/odds_apertura_por_liga.png",    df, "AvgH",     "AvgA",     "Div")
-scatter_group_by("img/goles_local_vs_visitante.png",  df, "FTHG",     "FTAG",     "Div")
-scatter_group_by("img/odds_apertura_vs_cierre_H.png", df, "AvgH",     "AvgCH",    "Div")
-scatter_group_by("img/odds_apertura_vs_cierre_A.png", df, "AvgA",     "AvgCA",    "Div")
-scatter_group_by("img/implied_prob_H_vs_A.png",       df, "imp_prob_H","imp_prob_A","Div")
+scatter_group_by("img/odds_apertura_por_liga.png",    df, "AvgH",       "AvgA",       "Div")
+scatter_group_by("img/goles_local_vs_visitante.png",  df, "FTHG",       "FTAG",       "Div")
+scatter_group_by("img/odds_apertura_vs_cierre_H.png", df, "AvgH",       "AvgCH",      "Div")
+scatter_group_by("img/odds_apertura_vs_cierre_A.png", df, "AvgA",       "AvgCA",      "Div")
+scatter_group_by("img/implied_prob_H_vs_A.png",       df, "imp_prob_H", "imp_prob_A", "Div")
 scatter_group_by("img/movimiento_mercado.png",         df, "odds_move_H","odds_move_A","Div")
+scatter_group_by("img/ht_vs_ft_goles.png",            df, "ht_goals",   "total_goals","Div")
 
-# líneas temporada/liga
 for col, ylabel, fname in [
-    ("total_goals", "goles promedio",    "goles_por_temporada_y_liga"),
-    ("over25",      "% over 2.5",        "over25_por_temporada_y_liga"),
-    ("btts",        "% btts",            "btts_por_temporada_y_liga"),
-    ("home_win",    "% victoria local",  "pct_home_win_por_temporada_liga"),
-    ("clean_sheet_h","% clean sheet loc","clean_sheet_por_temporada_liga"),
+    ("total_goals",    "goles promedio",     "goles_por_temporada_y_liga"),
+    ("over25",         "% over 2.5",         "over25_por_temporada_y_liga"),
+    ("btts",           "% btts",             "btts_por_temporada_y_liga"),
+    ("home_win",       "% victoria local",   "pct_home_win_por_temporada_liga"),
+    ("clean_sheet_h",  "% clean sheet local","clean_sheet_por_temporada_liga"),
 ]:
     fig, ax = plt.subplots(figsize=(12, 6))
     for i, liga in enumerate(ligas):
         sub = df[df["Div"] == liga].groupby("Season")[col].mean()
-        if col in ("over25","btts","home_win","clean_sheet_h"):
+        if col != "total_goals":
             sub = sub * 100
         ax.plot(sub.index.astype(str), sub.values, marker="o", label=liga, color=cmap(i))
     ax.set_xlabel("temporada"); ax.set_ylabel(ylabel); ax.legend()
     plt.savefig(f"img/{fname}.png"); plt.close()
 
-# pies de resultados
 fig, axes = plt.subplots(1, 5, figsize=(20, 5))
 for i, liga in enumerate(ligas):
     sub = df[df["Div"] == liga]["FTR"].value_counts()
     axes[i].pie(sub.values, labels=sub.index, autopct="%1.1f%%"); axes[i].set_title(liga)
 plt.savefig("img/resultados_pie_por_liga.png"); plt.close()
 
-# barras btts/over/under/cs
 fig, ax = plt.subplots(figsize=(13, 5))
 x = np.arange(len(ligas)); w = 0.13
 for j, (mlabel, col) in enumerate([("btts","btts"),("over1.5","over15"),("over2.5","over25"),
@@ -561,31 +915,38 @@ for j, (mlabel, col) in enumerate([("btts","btts"),("over1.5","over15"),("over2.
 ax.set_xticks(x + w*2.5); ax.set_xticklabels(ligas); ax.set_ylabel("%"); ax.legend()
 plt.savefig("img/btts_over_under_cs_por_liga.png"); plt.close()
 
-# histogramas goles por liga
 fig, axes = plt.subplots(1, 5, figsize=(20, 5))
 for i, liga in enumerate(ligas):
     axes[i].hist(df[df["Div"]==liga]["total_goals"], bins=range(0,12), edgecolor="black", align="left")
     axes[i].set_title(liga); axes[i].set_xlabel("goles")
 plt.savefig("img/distribucion_goles_por_liga.png"); plt.close()
 
-# overround
 fig, ax = plt.subplots(figsize=(10, 5))
 for liga in ligas:
     ax.hist(df[df["Div"]==liga]["overround"], bins=40, alpha=0.5, label=liga)
 ax.set_xlabel("overround"); ax.legend()
 plt.savefig("img/overround_por_liga.png"); plt.close()
 
-# underdog gana vs pierde
 fig, ax = plt.subplots(figsize=(10, 5))
-ax.hist(df[(df["is_underdog_away"]==1)&(df["away_win"]==1)]["AvgA"], bins=30, alpha=0.6, label="underdog gana")
-ax.hist(df[(df["is_underdog_away"]==1)&(df["away_win"]==0)]["AvgA"], bins=30, alpha=0.6, label="underdog pierde")
+ax.hist(df[(df["is_underdog_away"]==1)&(df["away_win"]==1)]["AvgA"],  bins=30, alpha=0.6, label="underdog gana")
+ax.hist(df[(df["is_underdog_away"]==1)&(df["away_win"]==0)]["AvgA"],  bins=30, alpha=0.6, label="underdog pierde")
 ax.set_xlabel("AvgA"); ax.legend()
 plt.savefig("img/underdog_win_vs_lose.png"); plt.close()
 
-# goles totales
 fig, ax = plt.subplots(figsize=(10, 5))
 ax.hist(df["total_goals"], bins=range(0,15), edgecolor="black", align="left")
 ax.set_xlabel("goles en el partido"); ax.set_ylabel("frecuencia")
 plt.savefig("img/distribucion_goles_totales.png"); plt.close()
+
+fig, ax = plt.subplots(figsize=(11, 5))
+day_plot = day_stats.set_index("day_name").reindex([d for d in day_order if d in day_stats["day_name"].values])
+ax.bar(day_plot.index, day_plot["avg_goles"], color="#3498db", alpha=0.8)
+ax2 = ax.twinx()
+ax2.plot(day_plot.index, day_plot["pct_H"],      marker="o", color="#e74c3c", label="% H")
+ax2.plot(day_plot.index, day_plot["pct_over25"],  marker="s", color="#2ecc71", label="% over2.5")
+ax.set_ylabel("goles promedio"); ax2.set_ylabel("%"); ax2.legend(loc="upper right")
+plt.title("goles y resultados por dia de la semana")
+plt.tight_layout()
+plt.savefig("img/goles_por_dia_semana.png"); plt.close()
 
 print("guardadas imagenes en img/")

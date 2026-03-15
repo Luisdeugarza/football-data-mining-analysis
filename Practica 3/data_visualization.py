@@ -729,7 +729,7 @@ for liga in ligas:
     # boxplot de las tres cuotas para ver su dispersion
     ax02 = fig.add_subplot(gs[0, 2])
     ax02.boxplot([sub["AvgH"].dropna(), sub["AvgD"].dropna(), sub["AvgA"].dropna()],
-                 labels=["AvgH","AvgD","AvgA"], patch_artist=True,
+                 tick_labels=["AvgH","AvgD","AvgA"], patch_artist=True,
                  boxprops=dict(facecolor=LIGA_COLORS[liga], alpha=0.6))
     ax02.set_title("Distribucion cuotas", fontsize=9); ax02.set_ylabel("cuota")
 

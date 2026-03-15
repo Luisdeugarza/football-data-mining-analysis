@@ -1,3 +1,5 @@
+﻿import sys
+sys.stdout.reconfigure(encoding='utf-8')
 import pandas as pd
 from tabulate import tabulate
 import matplotlib
@@ -11,7 +13,7 @@ DAY_NAMES  = {0:"Lunes",1:"Martes",2:"Miercoles",3:"Jueves",4:"Viernes",5:"Sabad
 DAY_ORDER  = ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"]
 LIGAS_NAME = {"E0":"Premier League","SP1":"La Liga","D1":"Bundesliga","I1":"Serie A","F1":"Ligue 1"}
 
-# FUNCIONES AUXILIARES — ESTADISTICA DESCRIPTIVA
+# funciones auxiliares para estadistica descriptiva
 
 
 def print_tabulate(df: pd.DataFrame):
@@ -58,7 +60,7 @@ def stats_distribution(df: pd.DataFrame, col: str, bins: list) -> pd.DataFrame:
     freq["freq_acum"] = round(freq["freq_%"].cumsum(),2)
     return freq
 
-#  GOLES ---
+# goles
 
 def stats_goals(df) -> dict:
     return {
@@ -184,7 +186,7 @@ def stats_btts_profile(df: pd.DataFrame) -> pd.DataFrame:
         })
     return pd.DataFrame(rows)
 
-#  CUOTAS ---
+# cuotas
 
 def stats_odds_mode(df: pd.DataFrame) -> dict:
     """Moda y mediana de cuotas ganadoras (apertura y cierre) redondeadas a 1 decimal."""
@@ -265,7 +267,7 @@ def stats_win_rate_by_odd(df) -> pd.DataFrame:
         })
     return pd.DataFrame(rows)
 
-#  RESULTADOS / FLAGS / REMONTADAS --
+# resultados, flags y remontadas
 
 def stats_flags(df, goal_flags) -> dict:
     return {f: round(df[f].mean()*100,2) for f in goal_flags}
@@ -308,7 +310,7 @@ def stats_comeback_teams(df: pd.DataFrame) -> pd.DataFrame:
     r["total_choke"] = r["choke_loc"] + r["choke_vis"]
     return r[["equipo","total_cb","cb_loc","cb_vis","total_choke","choke_loc","choke_vis"]].sort_values("total_cb",ascending=False)
 
-#  UNDERDOGS / SMART MONEY -
+# underdogs y smart money
 
 def stats_underdogs(df) -> dict:
     ua=df[df["is_underdog_away"]==1]; uh=df[df["is_underdog_home"]==1]; ux=df[df["AvgA"]>8]
@@ -333,7 +335,7 @@ def stats_smart_money(df) -> dict:
         "sm_draw_n":   len(sd), "sm_draw_pct": round(sd["draw"].mean()*100,2)     if len(sd) else 0,
     }
 
-#  DIAS / JORNADA --
+# dias de la semana y jornada
 
 def stats_day_of_week(df: pd.DataFrame) -> pd.DataFrame:
     agg = df.groupby("day_name").agg(
@@ -390,7 +392,7 @@ def stats_month_season(df: pd.DataFrame) -> pd.DataFrame:
         agg[c]=round(agg[c]*100,2)
     return agg
 
-#  RACHAS --
+# rachas
 
 def stats_streak_effect(df: pd.DataFrame) -> pd.DataFrame:
     """Efecto de la racha del equipo local: cuantas victorias/derrotas consecutivas
@@ -426,7 +428,7 @@ def stats_streak_effect(df: pd.DataFrame) -> pd.DataFrame:
         agg[c]=round(agg[c]*100,2)
     return agg.reindex([o for o in order if o in agg.index]).reset_index()
 
-#  TABLA DE POSICIONES / SEGMENTOS -
+# tabla de posiciones y segmentos por rendimiento
 
 def calc_standings(df_sub) -> pd.DataFrame:
     home=df_sub.groupby("HomeTeam").apply(lambda x: pd.Series({
@@ -471,10 +473,10 @@ def top_scorers(df, col_team, col_goals, n=5) -> dict:
     t=df.groupby(col_team)[col_goals].sum().sort_values(ascending=False).head(n)
     return {k:int(v) for k,v in t.items()}
 
-#  GRAFICAS 
+# helpers para graficas
 
 
-#  MARCADORES EXACTOS --
+# marcadores exactos mas frecuentes
 
 def stats_exact_scores(df: pd.DataFrame, top_n=15) -> pd.DataFrame:
     """Top marcadores exactos mas frecuentes."""
@@ -600,7 +602,7 @@ def stats_goles_by_fav_profile(df: pd.DataFrame) -> pd.DataFrame:
         })
     return pd.DataFrame(rows)
 
-#  CUOTAS Y MERCADO EXTRA --
+# analisis extra de cuotas y comportamiento del mercado
 
 def stats_overround_vs_goals(df: pd.DataFrame) -> pd.DataFrame:
     """Overround bajo / medio / alto: correlacion con goles y resultados."""
@@ -873,7 +875,7 @@ def stats_value_betting(df: pd.DataFrame) -> pd.DataFrame:
         })
     return pd.DataFrame(rows)
 
-#  RACHAS DETALLADAS ---
+# rachas detalladas por equipo
 
 def stats_max_streaks_all(df: pd.DataFrame) -> pd.DataFrame:
     """Racha maxima de victorias, derrotas y empates por equipo (todo el periodo)."""
@@ -965,7 +967,960 @@ def stats_bad_streak_then_goleada(df: pd.DataFrame, min_bad=3, min_goals=4) -> p
     return pd.DataFrame(out_rows).sort_values(["equipo","fecha_goleada"]).reset_index(drop=True)
 
 
-#  BTTS SEGUN HT ---
+# rachas extendidas: version ampliada con mas categorias y contexto
+
+def _build_streak_sequence(df: pd.DataFrame) -> pd.DataFrame:
+    """Núcleo interno: para cada partido, calcula la racha previa de cada equipo
+    (victorias positivas, derrotas negativas, empate rompe racha a 0),
+    goles a favor/contra en el partido anterior, y si el anterior fue una goleada.
+    Devuelve df enriquecido con columnas prev_* para local y visitante."""
+    df2 = df.sort_values("Date").copy()
+
+    streak  = {}   # racha neta (vic>0, der<0)
+    prev_gf = {}   # goles marcados en el ultimo partido
+    prev_gc = {}   # goles recibidos en el ultimo partido
+    prev_res= {}   # resultado del ultimo partido ('W','L','D')
+
+    rows_h = []  # (partido_idx, racha_previa_local, prev_gf_h, prev_gc_h, prev_res_h)
+    rows_a = []  # idem visitante
+
+    for idx, row in df2.iterrows():
+        ht = row["HomeTeam"]; at = row["AwayTeam"]
+        for d in [streak, prev_gf, prev_gc, prev_res]:
+            d.setdefault(ht, 0); d.setdefault(at, 0)
+
+        rows_h.append({
+            "idx":           idx,
+            "prev_streak_h": streak[ht],
+            "prev_gf_h":     prev_gf[ht],
+            "prev_gc_h":     prev_gc[ht],
+            "prev_res_h":    prev_res[ht],
+        })
+        rows_a.append({
+            "idx":           idx,
+            "prev_streak_a": streak[at],
+            "prev_gf_a":     prev_gf[at],
+            "prev_gc_a":     prev_gc[at],
+            "prev_res_a":    prev_res[at],
+        })
+
+        # actualizar local
+        if row["FTR"] == "H":
+            streak[ht]  = max(streak[ht], 0) + 1
+            prev_res[ht]= "W"
+        elif row["FTR"] == "A":
+            streak[ht]  = min(streak[ht], 0) - 1
+            prev_res[ht]= "L"
+        else:
+            streak[ht]  = 0
+            prev_res[ht]= "D"
+        prev_gf[ht] = int(row["FTHG"]); prev_gc[ht] = int(row["FTAG"])
+
+        # actualizar visitante
+        if row["FTR"] == "A":
+            streak[at]  = max(streak[at], 0) + 1
+            prev_res[at]= "W"
+        elif row["FTR"] == "H":
+            streak[at]  = min(streak[at], 0) - 1
+            prev_res[at]= "L"
+        else:
+            streak[at]  = 0
+            prev_res[at]= "D"
+        prev_gf[at] = int(row["FTAG"]); prev_gc[at] = int(row["FTHG"])
+
+    ph = pd.DataFrame(rows_h).set_index("idx")
+    pa = pd.DataFrame(rows_a).set_index("idx")
+    df2 = df2.join(ph).join(pa)
+    return df2
+
+
+def stats_bad_streak_analysis(df: pd.DataFrame) -> pd.DataFrame:
+    """Análisis estadístico del fenómeno 'racha mala → qué pasa'.
+    Agrupa partidos por la racha previa del equipo local (o visitante)
+    y muestra: avg goles a favor/contra, % victoria, % goleada (4+ GF), % clean sheet.
+    Responde: ¿los equipos en mala racha atacan más? ¿defienden peor?"""
+    df2 = _build_streak_sequence(df)
+
+    # Análisis desde perspectiva del local
+    cats = [
+        ("3+der", df2["prev_streak_h"] <= -3),
+        ("2der",  df2["prev_streak_h"] == -2),
+        ("1der",  df2["prev_streak_h"] == -1),
+        ("neutro",df2["prev_streak_h"] == 0),
+        ("1vic",  df2["prev_streak_h"] == 1),
+        ("2vic",  df2["prev_streak_h"] == 2),
+        ("3+vic", df2["prev_streak_h"] >= 3),
+    ]
+    rows = []
+    for lbl, mask in cats:
+        sub = df2[mask]
+        if len(sub) < 5: continue
+        rows.append({
+            "racha_previa_local": lbl,
+            "partidos":           len(sub),
+            "avg_gf_local":       round(sub["FTHG"].mean(), 3),
+            "avg_gc_local":       round(sub["FTAG"].mean(), 3),
+            "avg_goles_total":    round(sub["total_goals"].mean(), 3),
+            "pct_vic_local":      round(sub["home_win"].mean() * 100, 2),
+            "pct_der_local":      round(sub["away_win"].mean() * 100, 2),
+            "pct_empate":         round(sub["draw"].mean() * 100, 2),
+            "pct_goleada_local":  round((sub["FTHG"] >= 4).mean() * 100, 2),   # golea 4+
+            "pct_cs_local":       round(sub["clean_sheet_h"].mean() * 100, 2), # no recibe
+            "pct_btts":           round(sub["btts"].mean() * 100, 2),
+            "pct_over25":         round(sub["over25"].mean() * 100, 2),
+            "avg_AvgH":           round(sub["AvgH"].mean(), 3),  # ¿ajusta el mercado?
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_streak_momentum(df: pd.DataFrame) -> pd.DataFrame:
+    """'Momentum': ¿qué pasa en el partido inmediatamente después de
+    una victoria goleadora (4+ goles) vs una derrota goleadora (recibe 4+)?
+    Categorías del partido previo:
+      - goleada_a_favor:  marcó 4+ y ganó
+      - goleada_recibida: recibió 4+ y perdió
+      - victoria_normal:  ganó marcando 1-3
+      - derrota_normal:   perdió recibiendo 1-3
+      - empate:           empató
+    """
+    df2 = _build_streak_sequence(df)
+
+    def cat_prev(res, gf, gc):
+        if res == "W":
+            return "goleada_favor" if gf >= 4 else "victoria_normal"
+        elif res == "L":
+            return "goleada_recibida" if gc >= 4 else "derrota_normal"
+        return "empate"
+
+    # Perspectiva local
+    df2["cat_prev_h"] = df2.apply(
+        lambda r: cat_prev(r["prev_res_h"], r["prev_gf_h"], r["prev_gc_h"]), axis=1)
+
+    rows = []
+    order = ["goleada_favor","victoria_normal","empate","derrota_normal","goleada_recibida"]
+    for cat in order:
+        sub = df2[df2["cat_prev_h"] == cat]
+        if len(sub) < 5: continue
+        rows.append({
+            "partido_anterior_local": cat,
+            "partidos":         len(sub),
+            "pct_vic_local":    round(sub["home_win"].mean() * 100, 2),
+            "pct_empate":       round(sub["draw"].mean() * 100, 2),
+            "pct_der_local":    round(sub["away_win"].mean() * 100, 2),
+            "avg_gf_hoy":       round(sub["FTHG"].mean(), 3),
+            "avg_gc_hoy":       round(sub["FTAG"].mean(), 3),
+            "pct_btts":         round(sub["btts"].mean() * 100, 2),
+            "pct_over25":       round(sub["over25"].mean() * 100, 2),
+            "pct_cs_local":     round(sub["clean_sheet_h"].mean() * 100, 2),
+            "avg_AvgH":         round(sub["AvgH"].mean(), 3),
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_bad_streak_explosion_deep(df: pd.DataFrame,
+                                     min_bad: int = 2,
+                                     min_goles_goleada: int = 3) -> dict:
+    """Versión profunda del fenómeno que observaste:
+    'racha mala → goleada → siguiente partido'.
+    Calcula tasas agregadas y también las separa por si la goleada
+    fue como LOCAL o como VISITANTE, y por intensidad de la racha.
+
+    Retorna:
+      - resumen global
+      - tabla por intensidad de racha (2, 3, 4+ partidos malos)
+      - tabla: resultado del partido SIGUIENTE a la goleada
+      - tasa de pérdida en el siguiente vs la media normal del equipo
+    """
+    df2 = _build_streak_sequence(df)
+
+    # Partidos donde el equipo (local o visitante) venía de racha mala
+    # y en ESE partido golea (marca min_goles_goleada+)
+    events = []
+
+    for _, row in df2.iterrows():
+        for side, streak_col, gf_col, gc_col, team_col in [
+            ("H", "prev_streak_h", "FTHG", "FTAG", "HomeTeam"),
+            ("A", "prev_streak_a", "FTAG", "FTHG", "AwayTeam"),
+        ]:
+            streak_prev = row[streak_col]
+            gf = row[gf_col]
+            gc = row[gc_col]
+            won = row["FTR"] == side
+
+            if streak_prev <= -min_bad and won and gf >= min_goles_goleada:
+                events.append({
+                    "equipo":        row[team_col],
+                    "liga":          row["Div"],
+                    "fecha":         row["Date"],
+                    "lado":          side,
+                    "racha_previa":  streak_prev,
+                    "gf_goleada":    gf,
+                    "gc_goleada":    gc,
+                    "rival":         row["AwayTeam"] if side=="H" else row["HomeTeam"],
+                })
+
+    if not events:
+        return {"sin_eventos": True}
+
+    ev_df = pd.DataFrame(events)
+
+    # Buscar partido siguiente para cada evento
+    df_sorted = df2.sort_values("Date")
+    next_results = []
+    for _, ev in ev_df.iterrows():
+        team = ev["equipo"]; fecha = ev["fecha"]
+        next_g = df_sorted[
+            ((df_sorted["HomeTeam"] == team) | (df_sorted["AwayTeam"] == team)) &
+            (df_sorted["Date"] > fecha)
+        ].head(1)
+        if next_g.empty: continue
+        ng = next_g.iloc[0]
+        side_next = "H" if ng["HomeTeam"] == team else "A"
+        ftr = ng["FTR"]
+        won_n  = ftr == side_next
+        lost_n = (ftr == "H" and side_next == "A") or (ftr == "A" and side_next == "H")
+        gf_n   = int(ng["FTHG"] if side_next == "H" else ng["FTAG"])
+        gc_n   = int(ng["FTAG"] if side_next == "H" else ng["FTHG"])
+        next_results.append({
+            "equipo":           team,
+            "liga":             ev["liga"],
+            "racha_previa":     ev["racha_previa"],
+            "gf_goleada":       ev["gf_goleada"],
+            "lado_goleada":     ev["lado"],
+            "resultado_sig":    ftr,
+            "lado_sig":         side_next,
+            "gano_sig":         int(won_n),
+            "perdio_sig":       int(lost_n),
+            "empato_sig":       int(ftr == "D"),
+            "gf_sig":           gf_n,
+            "gc_sig":           gc_n,
+            "goleada_sig":      int(gf_n >= min_goles_goleada),  # repite goleada?
+        })
+
+    if not next_results:
+        return {"sin_siguiente": True}
+
+    nr = pd.DataFrame(next_results)
+    total = len(nr)
+
+    # Tasa global de victorias en cualquier partido (baseline)
+    baseline_h = df["home_win"].mean()
+    baseline_vic = (df["home_win"].mean() + df["away_win"].mean()) / 2  # aprox 50/50 no sirve
+    # mejor baseline: % victorias en el partido INMEDIATAMENTE después de cualquier victoria
+    df2_any_win = df2[
+        ((df2["prev_res_h"] == "W") | (df2["prev_res_a"] == "W"))
+    ]
+    baseline_next_win = df2_any_win["home_win"].mean() if len(df2_any_win) > 0 else None
+
+    # Tabla por intensidad de racha previa
+    rows_int = []
+    for umb, lbl in [(-2, "racha_2der"), (-3, "racha_3der"), (-4, "racha_4+der")]:
+        sub = nr[nr["racha_previa"] <= umb]
+        if len(sub) < 3: continue
+        rows_int.append({
+            "grupo":        lbl,
+            "eventos":      len(sub),
+            "pct_gana_sig": round(sub["gano_sig"].mean() * 100, 2),
+            "pct_pierde_sig":round(sub["perdio_sig"].mean() * 100, 2),
+            "pct_empata_sig":round(sub["empato_sig"].mean() * 100, 2),
+            "avg_gf_sig":   round(sub["gf_sig"].mean(), 3),
+            "avg_gc_sig":   round(sub["gc_sig"].mean(), 3),
+            "pct_repite_goleada": round(sub["goleada_sig"].mean() * 100, 2),
+        })
+
+    return {
+        "total_eventos":       total,
+        "min_racha_requerida": min_bad,
+        "min_goles_goleada":   min_goles_goleada,
+        "pct_gana_siguiente":  round(nr["gano_sig"].mean() * 100, 2),
+        "pct_pierde_siguiente":round(nr["perdio_sig"].mean() * 100, 2),
+        "pct_empata_siguiente":round(nr["empato_sig"].mean() * 100, 2),
+        "avg_gf_siguiente":    round(nr["gf_sig"].mean(), 3),
+        "avg_gc_siguiente":    round(nr["gc_sig"].mean(), 3),
+        "pct_repite_goleada":  round(nr["goleada_sig"].mean() * 100, 2),
+        "baseline_pct_vic_tras_cualquier_victoria": round(baseline_h * 100, 2),
+        "tabla_por_intensidad": pd.DataFrame(rows_int),
+        "detalle":             nr,
+    }
+
+
+def stats_streak_goals_pattern(df: pd.DataFrame) -> pd.DataFrame:
+    """Para cada posible racha previa del equipo local (-5 a +5),
+    muestra avg goles marcados, recibidos, total, y si hay patrón
+    de 'hambre' (racha mala → más goles) o 'relajación' (racha buena → menos goles)."""
+    df2 = _build_streak_sequence(df)
+    rows = []
+    for val in range(-5, 6):
+        if val < 0:
+            mask = df2["prev_streak_h"] == val
+        elif val > 0:
+            mask = df2["prev_streak_h"] == val
+        else:
+            mask = df2["prev_streak_h"] == 0
+        sub = df2[mask]
+        if len(sub) < 10: continue
+        rows.append({
+            "racha_prev": val,
+            "lbl":        f"{val:+d}" if val != 0 else "0",
+            "partidos":   len(sub),
+            "avg_gf":     round(sub["FTHG"].mean(), 3),
+            "avg_gc":     round(sub["FTAG"].mean(), 3),
+            "avg_total":  round(sub["total_goals"].mean(), 3),
+            "pct_H":      round(sub["home_win"].mean() * 100, 2),
+            "pct_D":      round(sub["draw"].mean() * 100, 2),
+            "pct_A":      round(sub["away_win"].mean() * 100, 2),
+            "pct_btts":   round(sub["btts"].mean() * 100, 2),
+            "pct_over25": round(sub["over25"].mean() * 100, 2),
+            "pct_goleada_h": round((sub["FTHG"] >= 4).mean() * 100, 2),
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_rebound_after_loss(df: pd.DataFrame) -> pd.DataFrame:
+    """Rebote después de una derrota: ¿el partido siguiente es mejor o peor?
+    Clasifica según cuántos goles se recibieron en la derrota:
+      - derrota_minima:  perdió 0-1 o 1-2 (gc-gf = 1)
+      - derrota_clara:   gc-gf = 2
+      - goleada_recibida: gc-gf >= 3
+    Y para cada grupo muestra qué pasa en el siguiente partido."""
+    df2 = _build_streak_sequence(df)
+
+    def cat_derrota(res, gf, gc):
+        if res != "L": return None
+        diff = gc - gf
+        if diff == 1: return "derrota_minima (1 gol)"
+        if diff == 2: return "derrota_clara (2 goles)"
+        return "goleada_recibida (3+)"
+
+    df2["cat_derrota_prev"] = df2.apply(
+        lambda r: cat_derrota(r["prev_res_h"], r["prev_gf_h"], r["prev_gc_h"]), axis=1)
+
+    rows = []
+    for cat in ["derrota_minima (1 gol)", "derrota_clara (2 goles)", "goleada_recibida (3+)"]:
+        sub = df2[df2["cat_derrota_prev"] == cat]
+        if len(sub) < 5: continue
+        rows.append({
+            "derrota_previa":  cat,
+            "partidos":        len(sub),
+            "pct_rebote_vic":  round(sub["home_win"].mean() * 100, 2),
+            "pct_empate":      round(sub["draw"].mean() * 100, 2),
+            "pct_sigue_perdiendo": round(sub["away_win"].mean() * 100, 2),
+            "avg_gf":          round(sub["FTHG"].mean(), 3),
+            "avg_gc":          round(sub["FTAG"].mean(), 3),
+            "pct_btts":        round(sub["btts"].mean() * 100, 2),
+            "pct_over25":      round(sub["over25"].mean() * 100, 2),
+            "avg_AvgH":        round(sub["AvgH"].mean(), 3),
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_winning_streak_end(df: pd.DataFrame) -> pd.DataFrame:
+    """¿Cómo se rompen las rachas buenas? Cuando un equipo lleva N victorias
+    consecutivas, ¿cómo pierde o empata?
+    Analiza el partido que ROMPE la racha ganadora por longitud de la racha."""
+    df2 = _build_streak_sequence(df)
+
+    rows = []
+    for umb, lbl in [(2,"tras 2vic"), (3,"tras 3vic"), (4,"tras 4vic"), (5,"tras 5+vic")]:
+        if umb == 5:
+            mask = (df2["prev_streak_h"] >= 5) & (df2["home_win"] == 0)
+        else:
+            mask = (df2["prev_streak_h"] == umb) & (df2["home_win"] == 0)
+        sub = df2[mask]
+        if len(sub) < 5: continue
+        rows.append({
+            "racha_rota":          lbl,
+            "partidos":            len(sub),
+            "pct_empate":          round(sub["draw"].mean() * 100, 2),
+            "pct_derrota":         round(sub["away_win"].mean() * 100, 2),
+            "avg_gf_en_derrota":   round(sub["FTHG"].mean(), 3),
+            "avg_gc_en_derrota":   round(sub["FTAG"].mean(), 3),
+            "pct_cs_roto":         round(sub["clean_sheet_h"].mean() * 100, 2),
+            "pct_btts":            round(sub["btts"].mean() * 100, 2),
+            "avg_AvgH":            round(sub["AvgH"].mean(), 3),
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_streak_by_team(df: pd.DataFrame, top_n: int = 20) -> pd.DataFrame:
+    """Por equipo: % de victorias según racha previa buena vs mala.
+    Detecta qué equipos reaccionan mejor tras una mala racha (alta tasa de rebote)
+    y qué equipos se 'caen' más cuando van en racha buena."""
+    df2 = _build_streak_sequence(df)
+    equipos = set(df["HomeTeam"].unique()) | set(df["AwayTeam"].unique())
+    rows = []
+    for team in equipos:
+        # partidos como local
+        sub = df2[df2["HomeTeam"] == team]
+        if len(sub) < 20: continue
+        malo = sub[sub["prev_streak_h"] <= -2]
+        bueno = sub[sub["prev_streak_h"] >= 2]
+        neutro = sub[sub["prev_streak_h"].between(-1, 1)]
+        rows.append({
+            "equipo":             team,
+            "pj_local":           len(sub),
+            "pct_vic_tras_mala":  round(malo["home_win"].mean() * 100, 2) if len(malo) >= 3 else None,
+            "n_tras_mala":        len(malo),
+            "pct_vic_tras_buena": round(bueno["home_win"].mean() * 100, 2) if len(bueno) >= 3 else None,
+            "n_tras_buena":       len(bueno),
+            "pct_vic_neutro":     round(neutro["home_win"].mean() * 100, 2) if len(neutro) >= 3 else None,
+            "avg_gf_tras_mala":   round(malo["FTHG"].mean(), 3) if len(malo) >= 3 else None,
+            "avg_gf_tras_buena":  round(bueno["FTHG"].mean(), 3) if len(bueno) >= 3 else None,
+        })
+    df_out = pd.DataFrame(rows).dropna(subset=["pct_vic_tras_mala","pct_vic_tras_buena"])
+    df_out["rebote"] = round(df_out["pct_vic_tras_mala"] - df_out["pct_vic_neutro"], 2)
+    df_out["caida"]  = round(df_out["pct_vic_tras_buena"] - df_out["pct_vic_neutro"], 2)
+    return df_out.sort_values("rebote", ascending=False).head(top_n).reset_index(drop=True)
+
+
+def stats_draw_streak_effect(df: pd.DataFrame) -> pd.DataFrame:
+    """¿Qué pasa después de N empates consecutivos?
+    Equipos que encadenan empates tienden a 'romper' con una victoria o derrota contundente."""
+    df2 = df.sort_values("Date").copy()
+    emp_streak = {}
+    prev_emp = []
+    for _, row in df2.iterrows():
+        for team, side in [(row["HomeTeam"],"H"), (row["AwayTeam"],"A")]:
+            emp_streak.setdefault(team, 0)
+        prev_emp.append(emp_streak[row["HomeTeam"]])
+        # actualizar
+        for team, side in [(row["HomeTeam"],"H"), (row["AwayTeam"],"A")]:
+            if row["FTR"] == "D":
+                emp_streak[team] += 1
+            else:
+                emp_streak[team] = 0
+
+    df2["prev_emp_streak_h"] = prev_emp
+    rows = []
+    for n in range(0, 5):
+        sub = df2[df2["prev_emp_streak_h"] == n]
+        if len(sub) < 5: continue
+        rows.append({
+            "empates_previos_local": n,
+            "partidos":         len(sub),
+            "pct_H":            round(sub["home_win"].mean() * 100, 2),
+            "pct_D":            round(sub["draw"].mean() * 100, 2),
+            "pct_A":            round(sub["away_win"].mean() * 100, 2),
+            "avg_goles":        round(sub["total_goals"].mean(), 3),
+            "pct_btts":         round(sub["btts"].mean() * 100, 2),
+            "pct_over25":       round(sub["over25"].mean() * 100, 2),
+        })
+    return pd.DataFrame(rows)
+
+
+
+# motor generico de rachas binarias
+# funciona para cualquier columna 0/1: over25, btts, under25, gol_ht, over35, goalless...
+
+def _binary_streaks_per_match(df: pd.DataFrame, flag: str) -> pd.DataFrame:
+    """Calcula, partido a partido (ordenados por fecha), la racha
+    consecutiva previa de flag=1 y la racha consecutiva previa de flag=0.
+    Devuelve df enriquecido con:
+      streak_on  : cuántos partidos seguidos con flag=1 antes de este
+      streak_off : cuántos partidos seguidos con flag=0 antes de este
+    (Se calculan a nivel de partido, no de equipo — son rachas del dataset
+    completo filtrado, útil para tendencias de mercado y de liga.)"""
+    df2 = df.sort_values("Date").copy()
+    on_cur = 0; off_cur = 0
+    ons = []; offs = []
+    for val in df2[flag]:
+        ons.append(on_cur); offs.append(off_cur)
+        if val == 1:
+            on_cur += 1; off_cur = 0
+        else:
+            off_cur += 1; on_cur = 0
+    df2["streak_on"]  = ons
+    df2["streak_off"] = offs
+    return df2
+
+
+def _binary_streaks_per_team(df: pd.DataFrame, flag: str) -> pd.DataFrame:
+    """Igual que _binary_streaks_per_match pero lleva racha independiente
+    por equipo (local+visitante combinados en orden cronológico).
+    Devuelve df con:
+      team_streak_on_h  / team_streak_off_h  (perspectiva del local)
+      team_streak_on_a  / team_streak_off_a  (perspectiva del visitante)
+    """
+    df2 = df.sort_values("Date").copy()
+
+    # Para el flag hay que saber el valor del partido para cada equipo.
+    # Usamos el flag tal cual (aplica al partido, no al equipo individual).
+    on_h = {}; off_h = {}
+    on_a = {}; off_a = {}
+
+    ts_on_h = []; ts_off_h = []
+    ts_on_a = []; ts_off_a = []
+
+    for _, row in df2.iterrows():
+        ht = row["HomeTeam"]; at = row["AwayTeam"]
+        val = int(row[flag])
+
+        for d in [on_h, off_h, on_a, off_a]:
+            d.setdefault(ht, 0); d.setdefault(at, 0)
+
+        ts_on_h.append(on_h[ht]);  ts_off_h.append(off_h[ht])
+        ts_on_a.append(on_a[at]);  ts_off_a.append(off_a[at])
+
+        # actualizar local
+        if val == 1:
+            on_h[ht] += 1; off_h[ht] = 0
+            on_a[at] += 1; off_a[at] = 0
+        else:
+            off_h[ht] += 1; on_h[ht] = 0
+            off_a[at] += 1; on_a[at] = 0
+
+    df2["team_streak_on_h"]  = ts_on_h
+    df2["team_streak_off_h"] = ts_off_h
+    df2["team_streak_on_a"]  = ts_on_a
+    df2["team_streak_off_a"] = ts_off_a
+    return df2
+
+
+# tabla 1: distribucion de longitud de rachas (cuanto duran en promedio)
+
+def streak_length_distribution(df: pd.DataFrame, flag: str, label: str) -> pd.DataFrame:
+    """¿Cuánto duran las rachas de flag=1 y de flag=0?
+    Devuelve tabla con longitud 1,2,3,4,5,6+ y su frecuencia."""
+    df2 = df.sort_values("Date").copy()
+    vals = df2[flag].tolist()
+    # calcular longitudes de rachas
+    runs_on = []; runs_off = []
+    cur_val = vals[0]; cur_len = 1
+    for v in vals[1:]:
+        if v == cur_val:
+            cur_len += 1
+        else:
+            if cur_val == 1: runs_on.append(cur_len)
+            else:            runs_off.append(cur_len)
+            cur_val = v; cur_len = 1
+    if cur_val == 1: runs_on.append(cur_len)
+    else:            runs_off.append(cur_len)
+
+    rows = []
+    for tipo, runs in [("racha_ON (flag=1)", runs_on), ("racha_OFF (flag=0)", runs_off)]:
+        total = len(runs)
+        if total == 0: continue
+        for n in range(1, 8):
+            cnt = sum(1 for r in runs if (r == n if n < 7 else r >= 7))
+            rows.append({
+                "flag":          label,
+                "tipo":          tipo,
+                "longitud":      f"{n}" if n < 7 else "7+",
+                "rachas":        cnt,
+                "pct_rachas":    round(cnt / total * 100, 2),
+                "avg_longitud":  round(sum(runs) / total, 2),
+                "max_longitud":  max(runs),
+                "median":        round(float(pd.Series(runs).median()), 1),
+            })
+    return pd.DataFrame(rows)
+
+
+# tabla 2: que pasa despues de una racha larga
+
+def streak_after_effect(df: pd.DataFrame, flag: str, label: str,
+                         outcome_cols: list = None) -> pd.DataFrame:
+    """Tras N partidos consecutivos con flag=1 (o flag=0),
+    ¿qué probabilidad hay de que el SIGUIENTE partido también cumpla el flag?
+    outcome_cols: columnas extra para calcular su media en cada grupo."""
+    if outcome_cols is None:
+        outcome_cols = ["total_goals", "btts", "over25", "home_win", "draw"]
+
+    df2 = _binary_streaks_per_match(df, flag)
+    rows = []
+
+    for src, streak_col, lbl_src in [
+        ("tras_racha_ON",  "streak_on",  f"tras N seguidos CON {label}"),
+        ("tras_racha_OFF", "streak_off", f"tras N seguidos SIN {label}"),
+    ]:
+        for n in range(0, 8):
+            sub = df2[df2[streak_col] == n] if n < 7 else df2[df2[streak_col] >= 7]
+            if len(sub) < 5: continue
+            row = {
+                "flag":          label,
+                "situacion":     lbl_src,
+                "racha_previa":  n if n < 7 else "7+",
+                "partidos":      len(sub),
+                f"pct_{flag}":   round(sub[flag].mean() * 100, 2),
+            }
+            for col in outcome_cols:
+                if col in sub.columns:
+                    row[f"avg_{col}"] = round(sub[col].mean() * 100 if sub[col].max() <= 1
+                                              else sub[col].mean(), 3)
+            rows.append(row)
+    return pd.DataFrame(rows)
+
+
+# tabla 3: rachas maximas por equipo
+
+def streak_max_by_team(df: pd.DataFrame, flag: str, label: str,
+                        min_pj: int = 20, top_n: int = 15) -> pd.DataFrame:
+    """Para cada equipo, calcula su racha máxima de flag=1 y de flag=0
+    (en partidos donde participó, como local o visitante)."""
+    equipos = set(df["HomeTeam"].unique()) | set(df["AwayTeam"].unique())
+    rows = []
+    df2 = df.sort_values("Date")
+    for team in equipos:
+        sub = df2[(df2["HomeTeam"] == team) | (df2["AwayTeam"] == team)]
+        if len(sub) < min_pj: continue
+        vals = sub[flag].tolist()
+        max_on = 0; max_off = 0; cur_on = 0; cur_off = 0
+        for v in vals:
+            if v == 1:
+                cur_on += 1; cur_off = 0
+                max_on = max(max_on, cur_on)
+            else:
+                cur_off += 1; cur_on = 0
+                max_off = max(max_off, cur_off)
+        rows.append({
+            "equipo":        team,
+            "pj":            len(sub),
+            f"max_racha_{label}_ON":  max_on,
+            f"max_racha_{label}_OFF": max_off,
+            f"pct_{label}":  round(sub[flag].mean() * 100, 2),
+        })
+    df_out = pd.DataFrame(rows)
+    return df_out.sort_values(f"max_racha_{label}_ON", ascending=False).head(top_n).reset_index(drop=True)
+
+
+# tabla 4: rachas maximas por liga
+
+def streak_max_by_league(df: pd.DataFrame, flag: str, label: str) -> pd.DataFrame:
+    """Racha máxima histórica de flag=1 y flag=0 por liga."""
+    rows = []
+    for liga in sorted(df["Div"].unique()):
+        sub = df[df["Div"] == liga].sort_values("Date")
+        vals = sub[flag].tolist()
+        max_on = 0; max_off = 0; cur_on = 0; cur_off = 0
+        for v in vals:
+            if v == 1:
+                cur_on += 1; cur_off = 0; max_on = max(max_on, cur_on)
+            else:
+                cur_off += 1; cur_on = 0; max_off = max(max_off, cur_off)
+        rows.append({
+            "liga":                    liga,
+            f"max_racha_{label}_ON":  max_on,
+            f"max_racha_{label}_OFF": max_off,
+            f"pct_{label}":           round(sub[flag].mean() * 100, 2),
+            "partidos":               len(sub),
+        })
+    return pd.DataFrame(rows)
+
+
+# tabla 5: estado actual de la racha al cierre del dataset
+
+def streak_current_state(df: pd.DataFrame, flag: str, label: str) -> pd.DataFrame:
+    """¿En qué racha termina cada liga/equipo al final del dataset?
+    Útil para saber si actualmente hay una racha larga activa."""
+    df2 = df.sort_values("Date")
+    rows = []
+    for liga in sorted(df2["Div"].unique()):
+        sub = df2[df2["Div"] == liga]
+        vals = sub[flag].tolist()
+        cur = 0; last = vals[-1] if vals else 0
+        for v in reversed(vals):
+            if v == last: cur += 1
+            else: break
+        rows.append({
+            "liga":           liga,
+            "estado_actual":  f"ON ({label})" if last == 1 else f"OFF (no {label})",
+            "partidos_activos": cur,
+            "ultimo_partido": sub["Date"].max(),
+        })
+    return pd.DataFrame(rows)
+
+
+# tabla 6: cuotas altas que terminaron ganando, con su racha
+
+def _add_high_odd_flags(df: pd.DataFrame) -> pd.DataFrame:
+    """Agrega flags de cuota alta ganadora para distintos umbrales."""
+    df2 = df.copy()
+    for umb in [3.0, 4.0, 5.0, 6.0]:
+        col = f"high_odd_{str(umb).replace('.','')}_win"
+        # cuota alta ganadora: local >umb y gana local, O visitante >umb y gana visitante
+        df2[col] = (
+            ((df2["AvgH"] >= umb) & (df2["FTR"] == "H")) |
+            ((df2["AvgA"] >= umb) & (df2["FTR"] == "A"))
+        ).astype(int)
+    # cuota de empate alta (>3.5) y sale empate
+    df2["high_draw_win"] = ((df2["AvgD"] >= 3.5) & (df2["FTR"] == "D")).astype(int)
+    # cuota local extrema (>5) y gana local
+    df2["extreme_upset"] = ((df2["AvgH"] >= 5.0) & (df2["FTR"] == "H")).astype(int)
+    # doble cuota alta: ambas >2.5
+    df2["balanced_high"] = ((df2["AvgH"] >= 2.5) & (df2["AvgA"] >= 2.5)).astype(int)
+    return df2
+
+
+# tabla 7: flags de goles en primer y segundo tiempo
+
+def _add_half_flags(df: pd.DataFrame) -> pd.DataFrame:
+    """Flags de over/under y btts para primer y segundo tiempo por separado."""
+    df2 = df.copy()
+    # primer tiempo
+    df2["gol_ht"]       = (df2["ht_goals"] >= 1).astype(int)
+    df2["over15_ht"]    = (df2["ht_goals"] >= 2).astype(int)
+    df2["under05_ht"]   = (df2["ht_goals"] == 0).astype(int)
+    df2["under15_ht"]   = (df2["ht_goals"] <= 1).astype(int)
+    df2["btts_ht"]      = ((df2["HTHG"] > 0) & (df2["HTAG"] > 0)).astype(int)
+    df2["no_btts_ht"]   = (1 - df2["btts_ht"])
+    # segundo tiempo
+    df2["gol_st"]       = (df2["second_half_goals"] >= 1).astype(int)
+    df2["over15_st"]    = (df2["second_half_goals"] >= 2).astype(int)
+    df2["over25_st"]    = (df2["second_half_goals"] >= 3).astype(int)
+    df2["under05_st"]   = (df2["second_half_goals"] == 0).astype(int)
+    df2["under15_st"]   = (df2["second_half_goals"] <= 1).astype(int)
+    df2["btts_st"]      = ((df2["FTHG"] - df2["HTHG"] > 0) & (df2["FTAG"] - df2["HTAG"] > 0)).astype(int)
+    df2["no_btts_st"]   = (1 - df2["btts_st"])
+    # global extras
+    df2["no_btts"]      = (1 - df2["btts"])
+    df2["no_goalless"]  = (1 - df2["goalless"])
+    df2["st_mas_ht"]    = (df2["second_half_goals"] > df2["ht_goals"]).astype(int)
+    df2["st_igual_ht"]  = (df2["second_half_goals"] == df2["ht_goals"]).astype(int)
+    return df2
+
+
+# funcion principal que ejecuta todos los analisis de rachas
+
+def run_all_binary_streaks(df: pd.DataFrame) -> dict:
+    """Ejecuta el análisis completo de rachas para todos los flags definidos.
+    Devuelve un dict con claves = nombre del flag, valor = dict de tablas."""
+
+    df2 = _add_high_odd_flags(_add_half_flags(df))
+
+    # Catálogo de flags a analizar
+    FLAGS = [
+        # resultados FT
+        ("over25",       "over2.5_FT"),
+        ("over35",       "over3.5_FT"),
+        ("over15",       "over1.5_FT"),
+        ("over45",       "over4.5_FT"),
+        ("under25",      "under2.5_FT"),
+        ("under15",      "under1.5_FT"),
+        ("btts",         "btts_FT"),
+        ("no_btts",      "no_btts_FT"),
+        ("goalless",     "0-0_FT"),
+        ("high_scoring", "5+goles_FT"),
+        ("home_win",     "victoria_local"),
+        ("away_win",     "victoria_visita"),
+        ("draw",         "empate"),
+        # primer tiempo
+        ("gol_ht",       "gol_en_HT"),
+        ("under05_ht",   "0goles_HT"),
+        ("under15_ht",   "under1.5_HT"),
+        ("over15_ht",    "over1.5_HT"),
+        ("btts_ht",      "btts_HT"),
+        ("no_btts_ht",   "no_btts_HT"),
+        # segundo tiempo
+        ("gol_st",       "gol_en_ST"),
+        ("under05_st",   "0goles_ST"),
+        ("under15_st",   "under1.5_ST"),
+        ("over15_st",    "over1.5_ST"),
+        ("over25_st",    "over2.5_ST"),
+        ("btts_st",      "btts_ST"),
+        ("no_btts_st",   "no_btts_ST"),
+        ("st_mas_ht",    "ST_supera_HT"),
+        # cuotas altas
+        ("high_odd_30_win",  "cuota_alta_30+_gana"),
+        ("high_odd_40_win",  "cuota_alta_40+_gana"),
+        ("high_odd_50_win",  "cuota_alta_50+_gana"),
+        ("high_odd_60_win",  "cuota_alta_60+_gana"),
+        ("high_draw_win",    "empate_cuota_alta"),
+        ("extreme_upset",    "sorpresa_extrema"),
+        ("balanced_high",    "partido_abierto"),
+        # clean sheets
+        ("clean_sheet_h",    "cs_local"),
+        ("clean_sheet_a",    "cs_visita"),
+    ]
+
+    outcome_cols = ["total_goals", "btts", "over25", "home_win", "draw", "goalless"]
+    results = {}
+
+    for flag, label in FLAGS:
+        if flag not in df2.columns:
+            continue
+        results[flag] = {
+            "label":        label,
+            "distribucion": streak_length_distribution(df2, flag, label),
+            "efecto":       streak_after_effect(df2, flag, label, outcome_cols),
+            "max_equipo":   streak_max_by_team(df2, flag, label),
+            "max_liga":     streak_max_by_league(df2, flag, label),
+            "estado_vivo":  streak_current_state(df2, flag, label),
+        }
+
+    return results, df2   # devuelve df2 con todos los flags extra
+
+
+def print_binary_streak_report(results: dict, flags_to_print: list = None) -> None:
+    """Imprime el reporte completo de rachas binarias.
+    flags_to_print: lista de claves a imprimir (None = todas)."""
+    if flags_to_print is None:
+        flags_to_print = list(results.keys())
+
+    for flag in flags_to_print:
+        if flag not in results: continue
+        r = results[flag]
+        lbl = r["label"]
+        sep = "─" * 60
+
+        print(f"\n{sep}")
+        print(f"  RACHA: {lbl.upper()}")
+        print(f"{sep}")
+
+        print(f"\n  [distribución de longitud de rachas ON y OFF]")
+        # mostrar resumen compacto
+        dist = r["distribucion"]
+        on  = dist[dist["tipo"].str.startswith("racha_ON")]
+        off = dist[dist["tipo"].str.startswith("racha_OFF")]
+        if not on.empty:
+            print(f"  ON  → max {on['max_longitud'].max()} | "
+                  f"median {on['median'].iloc[0]} | "
+                  f"avg {on['avg_longitud'].iloc[0]}")
+        if not off.empty:
+            print(f"  OFF → max {off['max_longitud'].max()} | "
+                  f"median {off['median'].iloc[0]} | "
+                  f"avg {off['avg_longitud'].iloc[0]}")
+        print_tabulate(dist[["tipo","longitud","rachas","pct_rachas"]].drop_duplicates(
+            subset=["tipo","longitud"]))
+
+        print(f"\n  [efecto de la racha previa → ¿cambia la prob del siguiente?]")
+        ef = r["efecto"]
+        # solo mostrar col del flag y goles para no saturar
+        cols_show = ["situacion","racha_previa","partidos",
+                     f"pct_{flag}", "avg_total_goals","avg_btts","avg_over25"]
+        cols_show = [c for c in cols_show if c in ef.columns]
+        print_tabulate(ef[cols_show])
+
+        print(f"\n  [racha máxima por liga]")
+        print_tabulate(r["max_liga"])
+
+        print(f"\n  [top 10 equipos con racha más larga de {lbl}]")
+        print_tabulate(r["max_equipo"].head(10))
+
+        print(f"\n  [estado actual al final del dataset]")
+        print_tabulate(r["estado_vivo"])
+
+
+def streak_cross_flags(df: pd.DataFrame) -> pd.DataFrame:
+    """Cuando hay racha de over2.5, ¿cuánto dura la racha de btts en el mismo periodo?
+    Correlación entre rachas simultáneas de distintos flags."""
+    df2 = _add_half_flags(df).sort_values("Date").copy()
+
+    flag_pairs = [
+        ("over25",  "btts",       "over2.5 y btts"),
+        ("over25",  "over35",     "over2.5 y over3.5"),
+        ("btts",    "gol_ht",     "btts y gol_en_HT"),
+        ("btts",    "gol_st",     "btts y gol_en_ST"),
+        ("over25",  "gol_ht",     "over2.5 y gol_HT"),
+        ("goalless","under05_ht", "0-0_FT y 0-0_HT"),
+        ("home_win","gol_ht",     "local gana y hay gol HT"),
+        ("draw",    "btts",       "empate y btts"),
+        ("over35",  "btts_ht",    "over3.5 y btts_HT"),
+    ]
+
+    rows = []
+    for f1, f2, lbl in flag_pairs:
+        if f1 not in df2.columns or f2 not in df2.columns: continue
+        corr = round(df2[f1].corr(df2[f2]), 4)
+        # cuando f1=1: ¿cuánto % f2=1?
+        sub1 = df2[df2[f1] == 1]
+        sub0 = df2[df2[f1] == 0]
+        rows.append({
+            "combinacion":          lbl,
+            "corr":                 corr,
+            f"pct_{f2}_cuando_{f1}=1": round(sub1[f2].mean() * 100, 2) if len(sub1) else 0,
+            f"pct_{f2}_cuando_{f1}=0": round(sub0[f2].mean() * 100, 2) if len(sub0) else 0,
+            "diferencia":           round((sub1[f2].mean() - sub0[f2].mean()) * 100, 2)
+                                    if len(sub1) and len(sub0) else 0,
+        })
+    return pd.DataFrame(rows)
+
+
+def streak_odds_high_analysis(df: pd.DataFrame) -> pd.DataFrame:
+    """Análisis profundo de cuotas altas ganadoras:
+    ¿En qué momento de una racha de 'favoritos ganando' aparece la sorpresa?
+    Agrupa los partidos según cuántos favoritos consecutivos ganaron antes."""
+    df2 = _add_high_odd_flags(df).sort_values("Date").copy()
+
+    # flag: favorito ganó = cuota local < 2.0 y ganó, o cuota visitante < 2.0 y ganó
+    df2["fav_win"] = (
+        ((df2["AvgH"] < 2.0) & (df2["FTR"] == "H")) |
+        ((df2["AvgA"] < 2.0) & (df2["FTR"] == "A"))
+    ).astype(int)
+    df2["upset_win"] = (1 - df2["fav_win"])  # sorpresa = no ganó el favorito (<2.0)
+
+    df3 = _binary_streaks_per_match(df2.assign(**{
+        "high_odd_30_win": df2["high_odd_30_win"]
+    }), "high_odd_30_win")
+
+    rows = []
+    for n in range(0, 7):
+        sub = df3[df3["streak_on"] == n] if n < 6 else df3[df3["streak_on"] >= 6]
+        if len(sub) < 5: continue
+        rows.append({
+            "sorpresas_previas":    n if n < 6 else "6+",
+            "partidos":             len(sub),
+            "pct_otra_sorpresa":    round(sub["high_odd_30_win"].mean() * 100, 2),
+            "avg_cuota_H":          round(sub["AvgH"].mean(), 3),
+            "avg_cuota_A":          round(sub["AvgA"].mean(), 3),
+            "pct_fav_gana_hoy":     round(sub["fav_win"].mean() * 100, 2),
+            "avg_goles":            round(sub["total_goals"].mean(), 3),
+            "pct_btts":             round(sub["btts"].mean() * 100, 2),
+        })
+    return pd.DataFrame(rows)
+
+
+def streak_team_flag_profile(df: pd.DataFrame, flag: str, label: str,
+                              min_pj: int = 30, top_n: int = 15) -> pd.DataFrame:
+    """Por equipo: desglose de su racha actual, pct histórico y si está
+    'caliente' (racha actual > media histórica) o 'fría'."""
+    df2 = df.sort_values("Date")
+    equipos = set(df["HomeTeam"].unique()) | set(df["AwayTeam"].unique())
+    rows = []
+    for team in equipos:
+        sub = df2[(df2["HomeTeam"] == team) | (df2["AwayTeam"] == team)]
+        if len(sub) < min_pj: continue
+        vals = sub[flag].tolist()
+        pct_hist = round(sum(vals) / len(vals) * 100, 2)
+        # racha actual
+        cur_val = vals[-1]; cur_len = 0
+        for v in reversed(vals):
+            if v == cur_val: cur_len += 1
+            else: break
+        max_on = 0; c = 0
+        for v in vals:
+            if v == 1: c += 1; max_on = max(max_on, c)
+            else: c = 0
+        rows.append({
+            "equipo":         team,
+            "pj":             len(sub),
+            f"pct_{label}":   pct_hist,
+            "racha_actual_tipo": f"ON ({label})" if cur_val == 1 else f"OFF",
+            "racha_actual_n": cur_len,
+            f"max_racha_ON":  max_on,
+            "caliente":       "SI" if cur_val == 1 and cur_len >= 3 else
+                              "FRIA" if cur_val == 0 and cur_len >= 3 else "-",
+        })
+    return pd.DataFrame(rows).sort_values("racha_actual_n", ascending=False).head(top_n).reset_index(drop=True)
+
+
+def streak_summary_table(results: dict) -> pd.DataFrame:
+    """Tabla resumen de todos los flags: max racha ON, max racha OFF, pct global."""
+    rows = []
+    for flag, r in results.items():
+        dist = r["distribucion"]
+        on  = dist[dist["tipo"].str.startswith("racha_ON")]
+        off = dist[dist["tipo"].str.startswith("racha_OFF")]
+        ligs = r["max_liga"]
+        rows.append({
+            "flag":          flag,
+            "label":         r["label"],
+            "max_racha_ON_global":  int(on["max_longitud"].max()) if not on.empty else 0,
+            "max_racha_OFF_global": int(off["max_longitud"].max()) if not off.empty else 0,
+            "avg_racha_ON":         float(on["avg_longitud"].iloc[0]) if not on.empty else 0,
+            "avg_racha_OFF":        float(off["avg_longitud"].iloc[0]) if not off.empty else 0,
+            "pct_flag_global":      round(ligs[f"pct_{flag}"].mean(), 2) if f"pct_{flag}" in ligs.columns else None,
+        })
+    return pd.DataFrame(rows).sort_values("max_racha_ON_global", ascending=False).reset_index(drop=True)
+
 
 def stats_btts_by_ht_state(df: pd.DataFrame) -> dict:
     """% BTTS segun si el primer tiempo termino sin goles o con goles."""
@@ -1002,7 +1957,7 @@ def stats_btts_ht_by_team(df: pd.DataFrame, top_n=15) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("btts_desde_ht0",ascending=False).head(top_n).reset_index(drop=True)
 
 
-#  0-0 HT -> EXPLOSION EN SegundoTiempo ---
+# partidos que van 0-0 al descanso: cuanto explotan en el segundo tiempo
 
 def stats_teams_explosion_after_00ht(df: pd.DataFrame, min_goals_ft=3, min_pj=15) -> pd.DataFrame:
     """Equipos cuyos partidos 0-0 al HT terminan con mas goles en FT."""
@@ -1023,7 +1978,7 @@ def stats_teams_explosion_after_00ht(df: pd.DataFrame, min_goals_ft=3, min_pj=15
     return pd.DataFrame(rows).sort_values("avg_goles_ft",ascending=False).head(20).reset_index(drop=True)
 
 
-#  EQUIPOS QUE YA GANAN AL HT -
+# equipos que suelen ir ganando al descanso
 
 def stats_teams_winning_at_ht(df: pd.DataFrame, min_pj=30) -> pd.DataFrame:
     """Equipos que con mas frecuencia van ganando al descanso (HTHG > HTAG como local / HTAG > HTHG como visitante)."""
@@ -1047,7 +2002,7 @@ def stats_teams_winning_at_ht(df: pd.DataFrame, min_pj=30) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("pct_ganando_ht",ascending=False).head(20).reset_index(drop=True)
 
 
-#  REMONTADAS DEL FAVORITO + BARCELONA es mi equipo favorito y remontan mucho, lo cual tiene valor en mi opinio -
+# remontadas del favorito, con enfoque especial en Barcelona
 
 def stats_comeback_by_fav(df: pd.DataFrame) -> pd.DataFrame:
     """Remontadas segun si el equipo que remonto era favorito o no."""
@@ -1127,7 +2082,7 @@ def stats_barcelona_remontadas_detail(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([barca_loc,barca_vis])[cols].sort_values("Date").reset_index(drop=True)
 
 
-#  INICIO VS FIN DE TEMPORADA --
+# comparativa entre el inicio y el final de temporada
 
 def stats_season_thirds(df: pd.DataFrame) -> pd.DataFrame:
     """Compara inicio (primer tercio), mitad y final (ultimo tercio) de cada temporada por liga."""
@@ -1180,7 +2135,7 @@ def stats_top_teams_season_thirds(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-#  CUOTAS GEMATRICAS / NUMEROLOGIA 
+# cuotas con valores llamativos (3.33, 4.44, etc.) y su rendimiento real
 
 def stats_gematric_odds(df: pd.DataFrame) -> pd.DataFrame:
     """Analisis de cuotas con valores 'gematricos' o llamativos (3.33, 4.44, 2.22, etc.)
@@ -1229,7 +2184,247 @@ def stats_gematric_odds(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values(["cuota_lbl","lado"]).reset_index(drop=True)
 
 
-#  CUOTAS: QUE RANGO SE GANA MAS (apert + cierre) -
+def stats_bet_roi_especial(df: pd.DataFrame) -> pd.DataFrame:
+    """ROI real si se apuesta 1 unidad plana a cuotas especiales (3.33, -333, etc.)
+    en los tres posibles resultados (local, empate, visitante), apertura y cierre.
+
+    Cuotas americanas de referencia:
+      +200 -> decimal 3.0  |  +250 -> 3.5  |  +333 -> 4.33
+      -333 -> 1.30         |  -200 -> 1.5  |  -150 -> 1.67
+
+    Por cada cuota objetivo y lado:
+      ROI%   = (wins * odd - n) / n * 100
+      yield  = ROI% / 100
+      edge%  = real_% - imp_%  (positivo = mercado infravalorado)
+    """
+    targets = {
+        1.30: "-333 (fav fuerte)",
+        1.50: "-200 (fav claro)",
+        1.67: "-150 (fav moderado)",
+        2.00: "Evens / +100",
+        2.50: "+150",
+        3.00: "+200",
+        3.33: "+233 / cuota 3.33",
+        3.50: "+250",
+        4.00: "+300",
+        4.33: "+333",
+        5.00: "+400",
+        6.00: "+500",
+        10.0: "+900",
+    }
+    tolerance = 0.06
+
+    columnas = [
+        ("AvgH",  "home_win",  "local_ap"),
+        ("AvgA",  "away_win",  "visitante_ap"),
+        ("AvgD",  "draw",      "empate_ap"),
+        ("AvgCH", "home_win",  "local_ci"),
+        ("AvgCA", "away_win",  "visitante_ci"),
+        ("AvgCD", "draw",      "empate_ci"),
+    ]
+
+    rows = []
+    for odd_target, lbl in targets.items():
+        lo      = odd_target - tolerance
+        hi      = odd_target + tolerance
+        imp_pct = round(1 / odd_target * 100, 2)
+        for odd_col, res_col, lado in columnas:
+            if odd_col not in df.columns or res_col not in df.columns:
+                continue
+            mask = (df[odd_col] >= lo) & (df[odd_col] < hi)
+            sub  = df[mask]
+            n    = len(sub)
+            if n < 10:
+                continue
+            wins     = int(sub[res_col].sum())
+            profit   = wins * odd_target - n
+            roi_pct  = round(profit / n * 100, 2)
+            real_pct = round(wins / n * 100, 2)
+            edge     = round(real_pct - imp_pct, 2)
+            rows.append({
+                "cuota":        lbl,
+                "decimal":      odd_target,
+                "lado":         lado,
+                "n":            n,
+                "wins":         wins,
+                "real_%":       real_pct,
+                "imp_%":        imp_pct,
+                "edge_%":       edge,
+                "roi_%":        roi_pct,
+                "yield":        round(roi_pct / 100, 4),
+                "avg_odd_real": round(sub[odd_col].mean(), 3),
+            })
+
+    df_out = pd.DataFrame(rows)
+    if df_out.empty:
+        return df_out
+    return df_out.sort_values(["decimal", "lado"]).reset_index(drop=True)
+
+
+# modelo Poisson para estimar probabilidades de marcador
+
+def poisson_model(df: pd.DataFrame, home_team: str, away_team: str,
+                  liga: str = None, max_goals: int = 8) -> dict:
+    """Modelo Dixon-Coles simplificado basado en Poisson.
+
+    Calcula lambda_home y lambda_away usando el ataque y defensa
+    historicos de cada equipo (todo el periodo o solo su liga).
+    Devuelve:
+      - lambda_h / lambda_a
+      - matriz de probabilidades de marcadores
+      - P(H), P(D), P(A)
+      - P(btts), P(over1.5), P(over2.5), P(over3.5)
+      - top marcadores por probabilidad
+      - cuota_fair_H/D/A  (1 / probabilidad — sin margen)
+    """
+    from scipy.stats import poisson as sp_poisson
+
+    sub = df[df["Div"] == liga].copy() if liga else df.copy()
+
+    # promedio global de goles de la liga (referencia)
+    mu_h = sub["FTHG"].mean()
+    mu_a = sub["FTAG"].mean()
+
+    # ataque y defensa de cada equipo como local
+    def ataque_defensa(equipo):
+        as_home = sub[sub["HomeTeam"] == equipo]
+        as_away = sub[sub["AwayTeam"] == equipo]
+        gf_h = as_home["FTHG"].sum(); gc_h = as_home["FTAG"].sum(); n_h = len(as_home)
+        gf_a = as_away["FTAG"].sum(); gc_a = as_away["FTHG"].sum(); n_a = len(as_away)
+        n_total = n_h + n_a
+        if n_total == 0:
+            return None
+        gf = gf_h + gf_a; gc = gc_h + gc_a
+        pj_h = max(n_h, 1); pj_a = max(n_a, 1)
+        atk_h = (gf_h / pj_h) / mu_h if mu_h > 0 else 1.0
+        def_h = (gc_h / pj_h) / mu_a if mu_a > 0 else 1.0
+        atk_a = (gf_a / pj_a) / mu_a if mu_a > 0 else 1.0
+        def_a = (gc_a / pj_a) / mu_h if mu_h > 0 else 1.0
+        return {
+            "atk_home": atk_h, "def_home": def_h,
+            "atk_away": atk_a, "def_away": def_a,
+            "pj": n_total, "gf": gf, "gc": gc,
+        }
+
+    stats_h = ataque_defensa(home_team)
+    stats_a = ataque_defensa(away_team)
+
+    if stats_h is None or stats_a is None:
+        return {"error": f"equipo no encontrado en el dataset"}
+
+    # lambdas esperados
+    lambda_h = mu_h * stats_h["atk_home"] * stats_a["def_away"]
+    lambda_a = mu_a * stats_a["atk_away"] * stats_h["def_home"]
+
+    # matriz de marcadores
+    max_g = max_goals
+    matriz = np.zeros((max_g + 1, max_g + 1))
+    for i in range(max_g + 1):
+        for j in range(max_g + 1):
+            matriz[i, j] = sp_poisson.pmf(i, lambda_h) * sp_poisson.pmf(j, lambda_a)
+
+    p_home = float(np.sum(np.tril(matriz, -1)))
+    p_draw = float(np.sum(np.diag(matriz)))
+    p_away = float(np.sum(np.triu(matriz, 1)))
+
+    # mercados de goles
+    p_btts   = float(sum(matriz[i,j] for i in range(1,max_g+1) for j in range(1,max_g+1)))
+    p_over15 = float(sum(matriz[i,j] for i in range(max_g+1) for j in range(max_g+1) if i+j>1))
+    p_over25 = float(sum(matriz[i,j] for i in range(max_g+1) for j in range(max_g+1) if i+j>2))
+    p_over35 = float(sum(matriz[i,j] for i in range(max_g+1) for j in range(max_g+1) if i+j>3))
+
+    # top 10 marcadores mas probables
+    scores = []
+    for i in range(max_g + 1):
+        for j in range(max_g + 1):
+            scores.append((i, j, round(float(matriz[i, j]) * 100, 2)))
+    top_scores = sorted(scores, key=lambda x: -x[2])[:10]
+
+    # cuotas fair (sin margen)
+    fair_h = round(1 / p_home, 3) if p_home > 0 else None
+    fair_d = round(1 / p_draw, 3) if p_draw > 0 else None
+    fair_a = round(1 / p_away, 3) if p_away > 0 else None
+
+    return {
+        "home":         home_team,
+        "away":         away_team,
+        "liga":         liga or "global",
+        "lambda_h":     round(lambda_h, 3),
+        "lambda_a":     round(lambda_a, 3),
+        "mu_h_liga":    round(mu_h, 3),
+        "mu_a_liga":    round(mu_a, 3),
+        "atk_home":     round(stats_h["atk_home"], 3),
+        "def_home":     round(stats_h["def_home"], 3),
+        "atk_away":     round(stats_a["atk_away"], 3),
+        "def_away":     round(stats_a["def_away"], 3),
+        "pj_home":      stats_h["pj"],
+        "pj_away":      stats_a["pj"],
+        "P_H":          round(p_home * 100, 2),
+        "P_D":          round(p_draw * 100, 2),
+        "P_A":          round(p_away * 100, 2),
+        "P_btts":       round(p_btts * 100, 2),
+        "P_over15":     round(p_over15 * 100, 2),
+        "P_over25":     round(p_over25 * 100, 2),
+        "P_over35":     round(p_over35 * 100, 2),
+        "fair_H":       fair_h,
+        "fair_D":       fair_d,
+        "fair_A":       fair_a,
+        "top_scores":   top_scores,
+        "matriz":       matriz,
+    }
+
+
+def print_poisson(result: dict):
+    """Imprime el resultado del modelo Poisson de forma legible."""
+    if "error" in result:
+        print(f"  ERROR: {result['error']}")
+        return
+    print(f"\n  {result['home']} vs {result['away']} ({result['liga']})")
+    print(f"  lambda local:    {result['lambda_h']}  (atk {result['atk_home']} x def rival {result['def_away']} x mu {result['mu_h_liga']})")
+    print(f"  lambda visitante:{result['lambda_a']}  (atk {result['atk_away']} x def rival {result['def_home']} x mu {result['mu_a_liga']})")
+    print(f"  partidos usados: local {result['pj_home']} | visitante {result['pj_away']}")
+    print(f"")
+    print(f"  P(H)={result['P_H']}%   P(D)={result['P_D']}%   P(A)={result['P_A']}%")
+    print(f"  cuota fair: H={result['fair_H']}  D={result['fair_D']}  A={result['fair_A']}")
+    print(f"")
+    print(f"  P(btts)={result['P_btts']}%  P(over1.5)={result['P_over15']}%  P(over2.5)={result['P_over25']}%  P(over3.5)={result['P_over35']}%")
+    print(f"")
+    print(f"  marcadores mas probables:")
+    for h, a, pct in result["top_scores"]:
+        bar = "#" * int(pct / 0.5)
+        print(f"    {h}-{a}  {pct:5.2f}%  {bar}")
+
+
+def poisson_vs_market(result: dict, odd_h: float, odd_d: float, odd_a: float) -> pd.DataFrame:
+    """Compara cuotas del mercado con probabilidades del modelo Poisson.
+    Calcula edge (modelo - implied) y ROI esperado por resultado."""
+    if "error" in result:
+        return pd.DataFrame()
+    rows = []
+    for lado, p_modelo, odd in [
+        ("local",     result["P_H"] / 100, odd_h),
+        ("empate",    result["P_D"] / 100, odd_d),
+        ("visitante", result["P_A"] / 100, odd_a),
+    ]:
+        imp      = 1 / odd
+        edge     = round((p_modelo - imp) * 100, 2)
+        ev       = round(odd * p_modelo - 1, 4)
+        roi_exp  = round(ev * 100, 2)
+        rows.append({
+            "lado":       lado,
+            "P_modelo_%": round(p_modelo * 100, 2),
+            "imp_%":      round(imp * 100, 2),
+            "edge_%":     edge,
+            "cuota_mkt":  odd,
+            "cuota_fair": round(1 / p_modelo, 3) if p_modelo > 0 else None,
+            "EV_1u":      ev,
+            "roi_exp_%":  roi_exp,
+            "value_bet":  "SI" if edge > 0 else "no",
+        })
+    return pd.DataFrame(rows)
+
+
+# rendimiento real por rango de cuota, apertura vs cierre
 
 def stats_odds_range_performance(df: pd.DataFrame) -> pd.DataFrame:
     """Por cada rango de cuota (apertura y cierre), que % gana realmente cada resultado."""
@@ -1266,6 +2461,406 @@ def stats_odds_range_performance(df: pd.DataFrame) -> pd.DataFrame:
                     "pct_btts":round(sub_ci["btts"].mean()*100,2),
                 })
     return pd.DataFrame(rows).sort_values(["resultado","tipo","rango_odd"]).reset_index(drop=True)
+
+
+# funciones de analisis profundo: primer tiempo, btts, cuotas y equipos
+
+def stats_ht1_effect(df: pd.DataFrame) -> dict:
+    """Si hay exactamente 1 gol en el HT, ¿qué pasa en el ST?
+    Compara HT=0, HT=1, HT=2+ en términos de ST, FT y flags."""
+    total = len(df)
+    rows = []
+    for lbl, mask in [
+        ("HT=0",  df["ht_goals"] == 0),
+        ("HT=1",  df["ht_goals"] == 1),
+        ("HT=2",  df["ht_goals"] == 2),
+        ("HT=3+", df["ht_goals"] >= 3),
+    ]:
+        sub = df[mask]
+        if len(sub) == 0:
+            continue
+        rows.append({
+            "ht_grupo":         lbl,
+            "partidos":         len(sub),
+            "pct_total":        round(len(sub) / total * 100, 2),
+            "avg_st":           round(sub["second_half_goals"].mean(), 3),
+            "moda_st":          int(sub["second_half_goals"].mode()[0]) if not sub["second_half_goals"].mode().empty else None,
+            "avg_ft":           round(sub["total_goals"].mean(), 3),
+            "pct_st_mayor_ht":  round((sub["second_half_goals"] > sub["ht_goals"]).mean() * 100, 2),
+            "pct_st_igual_ht":  round((sub["second_half_goals"] == sub["ht_goals"]).mean() * 100, 2),
+            "pct_st_menor_ht":  round((sub["second_half_goals"] < sub["ht_goals"]).mean() * 100, 2),
+            "pct_btts":         round(sub["btts"].mean() * 100, 2),
+            "pct_over25":       round(sub["over25"].mean() * 100, 2),
+            "pct_goalless_ft":  round((sub["total_goals"] == 0).mean() * 100, 2),
+            "pct_H":            round(sub["home_win"].mean() * 100, 2),
+            "pct_D":            round(sub["draw"].mean() * 100, 2),
+            "pct_A":            round(sub["away_win"].mean() * 100, 2),
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_ht_calma(df: pd.DataFrame) -> pd.DataFrame:
+    """¿Si el HT tiene muchos goles, el ST se calma?
+    Correlación HT vs ST y tabla de avg_st por valor de ht_goals."""
+    rows = []
+    for ht_val in range(0, int(df["ht_goals"].max()) + 1):
+        sub = df[df["ht_goals"] == ht_val]
+        if len(sub) < 5:
+            continue
+        rows.append({
+            "ht_goles":       ht_val,
+            "partidos":       len(sub),
+            "avg_st":         round(sub["second_half_goals"].mean(), 3),
+            "moda_st":        int(sub["second_half_goals"].mode()[0]) if not sub["second_half_goals"].mode().empty else None,
+            "avg_ft":         round(sub["total_goals"].mean(), 3),
+            "pct_st0":        round((sub["second_half_goals"] == 0).mean() * 100, 2),
+            "pct_st1":        round((sub["second_half_goals"] == 1).mean() * 100, 2),
+            "pct_st2p":       round((sub["second_half_goals"] >= 2).mean() * 100, 2),
+            "pct_st_mayor_ht":round((sub["second_half_goals"] > sub["ht_goals"]).mean() * 100, 2),
+            "pct_over25":     round(sub["over25"].mean() * 100, 2),
+            "pct_btts":       round(sub["btts"].mean() * 100, 2),
+        })
+    corr = round(df["ht_goals"].corr(df["second_half_goals"]), 4)
+    return pd.DataFrame(rows), corr
+
+
+def stats_ht_scorers_top(df: pd.DataFrame, top_n: int = 15) -> dict:
+    """Top equipos que más goles marcan en HT y top que más reciben en HT."""
+    # goles marcados en HT como local (HTHG) + como visitante (HTAG)
+    hthg = df.groupby("HomeTeam")["HTHG"].sum()
+    htag = df.groupby("AwayTeam")["HTAG"].sum()
+    total_ht_gf = hthg.add(htag, fill_value=0).sort_values(ascending=False)
+
+    # goles recibidos en HT como local (HTAG) + como visitante (HTHG)
+    htgc_h = df.groupby("HomeTeam")["HTAG"].sum()
+    htgc_a = df.groupby("AwayTeam")["HTHG"].sum()
+    total_ht_gc = htgc_h.add(htgc_a, fill_value=0).sort_values(ascending=False)
+
+    # ratio HT/FT goles marcados por equipo
+    fthg = df.groupby("HomeTeam")["FTHG"].sum()
+    ftag = df.groupby("AwayTeam")["FTAG"].sum()
+    total_ft_gf = fthg.add(ftag, fill_value=0)
+    ratio_ht_ft = (total_ht_gf / total_ft_gf.reindex(total_ht_gf.index)).dropna().sort_values(ascending=False)
+
+    return {
+        "top_marcadores_ht":    {k: int(v) for k, v in total_ht_gf.head(top_n).items()},
+        "top_reciben_ht":       {k: int(v) for k, v in total_ht_gc.head(top_n).items()},
+        "ratio_ht_ft_marcados": {k: round(float(v), 3) for k, v in ratio_ht_ft.head(top_n).items()},
+    }
+
+
+def stats_ht_goal_prob(df: pd.DataFrame) -> dict:
+    """Probabilidad de goles en el primer tiempo."""
+    total = len(df)
+    return {
+        "P(HT>=1)":    round((df["ht_goals"] >= 1).mean() * 100, 2),
+        "P(HT>=2)":    round((df["ht_goals"] >= 2).mean() * 100, 2),
+        "P(HT>=3)":    round((df["ht_goals"] >= 3).mean() * 100, 2),
+        "P(HT=0)":     round((df["ht_goals"] == 0).mean() * 100, 2),
+        "P(HT=1)":     round((df["ht_goals"] == 1).mean() * 100, 2),
+        "P(HT=2)":     round((df["ht_goals"] == 2).mean() * 100, 2),
+        "P(HT=0→FT=0)":round(((df["ht_goals"] == 0) & (df["total_goals"] == 0)).mean() * 100, 2),
+        "P(FT=0|HT=0)":round(
+            ((df["ht_goals"] == 0) & (df["total_goals"] == 0)).sum() /
+            max((df["ht_goals"] == 0).sum(), 1) * 100, 2),
+        "P(FT>=3|HT=0)": round(
+            ((df["ht_goals"] == 0) & (df["total_goals"] >= 3)).sum() /
+            max((df["ht_goals"] == 0).sum(), 1) * 100, 2),
+        "avg_ht_goles_loc": round(df["HTHG"].mean(), 3),
+        "avg_ht_goles_vis": round(df["HTAG"].mean(), 3),
+        "pct_local_marca_HT":  round((df["HTHG"] > 0).mean() * 100, 2),
+        "pct_visita_marca_HT": round((df["HTAG"] > 0).mean() * 100, 2),
+        "pct_btts_HT":         round(((df["HTHG"] > 0) & (df["HTAG"] > 0)).mean() * 100, 2),
+    }
+
+
+def stats_scoreline_00ht_explosion(df: pd.DataFrame) -> dict:
+    """Cuando va 0-0 al HT, ¿cuántos goles hay en el ST?
+    Distribución del resultado FT partiendo de 0-0 al descanso."""
+    sub = df[df["ht_goals"] == 0]
+    if len(sub) == 0:
+        return {}
+    total_ht0 = len(sub)
+    sub2 = sub.copy()
+    sub2["score_ft"] = sub2["FTHG"].astype(str) + "-" + sub2["FTAG"].astype(str)
+    top_scores = sub2["score_ft"].value_counts().head(10)
+    return {
+        "partidos_ht0":       total_ht0,
+        "pct_del_total":      round(total_ht0 / len(df) * 100, 2),
+        "pct_ft_0_0":         round((sub["total_goals"] == 0).mean() * 100, 2),
+        "pct_ft_1gol":        round((sub["total_goals"] == 1).mean() * 100, 2),
+        "pct_ft_2goles":      round((sub["total_goals"] == 2).mean() * 100, 2),
+        "pct_ft_3mas":        round((sub["total_goals"] >= 3).mean() * 100, 2),
+        "avg_goles_ft":       round(sub["total_goals"].mean(), 3),
+        "avg_st_goles":       round(sub["second_half_goals"].mean(), 3),
+        "pct_btts_desde_ht0": round(sub["btts"].mean() * 100, 2),
+        "pct_over25_ht0":     round(sub["over25"].mean() * 100, 2),
+        "pct_H":              round(sub["home_win"].mean() * 100, 2),
+        "pct_D":              round(sub["draw"].mean() * 100, 2),
+        "pct_A":              round(sub["away_win"].mean() * 100, 2),
+        "top_marcadores_ft":  dict(zip(top_scores.index.tolist(), top_scores.values.tolist())),
+    }
+
+
+def stats_btts_by_day(df: pd.DataFrame) -> pd.DataFrame:
+    """% BTTS por día de semana y correlación entre días consecutivos."""
+    agg = df.groupby("day_name").agg(
+        partidos    = ("btts", "count"),
+        pct_btts    = ("btts", "mean"),
+        pct_over25  = ("over25", "mean"),
+        avg_goles   = ("total_goals", "mean"),
+        pct_goalless= ("goalless", "mean"),
+        pct_H       = ("home_win", "mean"),
+        pct_D       = ("draw", "mean"),
+    ).round(3)
+    for c in ["pct_btts", "pct_over25", "pct_goalless", "pct_H", "pct_D"]:
+        agg[c] = round(agg[c] * 100, 2)
+    return agg.reindex([d for d in DAY_ORDER if d in agg.index]).reset_index()
+
+
+def stats_btts_finde_vs_entresemana(df: pd.DataFrame) -> dict:
+    """Finde vs entresemana en BTTS y goles."""
+    finde = df[df["is_weekend"] == 1]
+    entre = df[df["is_weekend"] == 0]
+    return {
+        "finde_n":        len(finde),
+        "finde_btts":     round(finde["btts"].mean() * 100, 2),
+        "finde_over25":   round(finde["over25"].mean() * 100, 2),
+        "finde_avg_goles":round(finde["total_goals"].mean(), 3),
+        "entre_n":        len(entre),
+        "entre_btts":     round(entre["btts"].mean() * 100, 2),
+        "entre_over25":   round(entre["over25"].mean() * 100, 2),
+        "entre_avg_goles":round(entre["total_goals"].mean(), 3),
+        "diff_btts":      round((finde["btts"].mean() - entre["btts"].mean()) * 100, 2),
+    }
+
+
+def stats_btts_team_ht(df: pd.DataFrame, top_n: int = 15) -> tuple:
+    """Equipos donde más se da BTTS en el primer tiempo (ambos marcan antes del descanso)
+    y equipos donde más se da BTTS solo en el segundo tiempo."""
+    df2 = df.copy()
+    df2["btts_ht"] = ((df2["HTHG"] > 0) & (df2["HTAG"] > 0)).astype(int)
+    df2["btts_st_only"] = ((df2["btts"] == 1) & (df2["btts_ht"] == 0)).astype(int)
+
+    equipos = set(df2["HomeTeam"].unique()) | set(df2["AwayTeam"].unique())
+    rows_ht = []
+    rows_st = []
+    for team in equipos:
+        sub = df2[(df2["HomeTeam"] == team) | (df2["AwayTeam"] == team)]
+        if len(sub) < 15:
+            continue
+        rows_ht.append({
+            "equipo":       team,
+            "pj":           len(sub),
+            "pct_btts_ht":  round(sub["btts_ht"].mean() * 100, 2),
+            "pct_btts_ft":  round(sub["btts"].mean() * 100, 2),
+            "avg_goles_ht": round(sub["ht_goals"].mean(), 3),
+        })
+        rows_st.append({
+            "equipo":           team,
+            "pj":               len(sub),
+            "pct_btts_st_only": round(sub["btts_st_only"].mean() * 100, 2),
+            "pct_btts_ft":      round(sub["btts"].mean() * 100, 2),
+            "avg_goles_st":     round(sub["second_half_goals"].mean(), 3),
+        })
+
+    top_ht = pd.DataFrame(rows_ht).sort_values("pct_btts_ht", ascending=False).head(top_n).reset_index(drop=True)
+    top_st = pd.DataFrame(rows_st).sort_values("pct_btts_st_only", ascending=False).head(top_n).reset_index(drop=True)
+    return top_ht, top_st
+
+
+def stats_odds_movement_detail(df: pd.DataFrame) -> pd.DataFrame:
+    """Si la cuota baja antes del cierre, ¿es más certero el resultado?
+    Clasifica por rango de movimiento con granularidad alta."""
+    df2 = df.copy()
+    bins  = [-np.inf, -0.20, -0.10, -0.05, 0.05, 0.10, 0.20, np.inf]
+    labels = ["baja >0.20", "baja 0.10-0.20", "baja 0.05-0.10",
+              "estable ±0.05",
+              "sube 0.05-0.10", "sube 0.10-0.20", "sube >0.20"]
+    df2["mov_cat"] = pd.cut(df2["odds_move_H"], bins=bins, labels=labels)
+    rows = []
+    for cat in labels:
+        sub = df2[df2["mov_cat"] == cat]
+        if len(sub) < 5:
+            continue
+        rows.append({
+            "movimiento":    cat,
+            "partidos":      len(sub),
+            "pct_total":     round(len(sub) / len(df) * 100, 2),
+            "pct_H":         round(sub["home_win"].mean() * 100, 2),
+            "pct_D":         round(sub["draw"].mean() * 100, 2),
+            "pct_A":         round(sub["away_win"].mean() * 100, 2),
+            "avg_goles":     round(sub["total_goals"].mean(), 3),
+            "pct_btts":      round(sub["btts"].mean() * 100, 2),
+            "pct_over25":    round(sub["over25"].mean() * 100, 2),
+            "avg_mov":       round(sub["odds_move_H"].mean(), 4),
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_odds_mode_full(df: pd.DataFrame) -> pd.DataFrame:
+    """Top 10 modas de cuotas (apertura y cierre) más frecuentes para cada resultado.
+    Responde: ¿qué cuota 'redonda' aparece más seguido?"""
+    rows = []
+    for resultado, ftr, odd_ap, odd_ci in [
+        ("local",    "H", "AvgH",  "AvgCH"),
+        ("visitante","A", "AvgA",  "AvgCA"),
+        ("empate",   "D", "AvgD",  "AvgCD"),
+    ]:
+        sub = df[df["FTR"] == ftr]
+        for tipo, col in [("apertura", odd_ap), ("cierre", odd_ci)]:
+            top = sub[col].round(2).value_counts().head(10)
+            for cuota, cnt in top.items():
+                rows.append({
+                    "resultado": resultado,
+                    "tipo":      tipo,
+                    "cuota":     float(cuota),
+                    "frecuencia":int(cnt),
+                    "pct":       round(cnt / len(sub) * 100, 2),
+                })
+    return pd.DataFrame(rows)
+
+
+def stats_odds_mode_all_results(df: pd.DataFrame) -> pd.DataFrame:
+    """Moda de cuotas para todos los partidos (sin filtrar por resultado).
+    ¿Cuál es la cuota local más común que sale en el tablero?"""
+    rows = []
+    for nombre, col in [("AvgH", "local_ap"), ("AvgCH", "local_ci"),
+                         ("AvgA", "visita_ap"), ("AvgCA", "visita_ci"),
+                         ("AvgD", "empate_ap"), ("AvgCD", "empate_ci")]:
+        top = df[nombre].round(2).value_counts().head(10)
+        for cuota, cnt in top.items():
+            rows.append({
+                "cuota_tipo": col,
+                "cuota":      float(cuota),
+                "frecuencia": int(cnt),
+                "pct":        round(cnt / len(df) * 100, 2),
+            })
+    return pd.DataFrame(rows)
+
+
+def stats_clean_sheet_teams(df: pd.DataFrame, top_n: int = 15) -> dict:
+    """Top equipos por % de clean sheets como local y como visitante."""
+    # como local: no reciben gol (FTAG=0)
+    cs_loc = df.groupby("HomeTeam").agg(
+        pj=("FTAG", "count"),
+        cs=("clean_sheet_h", "sum"),
+    ).reset_index()
+    cs_loc = cs_loc[cs_loc["pj"] >= 20]
+    cs_loc["pct_cs"] = round(cs_loc["cs"] / cs_loc["pj"] * 100, 2)
+    cs_loc = cs_loc.sort_values("pct_cs", ascending=False).head(top_n)
+
+    # como visitante: no reciben gol (FTHG=0)
+    cs_vis = df.groupby("AwayTeam").agg(
+        pj=("FTHG", "count"),
+        cs=("clean_sheet_a", "sum"),
+    ).reset_index().rename(columns={"AwayTeam": "AwayTeam"})
+    cs_vis = cs_vis[cs_vis["pj"] >= 20]
+    cs_vis["pct_cs"] = round(cs_vis["cs"] / cs_vis["pj"] * 100, 2)
+    cs_vis = cs_vis.sort_values("pct_cs", ascending=False).head(top_n)
+
+    return {
+        "top_cs_local":    cs_loc[["HomeTeam", "pj", "cs", "pct_cs"]].rename(columns={"HomeTeam": "equipo"}),
+        "top_cs_visitante":cs_vis[["AwayTeam",  "pj", "cs", "pct_cs"]].rename(columns={"AwayTeam":  "equipo"}),
+    }
+
+
+def stats_late_season_goals(df: pd.DataFrame) -> pd.DataFrame:
+    """Meses de inicio (ago-oct) vs final (mar-may): ¿más abiertos al final?"""
+    mes_inicio = [8, 9, 10]
+    mes_final  = [3, 4, 5]
+    rows = []
+    for lbl, meses in [("inicio (ago-oct)", mes_inicio), ("medio (nov-feb)", [11, 12, 1, 2]),
+                        ("final (mar-may)", mes_final)]:
+        sub = df[df["month"].isin(meses)]
+        if len(sub) == 0:
+            continue
+        rows.append({
+            "periodo":    lbl,
+            "partidos":   len(sub),
+            "avg_goles":  round(sub["total_goals"].mean(), 3),
+            "avg_ht":     round(sub["ht_goals"].mean(), 3),
+            "avg_st":     round(sub["second_half_goals"].mean(), 3),
+            "pct_btts":   round(sub["btts"].mean() * 100, 2),
+            "pct_over25": round(sub["over25"].mean() * 100, 2),
+            "pct_H":      round(sub["home_win"].mean() * 100, 2),
+            "pct_D":      round(sub["draw"].mean() * 100, 2),
+            "pct_goalless":round(sub["goalless"].mean() * 100, 2),
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_team_variance_goals(df: pd.DataFrame, top_n: int = 10) -> dict:
+    """Equipos más consistentes vs más impredecibles (varianza de goles marcados)."""
+    equipos = set(df["HomeTeam"].unique()) | set(df["AwayTeam"].unique())
+    rows = []
+    for team in equipos:
+        loc = df[df["HomeTeam"] == team]["FTHG"]
+        vis = df[df["AwayTeam"] == team]["FTAG"]
+        goles = pd.concat([loc, vis])
+        if len(goles) < 20:
+            continue
+        rows.append({
+            "equipo":    team,
+            "pj":        len(goles),
+            "avg_gf":    round(goles.mean(), 3),
+            "std_gf":    round(goles.std(), 3),
+            "var_gf":    round(goles.var(), 3),
+            "cv_gf":     round(goles.std() / goles.mean() * 100, 2) if goles.mean() > 0 else None,
+            "max_gf":    int(goles.max()),
+            "pct_0goles":round((goles == 0).mean() * 100, 2),
+        })
+    df_out = pd.DataFrame(rows)
+    return {
+        "mas_consistentes":    df_out.sort_values("std_gf").head(top_n).reset_index(drop=True),
+        "mas_impredecibles":   df_out.sort_values("std_gf", ascending=False).head(top_n).reset_index(drop=True),
+    }
+
+
+def stats_scoreline_1_0_ht_extended(df: pd.DataFrame) -> dict:
+    """Marcador 1-0 al HT: qué pasa en el FT (ya existe básica, esta añade más granularidad)."""
+    sub = df[(df["HTHG"] == 1) & (df["HTAG"] == 0)]
+    if len(sub) == 0:
+        return {}
+    return {
+        "total":            int(len(sub)),
+        "pct_1_0_ft":       round(((sub["FTHG"]==1)&(sub["FTAG"]==0)).mean()*100, 2),
+        "pct_2_0_ft":       round(((sub["FTHG"]==2)&(sub["FTAG"]==0)).mean()*100, 2),
+        "pct_3_0_ft":       round(((sub["FTHG"]==3)&(sub["FTAG"]==0)).mean()*100, 2),
+        "pct_1_1_ft":       round(((sub["FTHG"]==1)&(sub["FTAG"]==1)).mean()*100, 2),
+        "pct_2_1_ft":       round(((sub["FTHG"]==2)&(sub["FTAG"]==1)).mean()*100, 2),
+        "pct_remonta_A":    round((sub["FTR"]=="A").mean()*100, 2),
+        "pct_empata":       round((sub["FTR"]=="D").mean()*100, 2),
+        "pct_mantiene_H":   round((sub["FTR"]=="H").mean()*100, 2),
+        "avg_goles_ft":     round(sub["total_goals"].mean(), 3),
+        "pct_btts":         round(sub["btts"].mean()*100, 2),
+        "pct_over25":       round(sub["over25"].mean()*100, 2),
+    }
+
+
+def stats_scoreline_0_0_ht_deep(df: pd.DataFrame) -> pd.DataFrame:
+    """Distribución completa del FT cuando va 0-0 al HT, por liga."""
+    ht0 = df[df["ht_goals"] == 0].copy()
+    ht0["score_ft"] = ht0["FTHG"].astype(str) + "-" + ht0["FTAG"].astype(str)
+    rows = []
+    for liga in sorted(df["Div"].unique()):
+        sub = ht0[ht0["Div"] == liga]
+        if len(sub) == 0:
+            continue
+        top5 = sub["score_ft"].value_counts().head(5)
+        rows.append({
+            "liga":          liga,
+            "partidos_ht0":  len(sub),
+            "pct_ft_0_0":    round((sub["total_goals"]==0).mean()*100, 2),
+            "pct_ft_1gol":   round((sub["total_goals"]==1).mean()*100, 2),
+            "pct_ft_2goles": round((sub["total_goals"]==2).mean()*100, 2),
+            "pct_ft_3mas":   round((sub["total_goals"]>=3).mean()*100, 2),
+            "avg_goles_ft":  round(sub["total_goals"].mean(), 3),
+            "pct_btts":      round(sub["btts"].mean()*100, 2),
+            "top1_marcador": top5.index[0] if len(top5)>0 else None,
+            "top1_pct":      round(top5.iloc[0]/len(sub)*100,2) if len(top5)>0 else None,
+        })
+    return pd.DataFrame(rows)
 
 
 def draw_er_diagram(fp):
@@ -1310,7 +2905,7 @@ def scatter_group_by(fp,df,x_col,y_col,label_col):
     ax.set_xlabel(x_col); ax.set_ylabel(y_col); ax.legend()
     plt.savefig(fp); plt.close()
 
-# SETUP
+# carga del dataset y calculo de variables derivadas
 
 os.makedirs("img",exist_ok=True)
 df=pd.read_csv("../Practica 1/data/clean/football_clean.csv",parse_dates=["Date"])
@@ -1365,7 +2960,7 @@ season_labels={1920:"2019/20",2021:"2020/21",2122:"2021/22",
 
 resumen_temporadas=[]; resumen_ligas_temp=[]
 
-# CICLO PRINCIPAL: temporada > liga
+# ciclo principal: itera por temporada y dentro de cada una por liga
 
 for temporada in temporadas:
     slabel=season_labels.get(temporada,str(temporada))
@@ -1481,6 +3076,46 @@ for temporada in temporadas:
     print(f"\n--- goles por mes {slabel} ---")
     print_tabulate(stats_month_season(df_t))
 
+    # --- analisis profundo primer tiempo ---
+    print(f"\n--- efecto del marcador al HT: calma en el ST {slabel} ---")
+    ht_eff, corr_ht_st2 = stats_ht_calma(df_t)
+    print(f"  correlacion ht_goals vs second_half_goals: {corr_ht_st2}")
+    print_tabulate(ht_eff)
+
+    print(f"\n--- si hay 1 gol en HT, ¿qué pasa en el ST? {slabel} ---")
+    print_tabulate(stats_ht1_effect(df_t))
+
+    ht_prob = stats_ht_goal_prob(df_t)
+    print(f"\n--- probabilidad de goles en el primer tiempo {slabel} ---")
+    for k, v in ht_prob.items():
+        print(f"  {k}: {v}")
+
+    ht00 = stats_scoreline_00ht_explosion(df_t)
+    if ht00:
+        print(f"\n--- partidos 0-0 al HT: explosion en el ST {slabel} ---")
+        for k, v in ht00.items():
+            if k != "top_marcadores_ft":
+                print(f"  {k}: {v}")
+        if "top_marcadores_ft" in ht00:
+            print(f"  top marcadores FT desde 0-0 HT: {ht00['top_marcadores_ft']}")
+
+    s10 = stats_scoreline_1_0_ht_extended(df_t)
+    if s10:
+        print(f"\n--- marcador 1-0 al HT: como termina {slabel} ---")
+        for k, v in s10.items():
+            print(f"  {k}: {v}")
+
+    print(f"\n--- btts por dia de semana {slabel} ---")
+    print_tabulate(stats_btts_by_day(df_t))
+    bfd = stats_btts_finde_vs_entresemana(df_t)
+    print(f"  finde btts {bfd['finde_btts']}% | entresemana btts {bfd['entre_btts']}% | diff {bfd['diff_btts']}%")
+
+    print(f"\n--- inicio vs final de temporada {slabel} ---")
+    print_tabulate(stats_late_season_goals(df_t))
+
+    print(f"\n--- movimiento cuota local (granular) {slabel} ---")
+    print_tabulate(stats_odds_movement_detail(df_t))
+
     # --- distribuciones ---
     print(f"\n--- distribucion goles {slabel} ---")
     print_tabulate(stats_distribution(df_t,"total_goals",[0,1,2,3,4,5,6,7,8,9,10,20]))
@@ -1594,10 +3229,35 @@ for temporada in temporadas:
         print(f"  top goles visit:  {top_scorers(df_tl,'AwayTeam','FTAG')}")
         print(f"  top cs local:     {top_scorers(df_tl,'HomeTeam','clean_sheet_h')}")
 
+        # ht calma
+        ht_eff_tl, corr_tl = stats_ht_calma(df_tl)
+        print(f"  ht calma (corr ht->st: {corr_tl}):")
+        print_tabulate(ht_eff_tl[["ht_goles","partidos","avg_st","pct_st_mayor_ht","pct_btts","pct_over25"]])
+
+        # probabilidad goles HT
+        htpr = stats_ht_goal_prob(df_tl)
+        print(f"  P(HT=0)={htpr['P(HT=0)']}% P(HT>=1)={htpr['P(HT>=1)']}% "
+              f"P(HT>=2)={htpr['P(HT>=2)']}% P(FT=0|HT=0)={htpr['P(FT=0|HT=0)']}% "
+              f"P(FT>=3|HT=0)={htpr['P(FT>=3|HT=0)']}%")
+
+        # 0-0 HT
+        ht00_tl = stats_scoreline_00ht_explosion(df_tl)
+        if ht00_tl:
+            print(f"  0-0 HT → avg_goles_ft {ht00_tl['avg_goles_ft']} | "
+                  f"pct_ft_0-0 {ht00_tl['pct_ft_0_0']}% | "
+                  f"pct_3mas {ht00_tl['pct_ft_3mas']}% | "
+                  f"btts {ht00_tl['pct_btts_desde_ht0']}%")
+
+        # btts por dia
+        print(f"  btts por dia:")
+        print_tabulate(stats_btts_by_day(df_tl)[["day_name","partidos","pct_btts","avg_goles","pct_over25"]])
+
         # tabla posiciones + segmentos
         standing=calc_standings(df_tl)
         print(f"  tabla de posiciones {liga} {slabel}:")
-        print_tabulate(standing.reset_index().rename(columns={"index":"pos"}))
+        standing_print = standing.copy()
+        standing_print.insert(0, "pos", range(1, len(standing_print)+1))
+        print_tabulate(standing_print)
 
         n_eq=len(standing)
         top5=list(standing.head(5)["equipo"]); bot5=list(standing.tail(5)["equipo"])
@@ -1622,7 +3282,7 @@ for temporada in temporadas:
         resumen_ligas_temp.append(row_tl)
 
 
-# COMPARACION ENTRE TEMPORADAS
+# comparacion entre temporadas
 
 print(f"\n{'='*70}\n  COMPARACION ENTRE TEMPORADAS\n{'='*70}")
 df_rt=pd.DataFrame(resumen_temporadas)
@@ -1685,7 +3345,7 @@ print("\n=== smart money por temporada ===")
 print_tabulate(df_rt[["season","sm_loc_n","sm_loc_pct","sm_loc_goles","sm_vis_n","sm_vis_pct","sm_vis_goles"]])
 
 
-# COMPARACION ENTRE LIGAS
+# comparacion entre ligas (todo el periodo)
 
 print(f"\n{'='*70}\n  COMPARACION ENTRE LIGAS (todo el periodo)\n{'='*70}")
 
@@ -1850,6 +3510,230 @@ for liga in ligas:
     if mid: segs.append(stats_segment(sub[sub["HomeTeam"].isin(mid)|sub["AwayTeam"].isin(mid)],"medio"))
     print(f"\n  {liga}:"); print_tabulate(pd.DataFrame(segs))
 
+# secciones adicionales de analisis
+
+print(f"\n{'='*70}\n  ANALISIS PROFUNDO PRIMER TIEMPO — COMPARACION ENTRE LIGAS\n{'='*70}")
+
+print("\n=== calma en el ST segun goles en HT (todo el periodo) ===")
+ht_eff_all, corr_all = stats_ht_calma(df)
+print(f"  correlacion ht_goals vs second_half_goals (global): {corr_all}")
+print_tabulate(ht_eff_all)
+print("\n  por liga:")
+for liga in ligas:
+    sub = df[df["Div"]==liga]
+    _, c = stats_ht_calma(sub)
+    print(f"  {LIGAS_NAME.get(liga,liga):<20} corr ht->st: {c}")
+
+print("\n=== efecto del marcador al HT en el ST ===")
+print_tabulate(stats_ht1_effect(df))
+
+print("\n=== probabilidad de goles en el primer tiempo por liga ===")
+htpr_rows = []
+for liga in ligas:
+    p = stats_ht_goal_prob(df[df["Div"]==liga])
+    p["liga"] = liga
+    htpr_rows.append(p)
+print_tabulate(pd.DataFrame(htpr_rows)[["liga","P(HT=0)","P(HT=1)","P(HT>=2)",
+    "pct_btts_HT","P(FT=0|HT=0)","P(FT>=3|HT=0)"]])
+
+print("\n=== cuando va 0-0 al HT: explosion en el segundo tiempo por liga ===")
+print_tabulate(stats_scoreline_0_0_ht_deep(df))
+
+print("\n=== marcador 1-0 al HT: como termina el partido por liga ===")
+s10_rows = []
+for liga in ligas:
+    r = stats_scoreline_1_0_ht_extended(df[df["Div"]==liga])
+    if r:
+        r["liga"] = liga
+        s10_rows.append(r)
+if s10_rows:
+    print_tabulate(pd.DataFrame(s10_rows)[["liga","total","pct_mantiene_H","pct_empata",
+        "pct_remonta_A","pct_1_0_ft","pct_1_1_ft","avg_goles_ft","pct_btts"]])
+
+print("\n=== top equipos que marcan en HT y que reciben goles en HT ===")
+ht_sc = stats_ht_scorers_top(df)
+print("  top marcadores en HT:")
+for k, v in list(ht_sc["top_marcadores_ht"].items())[:15]:
+    print(f"    {k}: {v}")
+print("  top que reciben en HT:")
+for k, v in list(ht_sc["top_reciben_ht"].items())[:15]:
+    print(f"    {k}: {v}")
+print("  ratio HT/FT de goles marcados (marcan temprano):")
+for k, v in list(ht_sc["ratio_ht_ft_marcados"].items())[:15]:
+    print(f"    {k}: {v}")
+
+print(f"\n{'='*70}\n  BTTS POR DIA Y PATRONES\n{'='*70}")
+
+print("\n=== btts por dia de semana (todo el periodo) ===")
+print_tabulate(stats_btts_by_day(df))
+
+bfd_all = stats_btts_finde_vs_entresemana(df)
+print(f"\n=== finde vs entresemana ===")
+for k, v in bfd_all.items():
+    print(f"  {k}: {v}")
+
+print("\n=== btts por dia por liga ===")
+for liga in ligas:
+    print(f"\n  {liga}:")
+    print_tabulate(stats_btts_by_day(df[df["Div"]==liga])[["day_name","partidos","pct_btts","avg_goles","pct_over25"]])
+
+print("\n=== equipos donde mas se da BTTS en el primer tiempo ===")
+btts_ht_top, btts_st_top = stats_btts_team_ht(df)
+print("  top BTTS en HT:")
+print_tabulate(btts_ht_top)
+print("  top BTTS solo en ST (no en HT):")
+print_tabulate(btts_st_top)
+
+print(f"\n{'='*70}\n  CUOTAS: MODAS Y MOVIMIENTO DETALLADO\n{'='*70}")
+
+print("\n=== modas de cuotas mas frecuentes (todos los partidos) ===")
+print_tabulate(stats_odds_mode_all_results(df))
+
+print("\n=== modas de cuotas ganadoras por resultado (top 10 cada uno) ===")
+print_tabulate(stats_odds_mode_full(df))
+
+print("\n=== modas de cuotas ganadoras por liga ===")
+om_l=[]
+for liga in ligas:
+    om=stats_odds_mode(df[df["Div"]==liga]); om["liga"]=liga; om_l.append(om)
+print_tabulate(pd.DataFrame(om_l)[["liga","moda_ap_H","med_ap_H","moda_ci_H","med_ci_H",
+    "moda_ap_A","med_ap_A","moda_ci_A","med_ci_A","moda_ud_ap_A","med_ud_ap_A"]])
+
+print("\n=== movimiento de cuota local (granularidad alta) — todo el periodo ===")
+print_tabulate(stats_odds_movement_detail(df))
+
+print("\n=== movimiento de cuota por liga ===")
+for liga in ligas:
+    print(f"\n  {liga}:")
+    print_tabulate(stats_odds_movement_detail(df[df["Div"]==liga]))
+
+print(f"\n{'='*70}\n  CLEAN SHEETS POR EQUIPO\n{'='*70}")
+
+print("\n=== top equipos por clean sheet (local y visitante) ===")
+cs_dict = stats_clean_sheet_teams(df)
+print("  top clean sheet como local:")
+print_tabulate(cs_dict["top_cs_local"])
+print("  top clean sheet como visitante:")
+print_tabulate(cs_dict["top_cs_visitante"])
+
+print("\n=== clean sheet por mes del año (¿más defensivos en invierno?) ===")
+print_tabulate(stats_clean_sheet_by_month(df))
+
+print(f"\n{'='*70}\n  VARIANZA DE GOLES POR EQUIPO (CONSISTENTES VS IMPREDECIBLES)\n{'='*70}")
+var_dict = stats_team_variance_goals(df)
+print("\n  mas consistentes (baja std):")
+print_tabulate(var_dict["mas_consistentes"])
+print("\n  mas impredecibles (alta std):")
+print_tabulate(var_dict["mas_impredecibles"])
+
+print(f"\n{'='*70}\n  INICIO VS FINAL DE TEMPORADA\n{'='*70}")
+print("\n=== inicio (ago-oct) vs medio (nov-feb) vs final (mar-may) — todo el periodo ===")
+print_tabulate(stats_late_season_goals(df))
+print("\n  por liga:")
+for liga in ligas:
+    print(f"\n  {liga}:")
+    print_tabulate(stats_late_season_goals(df[df["Div"]==liga]))
+
+
+# rachas extendidas: comparacion global y por liga
+
+print(f"\n{'='*70}")
+print(f"  RACHAS — ANALISIS EXTENDIDO")
+print(f"{'='*70}")
+
+print("\n=== efecto de la racha previa del local: goles y resultados ===")
+print("  (racha neta: positivo=victorias, negativo=derrotas, 0=neutro)")
+print_tabulate(stats_bad_streak_analysis(df))
+
+print("\n=== por liga ===")
+for liga in ligas:
+    print(f"\n  {liga}:")
+    print_tabulate(stats_bad_streak_analysis(df[df["Div"]==liga]))
+
+print("\n=== patron de goles por valor exacto de racha previa (-5 a +5) ===")
+print("  ¿Cuánto golea y cuánto recibe el local según su historial reciente?")
+print_tabulate(stats_streak_goals_pattern(df))
+
+print("\n=== momentum: partido anterior del local → resultado de hoy ===")
+print("  ¿Qué pasa HOY según lo que pasó el partido anterior (goleada/derrota/etc.)?")
+print_tabulate(stats_streak_momentum(df))
+
+print("\n=== por liga ===")
+for liga in ligas:
+    print(f"\n  {liga}:")
+    print_tabulate(stats_streak_momentum(df[df["Div"]==liga]))
+
+print("\n=== FENOMENO: racha mala → goleada → siguiente partido (análisis profundo) ===")
+print("  (racha mala ≥2 partidos sin ganar, goleada = marcar 3+ goles)")
+bse = stats_bad_streak_explosion_deep(df, min_bad=2, min_goles_goleada=3)
+if "sin_eventos" not in bse and "sin_siguiente" not in bse:
+    print(f"  total eventos detectados: {bse['total_eventos']}")
+    print(f"  tras goleada: gana {bse['pct_gana_siguiente']}% | "
+          f"pierde {bse['pct_pierde_siguiente']}% | "
+          f"empata {bse['pct_empata_siguiente']}%")
+    print(f"  avg goles a favor siguiente: {bse['avg_gf_siguiente']} | "
+          f"en contra: {bse['avg_gc_siguiente']}")
+    print(f"  % que repite goleada en siguiente: {bse['pct_repite_goleada']}%")
+    print(f"  baseline % vic tras cualquier victoria: {bse['baseline_pct_vic_tras_cualquier_victoria']}%")
+    print("\n  por intensidad de racha previa:")
+    print_tabulate(bse["tabla_por_intensidad"])
+
+print("\n  [variante más estricta: racha ≥3, goleada 4+]")
+bse2 = stats_bad_streak_explosion_deep(df, min_bad=3, min_goles_goleada=4)
+if "sin_eventos" not in bse2 and "sin_siguiente" not in bse2:
+    print(f"  total eventos: {bse2['total_eventos']} | "
+          f"gana {bse2['pct_gana_siguiente']}% | "
+          f"pierde {bse2['pct_pierde_siguiente']}% | "
+          f"avg goles sig: {bse2['avg_gf_siguiente']}")
+    if not bse2["tabla_por_intensidad"].empty:
+        print_tabulate(bse2["tabla_por_intensidad"])
+
+print("\n=== rebote tras derrota según la magnitud de la derrota ===")
+print("  ¿Tras una goleada recibida el equipo local reacciona con más goles?")
+print_tabulate(stats_rebound_after_loss(df))
+
+print("\n  por liga:")
+for liga in ligas:
+    sub = df[df["Div"]==liga]
+    rbl = stats_rebound_after_loss(sub)
+    if not rbl.empty:
+        print(f"\n  {liga}:")
+        print_tabulate(rbl)
+
+print("\n=== como se rompen las rachas ganadoras ===")
+print("  Cuando un equipo lleva N victorias seguidas, ¿cómo lo frenan?")
+print_tabulate(stats_winning_streak_end(df))
+
+print("\n  por liga:")
+for liga in ligas:
+    wse = stats_winning_streak_end(df[df["Div"]==liga])
+    if not wse.empty:
+        print(f"\n  {liga}:")
+        print_tabulate(wse)
+
+print("\n=== equipos que mejor reaccionan tras mala racha (rebote como local) ===")
+print("  rebote = pct_vic_tras_racha_mala - pct_vic_neutro")
+sby = stats_streak_by_team(df)
+if not sby.empty:
+    print("  top 15 con mayor rebote:")
+    print_tabulate(sby.head(15)[["equipo","pj_local","n_tras_mala","pct_vic_tras_mala",
+                                   "pct_vic_neutro","pct_vic_tras_buena","rebote","caida"]])
+    print("  top 15 con mayor caída tras buena racha:")
+    print_tabulate(sby.sort_values("caida").head(15)[
+        ["equipo","pj_local","n_tras_buena","pct_vic_tras_buena",
+         "pct_vic_neutro","rebote","caida"]])
+
+print("\n=== efecto de empates consecutivos del local ===")
+print("  ¿Después de N empates seguidos el local es más explosivo?")
+print_tabulate(stats_draw_streak_effect(df))
+
+print("\n  por liga:")
+for liga in ligas:
+    dse = stats_draw_streak_effect(df[df["Div"]==liga])
+    if not dse.empty:
+        print(f"\n  {liga}:")
+        print_tabulate(dse)
+
 print("\n=== top 15 goleadores ===")
 hg=df.groupby("HomeTeam")["FTHG"].sum().reset_index().rename(columns={"HomeTeam":"equipo","FTHG":"g_loc"})
 ag=df.groupby("AwayTeam")["FTAG"].sum().reset_index().rename(columns={"AwayTeam":"equipo","FTAG":"g_vis"})
@@ -1899,7 +3783,7 @@ corr_cols=["total_goals","FTHG","FTAG","ht_goals","second_half_goals",
 print(round(df[corr_cols].corr(),3))
 
 
-# ANALISIS GENERALES (todo el periodo, todas las ligas)
+# analisis generales para todo el periodo y todas las ligas
 
 print(f"\n{'='*70}\n  ANALISIS GENERALES — TODO EL PERIODO\n{'='*70}")
 
@@ -2049,7 +3933,7 @@ print(f"  sm H: btts={bsm_all['sm_H_btts']}% goles={bsm_all['sm_H_goles']} | sm 
 print(f"  corr move_D->btts: {bsm_all['corr_move_D_btts']} | corr move_D->goles: {bsm_all['corr_move_D_goles']}")
 
 
-# RACHAS DETALLADAS
+# rachas detalladas por equipo
 
 print(f"\n{'='*70}\n  RACHAS DETALLADAS\n{'='*70}")
 
@@ -2083,14 +3967,14 @@ if not bstg.empty:
 else:
     print("  no hay eventos suficientes con esos filtros")
 
-# variante mas permisiva
+# variante con umbral mas permisivo para capturar mas casos
 print("\n  [variante: racha>=2 derrotas/sin gana, golea >=3]")
 bstg2 = stats_bad_streak_then_goleada(df, min_bad=2, min_goals=3)
 if not bstg2.empty:
     print(f"  total: {len(bstg2)} | gana sig: {round(bstg2['gano_siguiente'].mean()*100,2)}% | pierde: {round(bstg2['perdio_siguiente'].mean()*100,2)}%")
 
 
-# BTTS SEGUN ESTADO DEL PRIMER TIEMPO
+# btts segun como iba el marcador al descanso
 
 print(f"\n{'='*70}\n  BTTS SEGUN ESTADO HT\n{'='*70}")
 
@@ -2117,7 +4001,7 @@ print("\n=== equipos que con mas frecuencia van ganando al descanso ===")
 print_tabulate(stats_teams_winning_at_ht(df))
 
 
-# REMONTADAS: FAVORITOS + BARCELONA
+# analisis de remontadas, con foco en favoritos y Barcelona
 
 print(f"\n{'='*70}\n  REMONTADAS: FAVORITOS Y BARCELONA\n{'='*70}")
 
@@ -2149,7 +4033,7 @@ else:
     print("  Barcelona no aparece en el dataset (puede ser que no este en La Liga en este periodo)")
 
 
-# INICIO VS FIN DE TEMPORADA
+# comparativa entre el arranque y el cierre de cada temporada
 
 print(f"\n{'='*70}\n  INICIO VS FINAL DE TEMPORADA\n{'='*70}")
 
@@ -2186,7 +4070,7 @@ if not top_thirds.empty:
     print_tabulate(cmp_t.sort_values("delta_vic",ascending=False).head(15))
 
 
-# CUOTAS: RANGOS DE PERFORMANCE + VALORES GEMATRICOS
+# rendimiento por rango de cuota y analisis de valores especiales
 
 print(f"\n{'='*70}\n  CUOTAS — RENDIMIENTO POR RANGO Y VALORES ESPECIALES\n{'='*70}")
 
@@ -2224,8 +4108,140 @@ for liga in ligas:
         print(f"\n  {liga}:")
         print_tabulate(gm_l[gm_l["n"]>=5])
 
+print(f"\n{'='*70}")
+print("  ROI APUESTA PLANA A CUOTAS ESPECIALES (3.33 / +333 / -333 / etc.)")
+print(f"{'='*70}")
+print("  Interpretacion: roi_% > 0 = estrategia rentable | edge_% > 0 = mercado infravalorado\n")
 
-# GRAFICAS
+roi_esp = stats_bet_roi_especial(df)
+if not roi_esp.empty:
+    print("\n  Tabla completa (apertura + cierre, los 3 resultados):")
+    print_tabulate(roi_esp)
+
+    pos_roi = roi_esp[roi_esp["roi_%"] > 0].sort_values("roi_%", ascending=False)
+    print("\n  Cuotas CON ROI positivo (todo el dataset):")
+    if not pos_roi.empty:
+        print_tabulate(pos_roi)
+    else:
+        print("  (ninguna cuota especial tiene ROI positivo en el dataset completo)")
+
+    print("\n  Resumen apertura local:")
+    local_ap = roi_esp[roi_esp["lado"] == "local_ap"][
+        ["cuota","decimal","n","wins","real_%","imp_%","edge_%","roi_%","yield"]
+    ].sort_values("decimal").reset_index(drop=True)
+    if not local_ap.empty:
+        print_tabulate(local_ap)
+
+    print("\n  Resumen apertura empate:")
+    draw_ap = roi_esp[roi_esp["lado"] == "empate_ap"][
+        ["cuota","decimal","n","wins","real_%","imp_%","edge_%","roi_%","yield"]
+    ].sort_values("decimal").reset_index(drop=True)
+    if not draw_ap.empty:
+        print_tabulate(draw_ap)
+
+    print("\n  Resumen apertura visitante:")
+    away_ap = roi_esp[roi_esp["lado"] == "visitante_ap"][
+        ["cuota","decimal","n","wins","real_%","imp_%","edge_%","roi_%","yield"]
+    ].sort_values("decimal").reset_index(drop=True)
+    if not away_ap.empty:
+        print_tabulate(away_ap)
+
+print("\n=== ROI cuotas especiales por liga ===")
+for liga in ligas:
+    roi_l = stats_bet_roi_especial(df[df["Div"] == liga])
+    if roi_l.empty:
+        continue
+    print(f"\n  {LIGAS_NAME[liga]}:")
+    sub_l = roi_l[roi_l["lado"].isin(["local_ap","empate_ap","visitante_ap"])][
+        ["cuota","lado","n","real_%","imp_%","edge_%","roi_%"]
+    ].reset_index(drop=True)
+    if not sub_l.empty:
+        print_tabulate(sub_l)
+
+print(f"\n{'='*70}")
+print("  MODELO POISSON — PREDICCION DE MARCADORES Y PROBABILIDADES")
+print(f"{'='*70}")
+print("""
+  El modelo Poisson estima lambda_home y lambda_away para cada partido
+  usando el ataque y defensa historicos de cada equipo relativizados
+  por el promedio de goles de la liga (referencia de rendimiento).
+
+  Formula:
+    lambda_H = mu_H_liga * ataque_local * defensa_visitante
+    lambda_A = mu_A_liga * ataque_visitante * defensa_local
+
+  Donde ataque = (goles_marcados / partidos) / mu_liga
+        defensa = (goles_recibidos / partidos) / mu_rival_liga
+
+  P(marcador i-j) = Poisson(i; lambda_H) * Poisson(j; lambda_A)
+  P(H)  = suma de P(i-j) con i > j
+  P(D)  = suma de P(i-j) con i == j
+  P(A)  = suma de P(i-j) con i < j
+""")
+
+# un clasico por liga para mostrar el modelo en accion
+ejemplos_poisson = [
+    ("E0",  "Man City",    "Arsenal"),
+    ("SP1", "Real Madrid", "Barcelona"),
+    ("D1",  "Bayern Munich","Dortmund"),
+    ("I1",  "Inter",       "Juventus"),
+    ("F1",  "Paris SG",    "Marseille"),
+]
+
+print("\n=== Poisson: ejemplos por liga (clásicos) ===")
+for liga, home, away in ejemplos_poisson:
+    res = poisson_model(df, home, away, liga=liga)
+    print_poisson(res)
+
+print("\n=== Poisson: todos los equipos de la liga (ranking de ataque y defensa) ===")
+for liga in ligas:
+    sub_liga = df[df["Div"] == liga]
+    mu_h = sub_liga["FTHG"].mean()
+    mu_a = sub_liga["FTAG"].mean()
+    equipos_liga = sorted(sub_liga["HomeTeam"].unique())
+    rows_rank = []
+    for eq in equipos_liga:
+        as_home = sub_liga[sub_liga["HomeTeam"] == eq]
+        as_away = sub_liga[sub_liga["AwayTeam"] == eq]
+        n_h = len(as_home); n_a = len(as_away)
+        if n_h + n_a < 10:
+            continue
+        gf_h = as_home["FTHG"].sum(); gc_h = as_home["FTAG"].sum()
+        gf_a = as_away["FTAG"].sum(); gc_a = as_away["FTHG"].sum()
+        pj_h = max(n_h, 1); pj_a = max(n_a, 1)
+        atk = round(((gf_h/pj_h) + (gf_a/pj_a)) / 2 / ((mu_h + mu_a) / 2), 3) if (mu_h+mu_a)>0 else 1.0
+        dfn = round(((gc_h/pj_h) + (gc_a/pj_a)) / 2 / ((mu_h + mu_a) / 2), 3) if (mu_h+mu_a)>0 else 1.0
+        rows_rank.append({
+            "equipo":     eq,
+            "pj":         n_h + n_a,
+            "ataque":     atk,
+            "defensa":    dfn,
+            "gf_pg":      round((gf_h + gf_a) / (n_h + n_a), 3),
+            "gc_pg":      round((gc_h + gc_a) / (n_h + n_a), 3),
+            "poder":      round(atk - dfn, 3),
+        })
+    if not rows_rank:
+        continue
+    rank_df = pd.DataFrame(rows_rank).sort_values("poder", ascending=False).reset_index(drop=True)
+    rank_df.insert(0, "pos", range(1, len(rank_df)+1))
+    print(f"\n  {LIGAS_NAME[liga]} — ranking ataque/defensa/poder (todo el periodo):")
+    print_tabulate(rank_df)
+
+print("\n=== Poisson: matriz de marcadores completa — ejemplo Premier League ===")
+res_ex = poisson_model(df, "Man City", "Arsenal", liga="E0")
+if "error" not in res_ex:
+    print(f"\n  {res_ex['home']} vs {res_ex['away']} — lambda_H={res_ex['lambda_h']} lambda_A={res_ex['lambda_a']}")
+    print(f"  Matriz P(i-j) en % — filas=goles local, columnas=goles visitante:\n")
+    max_show = 7
+    header = ["loc\\vis"] + [str(j) for j in range(max_show+1)]
+    mat_rows = []
+    for i in range(max_show+1):
+        row_data = [str(i)] + [f"{res_ex['matriz'][i,j]*100:.2f}%" for j in range(max_show+1)]
+        mat_rows.append(row_data)
+    print(tabulate(mat_rows, headers=header, tablefmt="orgtbl"))
+
+
+# generacion de graficas
 
 
 print("\n--- generando graficas ---")
@@ -2301,7 +4317,7 @@ ax.hist(df["total_goals"],bins=range(0,15),edgecolor="black",align="left")
 ax.set_xlabel("goles"); ax.set_ylabel("frecuencia")
 plt.savefig("img/distribucion_goles_totales.png"); plt.close()
 
-# HT vs FT analisis grafico
+# grafica: como cambia el resultado final segun los goles del primer tiempo
 fig,axes=plt.subplots(1,3,figsize=(18,5))
 ht_groups=["HT=0","HT=1","HT=2","HT=3+"]
 masks=[df["ht_goals"]==0,df["ht_goals"]==1,df["ht_goals"]==2,df["ht_goals"]>=3]
@@ -2316,7 +4332,7 @@ axes[2].bar(ht_groups,pct_5p,color="#2ecc71",alpha=0.8)
 axes[2].set_title("% 5+ goles segun HT"); axes[2].set_ylabel("% 5+")
 plt.tight_layout(); plt.savefig("img/ht_vs_ft_analisis.png"); plt.close()
 
-# odds gap grafico
+# grafica: relacion entre el equilibrio de cuotas y los goles del partido
 gap_df=stats_odds_gap(df)
 fig,axes=plt.subplots(1,3,figsize=(18,5))
 axes[0].bar(gap_df["equilibrio"],gap_df["avg_goles"],color="#3498db",alpha=0.8)
@@ -2327,7 +4343,7 @@ axes[2].bar(gap_df["equilibrio"],gap_df["pct_D"],color="#9b59b6",alpha=0.8)
 axes[2].set_title("% empate segun equilibrio"); axes[2].tick_params(axis="x",rotation=45)
 plt.tight_layout(); plt.savefig("img/odds_gap_analisis.png"); plt.close()
 
-# dias de la semana grafico
+# grafica: goles promedio y otros indicadores segun el dia de la semana
 day_plot=stats_day_of_week(df)
 fig,ax=plt.subplots(figsize=(11,5))
 dp=day_plot.set_index("day_name")
@@ -2340,7 +4356,7 @@ ax2.legend(loc="upper right"); ax.legend(loc="upper left")
 plt.title("goles y resultados por dia de la semana")
 plt.tight_layout(); plt.savefig("img/goles_por_dia_semana.png"); plt.close()
 
-# racha efecto grafico
+# grafica: como influye la racha previa del equipo local en el resultado
 streak_df=stats_streak_effect(df)
 fig,axes=plt.subplots(1,2,figsize=(14,5))
 axes[0].bar(streak_df["streak_cat"],streak_df["pct_H"],color="#3498db",alpha=0.8)
@@ -2351,7 +4367,7 @@ plt.tight_layout(); plt.savefig("img/efecto_racha.png"); plt.close()
 
 print("guardadas imagenes en img/")
 
-#  graficas: marcadores exactos (todo el periodo) 
+# grafica: marcadores exactos mas frecuentes en todo el periodo
 scores_all = stats_exact_scores(df, top_n=12)
 fig, ax = plt.subplots(figsize=(11,5))
 ax.barh(scores_all["marcador"][::-1], scores_all["pct"][::-1], color="#3498db", alpha=0.85)
@@ -2361,7 +4377,7 @@ for i,(v,p) in enumerate(zip(scores_all["marcador"][::-1], scores_all["pct"][::-
     ax.text(p+0.05, i, f"{p}%", va="center", fontsize=8)
 plt.tight_layout(); plt.savefig("img/marcadores_exactos.png"); plt.close()
 
-#  graficas: diferencia de goles 
+# grafica: distribucion de la diferencia de goles por partido
 gdiff = stats_goal_diff_distribution(df)
 gdiff = gdiff[gdiff["diff_goles"] <= 6]
 fig, ax = plt.subplots(figsize=(9,5))
@@ -2372,7 +4388,7 @@ for i,(v,p) in enumerate(zip(gdiff["diff_goles"], gdiff["pct"])):
     ax.text(i, p+0.2, f"{p}%", ha="center", fontsize=8)
 plt.tight_layout(); plt.savefig("img/diferencia_goles_ft.png"); plt.close()
 
-#  graficas: upset rate (tasa sorpresa) por diferencia de cuotas 
+# grafica: tasa de sorpresas segun que tan dispares eran las cuotas
 upset_df = stats_upset_rate(df)
 if not upset_df.empty:
     fig, ax = plt.subplots(figsize=(10,5))
@@ -2385,7 +4401,7 @@ if not upset_df.empty:
     ax.set_title("Favorito gana vs sorpresa vs empate segun diferencia de cuotas")
     plt.tight_layout(); plt.savefig("img/upset_rate_por_dif_cuotas.png"); plt.close()
 
-#  graficas: overround evolucion 
+# grafica: evolucion del overround a lo largo del tiempo
 oe = stats_overround_evolution(df)
 fig, ax = plt.subplots(figsize=(10,4))
 ax.plot(oe["temporada"], oe["avg_overround"], marker="o", color="#8e44ad", linewidth=2)
@@ -2397,7 +4413,7 @@ ax.set_xlabel("temporada"); ax.set_ylabel("overround promedio")
 ax.set_title("Evolucion del overround por temporada (margen de la casa)")
 plt.tight_layout(); plt.savefig("img/overround_evolucion.png"); plt.close()
 
-#  graficas: decaimiento ventaja local 
+# grafica: si la ventaja de jugar en casa se esta perdiendo con los anos
 had = stats_home_advantage_decay(df)
 fig, ax = plt.subplots(figsize=(10,4))
 ax.plot(had["Season_label"], had["pct_H"],  marker="o", label="% H",  color="#3498db", linewidth=2)
@@ -2407,7 +4423,7 @@ ax.set_xlabel("temporada"); ax.set_ylabel("%"); ax.legend()
 ax.set_title("Evolucion de resultados por temporada (ventaja local)")
 plt.tight_layout(); plt.savefig("img/ventaja_local_evolucion.png"); plt.close()
 
-#  graficas: perfil cuota local 
+# grafica: perfil de la cuota local por liga
 pfav = stats_goles_by_fav_profile(df)
 if not pfav.empty:
     fig, axes = plt.subplots(1,3,figsize=(16,5))
@@ -2419,7 +4435,7 @@ if not pfav.empty:
     axes[2].set_title("% over2.5 segun perfil cuota"); axes[2].tick_params(axis="x",rotation=20)
     plt.tight_layout(); plt.savefig("img/goles_por_perfil_cuota.png"); plt.close()
 
-#  graficas: matriz HTR -> FTR 
+# grafica: matriz de transicion de resultado al descanso a resultado final
 hft = stats_ht_to_ft_matrix(df)
 if not hft.empty:
     fig, ax = plt.subplots(figsize=(6,4))
@@ -2435,7 +4451,7 @@ if not hft.empty:
     plt.colorbar(im, ax=ax); plt.tight_layout()
     plt.savefig("img/matriz_htr_ftr.png"); plt.close()
 
-#  graficas: ratio goles local/visita por liga y temporada 
+# grafica: ratio goles local vs visitante por liga y temporada
 hlr = stats_home_local_ratio(df)
 fig, ax = plt.subplots(figsize=(12,5))
 cmap = get_cmap(len(ligas)+1)
@@ -2447,7 +4463,7 @@ ax.set_xlabel("temporada"); ax.set_ylabel("ratio goles local / visitante")
 ax.set_title("Evolucion del ratio goles local/visitante por liga")
 ax.legend(); plt.tight_layout(); plt.savefig("img/ratio_goles_local_visitante.png"); plt.close()
 
-#  graficas: entropia por liga 
+# grafica: entropia de resultados por liga
 ent_df = stats_entropy_results(df)
 fig, ax = plt.subplots(figsize=(8,4))
 bars = ax.bar(ent_df["liga"], ent_df["entropia"], color="#9b59b6", alpha=0.85)
@@ -2458,7 +4474,7 @@ for bar, val in zip(bars, ent_df["entropia"]):
     ax.text(bar.get_x()+bar.get_width()/2, val+0.01, f"{val}", ha="center", fontsize=9)
 plt.tight_layout(); plt.savefig("img/entropia_por_liga.png"); plt.close()
 
-#  graficas: empate real vs implied 
+# grafica: calibracion del mercado para el empate
 draw_rng = stats_draw_by_odd_range(df)
 if not draw_rng.empty:
     fig, ax = plt.subplots(figsize=(10,5))
@@ -2472,7 +4488,7 @@ if not draw_rng.empty:
 
 print("guardadas imagenes nuevas en img/")
 
-#  graficas: rachas maximas top 20 equipos 
+# grafica: top 20 equipos con las rachas ganadoras mas largas
 streak_all = stats_max_streaks_all(df).head(20)
 fig, ax = plt.subplots(figsize=(14,6))
 x = np.arange(len(streak_all)); w = 0.28
@@ -2484,7 +4500,7 @@ ax.set_ylabel("partidos consecutivos"); ax.legend()
 ax.set_title("Rachas maximas por equipo (victorias / derrotas / empates)")
 plt.tight_layout(); plt.savefig("img/rachas_maximas_equipos.png"); plt.close()
 
-#  graficas: btts segun estado HT por liga 
+# grafica: btts segun como iba el marcador al descanso
 bht_rows=[]
 for liga in ligas:
     b=stats_btts_by_ht_state(df[df["Div"]==liga]); b["liga"]=liga; bht_rows.append(b)
@@ -2503,7 +4519,7 @@ axes[1].set_ylabel("avg goles FT"); axes[1].set_title("Avg goles FT segun estado
 axes[1].legend()
 plt.tight_layout(); plt.savefig("img/btts_segun_estado_ht.png"); plt.close()
 
-#  graficas: explosion 0-0 HT por equipo 
+# grafica: cuantos goles meten en el segundo tiempo los equipos que van 0-0 al descanso
 exp_df = stats_teams_explosion_after_00ht(df).head(15)
 if not exp_df.empty:
     fig, ax = plt.subplots(figsize=(12,5))
@@ -2514,7 +4530,7 @@ if not exp_df.empty:
         ax.text(v+0.01, i, f"{v}", va="center", fontsize=8)
     plt.tight_layout(); plt.savefig("img/explosion_00ht_por_equipo.png"); plt.close()
 
-#  graficas: comparativa inicio vs final temporada 
+# grafica: diferencias entre el inicio y el final de temporada
 thirds = stats_season_thirds(df)
 if not thirds.empty:
     ini = thirds[thirds["segmento"]=="inicio"].groupby("liga")["pct_H"].mean()
@@ -2530,7 +4546,7 @@ if not thirds.empty:
     ax.set_title("Victoria local: inicio vs final de temporada por liga")
     plt.tight_layout(); plt.savefig("img/inicio_vs_final_temporada.png"); plt.close()
 
-#  graficas: cuotas gematricas — edge por valor 
+# grafica: edge real por cuota especial
 gm = stats_gematric_odds(df)
 if not gm.empty:
     gm_loc = gm[gm["lado"]=="local"].copy()
@@ -2544,3 +4560,167 @@ if not gm.empty:
     plt.tight_layout(); plt.savefig("img/cuotas_gematricas_edge.png"); plt.close()
 
 print("guardadas imagenes finales en img/")
+
+# ejecucion completa del analisis de rachas binarias
+
+print(f"\n{'='*70}")
+print(f"  RACHAS BINARIAS — MOTOR COMPLETO")
+print(f"  (over/under, btts, goles HT/ST, cuotas altas, CS, resultados)")
+print(f"{'='*70}")
+
+# construccion de flags y ejecucion del motor
+binary_results, df_ext = run_all_binary_streaks(df)
+
+# 1. resumen global de todas las rachas
+print("\n=== RESUMEN GLOBAL: max racha ON y OFF por flag ===")
+print_tabulate(streak_summary_table(binary_results))
+
+# 2. reporte por grupos tematicos
+
+# grupo A: resultados a tiempo completo
+print(f"\n{'─'*70}")
+print("  GRUPO A — RESULTADOS FULL TIME")
+print(f"{'─'*70}")
+print_binary_streak_report(binary_results, [
+    "over25","over35","over15","over45",
+    "under25","under15",
+    "btts","no_btts",
+    "goalless","high_scoring",
+    "home_win","away_win","draw",
+])
+
+# grupo B: primer tiempo
+print(f"\n{'─'*70}")
+print("  GRUPO B — PRIMER TIEMPO (HT)")
+print(f"{'─'*70}")
+print_binary_streak_report(binary_results, [
+    "gol_ht","under05_ht","under15_ht","over15_ht",
+    "btts_ht","no_btts_ht",
+])
+
+# grupo C: segundo tiempo
+print(f"\n{'─'*70}")
+print("  GRUPO C — SEGUNDO TIEMPO (ST)")
+print(f"{'─'*70}")
+print_binary_streak_report(binary_results, [
+    "gol_st","under05_st","under15_st","over15_st","over25_st",
+    "btts_st","no_btts_st","st_mas_ht",
+])
+
+# grupo D: cuotas altas y resultados sorpresa
+print(f"\n{'─'*70}")
+print("  GRUPO D — CUOTAS ALTAS Y SORPRESAS")
+print(f"{'─'*70}")
+print_binary_streak_report(binary_results, [
+    "high_odd_30_win","high_odd_40_win","high_odd_50_win","high_odd_60_win",
+    "high_draw_win","extreme_upset","balanced_high",
+])
+
+# grupo E: porterias a cero
+print(f"\n{'─'*70}")
+print("  GRUPO E — CLEAN SHEETS")
+print(f"{'─'*70}")
+print_binary_streak_report(binary_results, [
+    "clean_sheet_h","clean_sheet_a",
+])
+
+# 3. correlaciones cruzadas entre flags
+print(f"\n{'='*70}")
+print("  CORRELACIONES CRUZADAS ENTRE RACHAS")
+print(f"{'='*70}")
+print_tabulate(streak_cross_flags(df))
+
+# 4. cuotas altas en contexto de racha
+print(f"\n{'='*70}")
+print("  CUOTAS ALTAS: ¿TRAS N SORPRESAS CONSECUTIVAS, HAY OTRA?")
+print(f"{'='*70}")
+print_tabulate(streak_odds_high_analysis(df))
+
+# 5. rachas maximas por liga para los flags principales
+FLAGS_CLAVE = [
+    ("over25",       "over2.5_FT"),
+    ("btts",         "btts_FT"),
+    ("under25",      "under2.5_FT"),
+    ("goalless",     "0-0_FT"),
+    ("gol_ht",       "gol_en_HT"),
+    ("under05_ht",   "0goles_HT"),
+    ("gol_st",       "gol_en_ST"),
+    ("high_odd_30_win","cuota_alta_gana"),
+]
+
+print(f"\n{'='*70}")
+print("  RACHAS MÁXIMAS POR LIGA — FLAGS CLAVE")
+print(f"{'='*70}")
+for flag, label in FLAGS_CLAVE:
+    if flag not in df_ext.columns: continue
+    print(f"\n  [{label}]")
+    print_tabulate(streak_max_by_league(df_ext, flag, label))
+
+# 6. rachas maximas por temporada
+print(f"\n{'='*70}")
+print("  RACHAS MÁXIMAS POR TEMPORADA — FLAGS CLAVE")
+print(f"{'='*70}")
+for flag, label in FLAGS_CLAVE:
+    if flag not in df_ext.columns: continue
+    rows_t = []
+    for slbl in sorted(df["Season_label"].dropna().unique()):
+        sub = df_ext[df_ext["Season_label"] == slbl].sort_values("Date")
+        if len(sub) < 10: continue
+        vals = sub[flag].tolist()
+        mx_on = 0; mx_off = 0; c_on = 0; c_off = 0
+        for v in vals:
+            if v == 1:
+                c_on += 1; c_off = 0; mx_on = max(mx_on, c_on)
+            else:
+                c_off += 1; c_on = 0; mx_off = max(mx_off, c_off)
+        rows_t.append({
+            "temporada": slbl,
+            "max_racha_ON":  mx_on,
+            "max_racha_OFF": mx_off,
+            f"pct_{flag}":   round(sub[flag].mean() * 100, 2),
+            "partidos":      len(sub),
+        })
+    if rows_t:
+        print(f"\n  [{label}]")
+        print_tabulate(pd.DataFrame(rows_t))
+
+# 7. equipos con rachas mas largas en los flags clave
+print(f"\n{'='*70}")
+print("  TOP EQUIPOS CON RACHAS MÁS LARGAS — FLAGS CLAVE")
+print(f"{'='*70}")
+for flag, label in FLAGS_CLAVE:
+    if flag not in df_ext.columns: continue
+    print(f"\n  [{label}]")
+    print_tabulate(streak_max_by_team(df_ext, flag, label).head(12))
+
+# 8. perfil de equipos calientes y frios en btts y over25
+print(f"\n{'='*70}")
+print("  PERFIL EQUIPOS CALIENTES / FRÍOS (racha actual ≥3)")
+print(f"{'='*70}")
+for flag, label in [("btts","btts_FT"), ("over25","over2.5_FT"),
+                     ("gol_ht","gol_HT"), ("clean_sheet_h","cs_local")]:
+    if flag not in df_ext.columns: continue
+    print(f"\n  [{label}] — equipos con racha activa más larga:")
+    print_tabulate(streak_team_flag_profile(df_ext, flag, label).head(10))
+
+# 9. estado actual: que rachas historicas siguen activas
+print(f"\n{'='*70}")
+print("  ESTADO VIVO AL FINAL DEL DATASET — TODOS LOS FLAGS")
+print(f"{'='*70}")
+estado_rows = []
+for flag, r in binary_results.items():
+    est = r["estado_vivo"].copy()
+    est.insert(0, "flag", r["label"])
+    estado_rows.append(est)
+if estado_rows:
+    estado_all = pd.concat(estado_rows, ignore_index=True)
+    # mostrar solo los que tienen racha activa larga (≥3)
+    print("\n  rachas activas de 3+ partidos al final del dataset:")
+    activas = estado_all[estado_all["partidos_activos"] >= 3].sort_values(
+        "partidos_activos", ascending=False)
+    if not activas.empty:
+        print_tabulate(activas)
+    else:
+        print("  (ninguna racha de 3+ activa al cierre del dataset)")
+
+print("\n=== fin bloque rachas binarias ===")

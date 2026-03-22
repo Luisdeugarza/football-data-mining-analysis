@@ -2698,6 +2698,198 @@ def stats_odds_movement_detail(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def stats_fav_move_vs_draw_upset(df: pd.DataFrame) -> pd.DataFrame:
+    """Cuando la cuota del favorito baja antes del cierre (dinero entrando),
+    que probabilidad hay de empate y de sorpresa vs cuando sube o se queda igual.
+
+    Identifica al favorito como el equipo con cuota mas baja en apertura.
+    Calcula el movimiento de esa cuota (cierre - apertura) y agrupa en:
+      - baja fuerte  : mov < -0.10  (mucho dinero al favorito)
+      - baja leve    : entre -0.10 y -0.02
+      - estable      : entre -0.02 y +0.02
+      - sube leve    : entre +0.02 y +0.10
+      - sube fuerte  : mov > +0.10  (dinero huyendo del favorito)
+
+    Para cada grupo muestra cuanto sale empate, sorpresa y victoria del favorito.
+    """
+    df2 = df.copy()
+
+    # identificar quien es el favorito y su cuota apertura/cierre
+    df2["fav_es_local"] = df2["AvgH"] <= df2["AvgA"]
+    df2["odd_fav_ap"]   = np.where(df2["fav_es_local"], df2["AvgH"], df2["AvgA"])
+    df2["odd_fav_ci"]   = np.where(df2["fav_es_local"], df2["AvgCH"], df2["AvgCA"])
+    df2["mov_fav"]      = round(df2["odd_fav_ci"] - df2["odd_fav_ap"], 4)
+
+    # si el favorito gano, empato o perdio
+    df2["fav_gana"]   = np.where(df2["fav_es_local"], df2["home_win"],  df2["away_win"]).astype(int)
+    df2["fav_pierde"] = np.where(df2["fav_es_local"], df2["away_win"],  df2["home_win"]).astype(int)
+    df2["empate"]     = df2["draw"]
+
+    bins   = [-np.inf, -0.10, -0.02, 0.02, 0.10, np.inf]
+    labels = ["baja fuerte (>0.10)", "baja leve (0.02-0.10)",
+              "estable (±0.02)",
+              "sube leve (0.02-0.10)", "sube fuerte (>0.10)"]
+    df2["mov_cat"] = pd.cut(df2["mov_fav"], bins=bins, labels=labels)
+
+    rows = []
+    for cat in labels:
+        sub = df2[df2["mov_cat"] == cat]
+        if len(sub) < 10:
+            continue
+        rows.append({
+            "movimiento_fav":    cat,
+            "partidos":          len(sub),
+            "pct_total":         round(len(sub) / len(df) * 100, 2),
+            "pct_fav_gana":      round(sub["fav_gana"].mean()   * 100, 2),
+            "pct_empate":        round(sub["empate"].mean()      * 100, 2),
+            "pct_sorpresa":      round(sub["fav_pierde"].mean()  * 100, 2),
+            "avg_odd_fav_ap":    round(sub["odd_fav_ap"].mean(), 3),
+            "avg_mov_fav":       round(sub["mov_fav"].mean(), 4),
+            "avg_goles":         round(sub["total_goals"].mean(), 3),
+            "pct_btts":          round(sub["btts"].mean()        * 100, 2),
+            "pct_over25":        round(sub["over25"].mean()      * 100, 2),
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_convergencia_cuotas(df: pd.DataFrame) -> pd.DataFrame:
+    """Cuando las cuotas de H y A se acercan entre apertura y cierre
+    (el partido se 'equilibro' en el mercado), hay mas empates?
+
+    Mide el cambio en la diferencia absoluta |AvgH - AvgA| entre apertura y cierre.
+    Si la diferencia baja, el mercado acorto distancias.
+    Si sube, el favorito se consolido mas.
+
+    Grupos:
+      - se equilibro mucho : diff_ci - diff_ap < -0.30
+      - se equilibro algo  : entre -0.30 y -0.05
+      - sin cambio         : entre -0.05 y +0.05
+      - se polarizo algo   : entre +0.05 y +0.30
+      - se polarizo mucho  : diff_ci - diff_ap > +0.30
+    """
+    df2 = df.copy()
+    df2["gap_ap"] = (df2["AvgH"]  - df2["AvgA"]).abs()
+    df2["gap_ci"] = (df2["AvgCH"] - df2["AvgCA"]).abs()
+    df2["delta_gap"] = round(df2["gap_ci"] - df2["gap_ap"], 4)
+
+    bins   = [-np.inf, -0.30, -0.05, 0.05, 0.30, np.inf]
+    labels = ["se equilibro mucho", "se equilibro algo",
+              "sin cambio",
+              "se polarizo algo", "se polarizo mucho"]
+    df2["conv_cat"] = pd.cut(df2["delta_gap"], bins=bins, labels=labels)
+
+    rows = []
+    for cat in labels:
+        sub = df2[df2["conv_cat"] == cat]
+        if len(sub) < 10:
+            continue
+        rows.append({
+            "movimiento_mercado": cat,
+            "partidos":           len(sub),
+            "pct_total":          round(len(sub) / len(df) * 100, 2),
+            "pct_H":              round(sub["home_win"].mean() * 100, 2),
+            "pct_D":              round(sub["draw"].mean()     * 100, 2),
+            "pct_A":              round(sub["away_win"].mean() * 100, 2),
+            "avg_gap_ap":         round(sub["gap_ap"].mean(), 3),
+            "avg_gap_ci":         round(sub["gap_ci"].mean(), 3),
+            "avg_delta_gap":      round(sub["delta_gap"].mean(), 4),
+            "avg_goles":          round(sub["total_goals"].mean(), 3),
+            "pct_btts":           round(sub["btts"].mean()     * 100, 2),
+            "pct_over25":         round(sub["over25"].mean()   * 100, 2),
+        })
+    return pd.DataFrame(rows)
+
+
+def stats_double_move(df: pd.DataFrame) -> pd.DataFrame:
+    """Partidos donde AMBAS cuotas (local y visitante) bajan a la vez —
+    dinero entrando a los dos lados simultaneamente.
+    Tipicamente indica que se espera un partido con goles (over/btts).
+
+    Clasifica segun la combinacion de direccion de movimiento:
+      H baja + A baja  : dinero a ambos lados (partido abierto esperado)
+      H baja + A sube  : dinero solo al local
+      H sube + A baja  : dinero solo al visitante
+      H sube + A sube  : mercado alejandose de ambos (quiza empate)
+      uno o ambos estables
+    """
+    df2 = df.copy()
+    umbral = 0.05
+
+    def cat_move(mov):
+        if mov < -umbral:   return "baja"
+        if mov >  umbral:   return "sube"
+        return "estable"
+
+    df2["dir_H"] = df2["odds_move_H"].map(cat_move)
+    df2["dir_A"] = df2["odds_move_A"].map(cat_move)
+    df2["combo"] = df2["dir_H"] + " + " + df2["dir_A"]
+
+    rows = []
+    for combo in df2["combo"].value_counts().index:
+        sub = df2[df2["combo"] == combo]
+        if len(sub) < 10:
+            continue
+        rows.append({
+            "movimiento_H_A":  combo,
+            "partidos":        len(sub),
+            "pct_total":       round(len(sub) / len(df) * 100, 2),
+            "pct_H":           round(sub["home_win"].mean() * 100, 2),
+            "pct_D":           round(sub["draw"].mean()     * 100, 2),
+            "pct_A":           round(sub["away_win"].mean() * 100, 2),
+            "avg_goles":       round(sub["total_goals"].mean(), 3),
+            "pct_btts":        round(sub["btts"].mean()     * 100, 2),
+            "pct_over25":      round(sub["over25"].mean()   * 100, 2),
+            "avg_mov_H":       round(sub["odds_move_H"].mean(), 4),
+            "avg_mov_A":       round(sub["odds_move_A"].mean(), 4),
+        })
+    return pd.DataFrame(rows).sort_values("partidos", ascending=False).reset_index(drop=True)
+
+
+def stats_edge_apertura_vs_cierre(df: pd.DataFrame) -> pd.DataFrame:
+    """Compara el edge real de la cuota de apertura vs la de cierre para
+    local y visitante. Responde: apostar a apertura o esperar al cierre
+    da mejor valor historicamente?
+
+    Edge = real_% - implied_%
+    Positivo significa que el mercado subestimo esa probabilidad.
+    """
+    bins   = [1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 6.0, 25.0]
+    labels = [f"{bins[i]}-{bins[i+1]}" for i in range(len(bins) - 1)]
+    rows = []
+
+    for res_col, odd_ap, odd_ci, lado in [
+        ("home_win", "AvgH",  "AvgCH", "local"),
+        ("away_win", "AvgA",  "AvgCA", "visitante"),
+    ]:
+        d2 = df.copy()
+        d2["rng_ap"] = pd.cut(d2[odd_ap], bins=bins, labels=labels, right=False)
+        d2["rng_ci"] = pd.cut(d2[odd_ci], bins=bins, labels=labels, right=False)
+
+        for rng in labels:
+            sub_ap = d2[d2["rng_ap"] == rng]
+            sub_ci = d2[d2["rng_ci"] == rng]
+            if len(sub_ap) < 10 or len(sub_ci) < 10:
+                continue
+            mid = (bins[labels.index(rng)] + bins[labels.index(rng) + 1]) / 2
+            imp = round(1 / mid * 100, 2)
+            real_ap = round(sub_ap[res_col].mean() * 100, 2)
+            real_ci = round(sub_ci[res_col].mean() * 100, 2)
+            rows.append({
+                "resultado":     lado,
+                "rango_odd":     rng,
+                "n_ap":          len(sub_ap),
+                "n_ci":          len(sub_ci),
+                "imp_%":         imp,
+                "real_ap_%":     real_ap,
+                "real_ci_%":     real_ci,
+                "edge_ap":       round(real_ap - imp, 2),
+                "edge_ci":       round(real_ci - imp, 2),
+                "mejor":         "cierre" if real_ci > real_ap else "apertura",
+                "diff_edge":     round((real_ci - imp) - (real_ap - imp), 2),
+            })
+    return pd.DataFrame(rows)
+
+
 def stats_odds_mode_full(df: pd.DataFrame) -> pd.DataFrame:
     """Top 10 modas de cuotas (apertura y cierre) más frecuentes para cada resultado.
     Responde: ¿qué cuota 'redonda' aparece más seguido?"""
@@ -3858,6 +4050,55 @@ print_tabulate(stats_apertura_vs_cierre(df))
 print("\n=== apertura vs cierre de cuotas por liga ===")
 for liga in ligas:
     print(f"\n  {liga}:"); print_tabulate(stats_apertura_vs_cierre(df[df["Div"]==liga]))
+
+print("\n=== cuando la cuota del favorito baja: empate y sorpresa ===")
+print("  (baja = dinero entrando al favorito antes del cierre)")
+print_tabulate(stats_fav_move_vs_draw_upset(df))
+
+print("\n=== cuando la cuota del favorito baja: por liga ===")
+for liga in ligas:
+    sub_l = stats_fav_move_vs_draw_upset(df[df["Div"]==liga])
+    if not sub_l.empty:
+        print(f"\n  {LIGAS_NAME[liga]}:")
+        print_tabulate(sub_l[["movimiento_fav","partidos","pct_fav_gana","pct_empate","pct_sorpresa","avg_goles","pct_btts"]])
+
+print("\n=== convergencia de cuotas: cuando el mercado equilibra el partido ===")
+print("  (delta negativo = las cuotas se acercaron, partido mas parejo al cierre)")
+print_tabulate(stats_convergencia_cuotas(df))
+
+print("\n=== convergencia de cuotas por liga ===")
+for liga in ligas:
+    sub_l = stats_convergencia_cuotas(df[df["Div"]==liga])
+    if not sub_l.empty:
+        print(f"\n  {LIGAS_NAME[liga]}:")
+        print_tabulate(sub_l[["movimiento_mercado","partidos","pct_H","pct_D","pct_A","avg_goles","pct_btts"]])
+
+print("\n=== movimiento simultaneo de cuotas H y A (dinero a ambos lados) ===")
+print("  (baja+baja = dinero a los dos lados, partido abierto esperado)")
+print_tabulate(stats_double_move(df))
+
+print("\n=== movimiento simultaneo por liga ===")
+for liga in ligas:
+    sub_l = stats_double_move(df[df["Div"]==liga])
+    if not sub_l.empty:
+        print(f"\n  {LIGAS_NAME[liga]}:")
+        print_tabulate(sub_l[["movimiento_H_A","partidos","pct_H","pct_D","pct_A","avg_goles","pct_btts","pct_over25"]])
+
+print("\n=== edge apertura vs cierre: donde conviene mas apostar ===")
+print("  (edge positivo = el mercado subestimo esa probabilidad)")
+eac = stats_edge_apertura_vs_cierre(df)
+if not eac.empty:
+    print("\n  local:")
+    print_tabulate(eac[eac["resultado"]=="local"].drop(columns="resultado").reset_index(drop=True))
+    print("\n  visitante:")
+    print_tabulate(eac[eac["resultado"]=="visitante"].drop(columns="resultado").reset_index(drop=True))
+
+print("\n=== edge apertura vs cierre por liga ===")
+for liga in ligas:
+    eac_l = stats_edge_apertura_vs_cierre(df[df["Div"]==liga])
+    if not eac_l.empty:
+        print(f"\n  {LIGAS_NAME[liga]}:")
+        print_tabulate(eac_l[["resultado","rango_odd","imp_%","real_ap_%","real_ci_%","edge_ap","edge_ci","mejor"]].reset_index(drop=True))
 
 print("\n=== tasa sorpresa segun dif cuotas (todo el periodo) ===")
 print_tabulate(stats_upset_rate(df))

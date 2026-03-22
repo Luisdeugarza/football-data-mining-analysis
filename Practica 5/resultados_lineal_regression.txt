@@ -1,0 +1,737 @@
+dataset cargado: 11,851 partidos | 5 ligas | 7 temporadas
+
+============================================================
+  1. MATRIZ DE CORRELACION
+============================================================
+
+  correlaciones con total_goals (ordenadas):
+|    | variable          |   corr_con_total_goals |
+|----+-------------------+------------------------|
+|  0 | over25            |                  0.8   |
+|  1 | second_half_goals |                  0.746 |
+|  2 | ht_goals          |                  0.699 |
+|  3 | btts              |                  0.574 |
+|  4 | draw              |                 -0.239 |
+|  5 | imp_prob_D        |                 -0.206 |
+|  6 | AvgD              |                  0.19  |
+|  7 | home_win          |                  0.144 |
+|  8 | AvgCA             |                  0.109 |
+|  9 | AvgA              |                  0.108 |
+| 10 | imp_prob_H        |                  0.07  |
+| 11 | away_win          |                  0.07  |
+| 12 | odds_move_D       |                  0.07  |
+| 13 | overround         |                 -0.022 |
+| 14 | AvgH              |                  0.019 |
+| 15 | AvgCH             |                  0.017 |
+| 16 | imp_prob_A        |                 -0.017 |
+| 17 | odds_move_A       |                  0.014 |
+| 18 | odds_move_H       |                 -0.005 |
+
+  correlaciones con home_win (ordenadas):
+|    | variable          |   corr_con_home_win |
+|----+-------------------+---------------------|
+|  0 | away_win          |              -0.592 |
+|  1 | draw              |              -0.505 |
+|  2 | imp_prob_H        |               0.394 |
+|  3 | imp_prob_A        |              -0.38  |
+|  4 | AvgCA             |               0.331 |
+|  5 | AvgA              |               0.33  |
+|  6 | AvgCH             |              -0.309 |
+|  7 | AvgH              |              -0.308 |
+|  8 | AvgD              |               0.185 |
+|  9 | imp_prob_D        |              -0.182 |
+| 10 | over25            |               0.171 |
+| 11 | total_goals       |               0.144 |
+| 12 | btts              |              -0.131 |
+| 13 | second_half_goals |               0.11  |
+| 14 | ht_goals          |               0.098 |
+| 15 | odds_move_H       |              -0.069 |
+| 16 | odds_move_A       |               0.042 |
+| 17 | odds_move_D       |               0.036 |
+| 18 | overround         |              -0.015 |
+
+  grafica guardada: img/lr_heatmap_correlaciones.png
+
+============================================================
+  2. REGRESIONES SIMPLES
+============================================================
+
+============================================================
+  total_goals ~ ht_goals
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.489
+Model:                            OLS   Adj. R-squared:                  0.489
+Method:                 Least Squares   F-statistic:                 1.135e+04
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):               0.00
+Time:                        02:13:14   Log-Likelihood:                -18917.
+No. Observations:               11851   AIC:                         3.784e+04
+Df Residuals:                   11849   BIC:                         3.785e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          1.4905      0.017     90.188      0.000       1.458       1.523
+x1             1.0493      0.010    106.523      0.000       1.030       1.069
+==============================================================================
+Omnibus:                      833.981   Durbin-Watson:                   1.993
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1019.812
+Skew:                           0.693   Prob(JB):                    3.55e-222
+Kurtosis:                       3.377   Cond. No.                         3.10
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_total_goals_ht_goals.png
+
+============================================================
+  home_win ~ AvgH (apertura)
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.095
+Model:                            OLS   Adj. R-squared:                  0.095
+Method:                 Least Squares   F-statistic:                     1239.
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):          3.42e-258
+Time:                        02:13:14   Log-Likelihood:                -7896.6
+No. Observations:               11851   AIC:                         1.580e+04
+Df Residuals:                   11849   BIC:                         1.581e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.6674      0.008     83.404      0.000       0.652       0.683
+x1            -0.0853      0.002    -35.196      0.000      -0.090      -0.081
+==============================================================================
+Omnibus:                    51473.296   Durbin-Watson:                   2.039
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1501.832
+Skew:                           0.194   Prob(JB):                         0.00
+Kurtosis:                       1.300   Cond. No.                         6.51
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_home_win_AvgH.png
+
+============================================================
+  home_win ~ AvgCH (cierre)
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.096
+Model:                            OLS   Adj. R-squared:                  0.095
+Method:                 Least Squares   F-statistic:                     1252.
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):          8.13e-261
+Time:                        02:13:14   Log-Likelihood:                -7890.6
+No. Observations:               11851   AIC:                         1.579e+04
+Df Residuals:                   11849   BIC:                         1.580e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.6617      0.008     84.449      0.000       0.646       0.677
+x1            -0.0821      0.002    -35.385      0.000      -0.087      -0.078
+==============================================================================
+Omnibus:                    53237.888   Durbin-Watson:                   2.037
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1455.371
+Skew:                           0.197   Prob(JB):                         0.00
+Kurtosis:                       1.329   Cond. No.                         6.50
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_home_win_AvgCH.png
+
+============================================================
+  total_goals ~ overround
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.001
+Model:                            OLS   Adj. R-squared:                  0.000
+Method:                 Least Squares   F-statistic:                     5.999
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):             0.0143
+Time:                        02:13:15   Log-Likelihood:                -22894.
+No. Observations:               11851   AIC:                         4.579e+04
+Df Residuals:                   11849   BIC:                         4.581e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          9.0633      2.554      3.548      0.000       4.057      14.070
+x1            -5.9727      2.439     -2.449      0.014     -10.753      -1.193
+==============================================================================
+Omnibus:                      517.858   Durbin-Watson:                   1.978
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              587.012
+Skew:                           0.541   Prob(JB):                    3.40e-128
+Kurtosis:                       3.139   Cond. No.                         333.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_total_goals_overround.png
+
+============================================================
+  home_win ~ imp_prob_H
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.155
+Model:                            OLS   Adj. R-squared:                  0.155
+Method:                 Least Squares   F-statistic:                     2174.
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):               0.00
+Time:                        02:13:15   Log-Likelihood:                -7487.5
+No. Observations:               11851   AIC:                         1.498e+04
+Df Residuals:                   11849   BIC:                         1.499e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -0.0410      0.011     -3.750      0.000      -0.062      -0.020
+x1             1.0327      0.022     46.630      0.000       0.989       1.076
+==============================================================================
+Omnibus:                   115039.849   Durbin-Watson:                   2.026
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              970.423
+Skew:                           0.230   Prob(JB):                    1.88e-211
+Kurtosis:                       1.676   Cond. No.                         6.43
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_home_win_imp_prob_H.png
+
+============================================================
+  total_goals ~ diff_imp (imp_H - imp_A)
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.002
+Model:                            OLS   Adj. R-squared:                  0.002
+Method:                 Least Squares   F-statistic:                     24.29
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):           8.41e-07
+Time:                        02:13:15   Log-Likelihood:                -22885.
+No. Observations:               11851   AIC:                         4.577e+04
+Df Residuals:                   11849   BIC:                         4.579e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          2.7808      0.016    171.115      0.000       2.749       2.813
+x1             0.2114      0.043      4.928      0.000       0.127       0.295
+==============================================================================
+Omnibus:                      513.754   Durbin-Watson:                   1.976
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              581.871
+Skew:                           0.539   Prob(JB):                    4.45e-127
+Kurtosis:                       3.129   Cond. No.                         2.85
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_total_goals_diff_imp.png
+
+============================================================
+  resumen regresiones simples
+============================================================
+|    | x          | y           |     n |     r2 |   r2_adj |      coef |     pval |
+|----+------------+-------------+-------+--------+----------+-----------+----------|
+|  0 | ht_goals   | total_goals | 11851 | 0.4892 |   0.4891 |  1.04935  | 0        |
+|  1 | AvgH       | home_win    | 11851 | 0.0947 |   0.0946 | -0.085285 | 0        |
+|  2 | AvgCH      | home_win    | 11851 | 0.0956 |   0.0955 | -0.082065 | 0        |
+|  3 | overround  | total_goals | 11851 | 0.0005 |   0.0004 | -5.97267  | 0.014329 |
+|  4 | imp_prob_H | home_win    | 11851 | 0.1551 |   0.155  |  1.03266  | 0        |
+|  5 | diff_imp   | total_goals | 11851 | 0.002  |   0.002  |  0.211409 | 1e-06    |
+
+============================================================
+  3. REGRESION MULTIPLE — total_goals
+============================================================
+
+============================================================
+  total_goals ~ imp_prob_H + imp_prob_A + overround
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            total_goals   R-squared:                       0.043
+Model:                            OLS   Adj. R-squared:                  0.043
+Method:                 Least Squares   F-statistic:                     178.0
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):          7.04e-113
+Time:                        02:13:15   Log-Likelihood:                -22636.
+No. Observations:               11851   AIC:                         4.528e+04
+Df Residuals:                   11847   BIC:                         4.531e+04
+Df Model:                           3                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          4.2908      2.508      1.711      0.087      -0.626       9.207
+imp_prob_H     7.0107      0.306     22.893      0.000       6.410       7.611
+imp_prob_A     7.2800      0.337     21.616      0.000       6.620       7.940
+overround     -6.7732      2.387     -2.838      0.005     -11.451      -2.095
+==============================================================================
+Omnibus:                      447.387   Durbin-Watson:                   1.987
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              498.826
+Skew:                           0.500   Prob(JB):                    4.80e-109
+Kurtosis:                       3.097   Cond. No.                         358.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+============================================================
+  total_goals ~ imp_prob_H + imp_prob_A + overround + odds_move_H + odds_move_A
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            total_goals   R-squared:                       0.043
+Model:                            OLS   Adj. R-squared:                  0.043
+Method:                 Least Squares   F-statistic:                     107.2
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):          4.46e-111
+Time:                        02:13:16   Log-Likelihood:                -22635.
+No. Observations:               11851   AIC:                         4.528e+04
+Df Residuals:                   11845   BIC:                         4.533e+04
+Df Model:                           5                                         
+Covariance Type:            nonrobust                                         
+===============================================================================
+                  coef    std err          t      P>|t|      [0.025      0.975]
+-------------------------------------------------------------------------------
+const           4.2145      2.510      1.679      0.093      -0.706       9.135
+imp_prob_H      7.0140      0.306     22.893      0.000       6.413       7.615
+imp_prob_A      7.2949      0.337     21.627      0.000       6.634       7.956
+overround      -6.7068      2.388     -2.808      0.005     -11.388      -2.025
+odds_move_H    -0.0275      0.039     -0.709      0.478      -0.103       0.048
+odds_move_A     0.0220      0.020      1.125      0.260      -0.016       0.060
+==============================================================================
+Omnibus:                      448.555   Durbin-Watson:                   1.987
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              500.248
+Skew:                           0.501   Prob(JB):                    2.36e-109
+Kurtosis:                       3.099   Cond. No.                         359.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+============================================================
+  total_goals ~ AvgH + AvgA + AvgD + overround
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            total_goals   R-squared:                       0.053
+Model:                            OLS   Adj. R-squared:                  0.053
+Method:                 Least Squares   F-statistic:                     167.3
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):          1.34e-139
+Time:                        02:13:16   Log-Likelihood:                -22572.
+No. Observations:               11851   AIC:                         4.515e+04
+Df Residuals:                   11846   BIC:                         4.519e+04
+Df Model:                           4                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.7557      2.508      0.301      0.763      -4.161       5.672
+AvgH          -0.2346      0.019    -12.599      0.000      -0.271      -0.198
+AvgA          -0.2323      0.016    -14.685      0.000      -0.263      -0.201
+AvgD           0.8079      0.039     20.672      0.000       0.731       0.884
+overround      0.4038      2.387      0.169      0.866      -4.276       5.083
+==============================================================================
+Omnibus:                      445.305   Durbin-Watson:                   1.994
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              496.041
+Skew:                           0.497   Prob(JB):                    1.93e-108
+Kurtosis:                       3.124   Cond. No.                     1.68e+03
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 1.68e+03. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+  resumen regresiones multiples (total_goals):
+|    | features                                                                | y           |     n |     r2 |   r2_adj |     aic |     bic |
+|----+-------------------------------------------------------------------------+-------------+-------+--------+----------+---------+---------|
+|  0 | ['imp_prob_H', 'imp_prob_A', 'overround']                               | total_goals | 11851 | 0.0431 |   0.0429 | 45280.1 | 45309.6 |
+|  1 | ['imp_prob_H', 'imp_prob_A', 'overround', 'odds_move_H', 'odds_move_A'] | total_goals | 11851 | 0.0433 |   0.0429 | 45282   | 45326.2 |
+|  2 | ['AvgH', 'AvgA', 'AvgD', 'overround']                                   | total_goals | 11851 | 0.0535 |   0.0532 | 45153.2 | 45190.1 |
+
+============================================================
+  4. MOVIMIENTO DE CUOTA COMO PREDICTOR
+============================================================
+
+  hipotesis: si la cuota local baja antes del cierre, predice victoria del local
+
+============================================================
+  home_win ~ odds_move_H (movimiento cuota local)
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.005
+Model:                            OLS   Adj. R-squared:                  0.005
+Method:                 Least Squares   F-statistic:                     56.01
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):           7.71e-14
+Time:                        02:13:16   Log-Likelihood:                -8457.8
+No. Observations:               11851   AIC:                         1.692e+04
+Df Residuals:                   11849   BIC:                         1.693e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.4339      0.005     95.143      0.000       0.425       0.443
+x1            -0.0859      0.011     -7.484      0.000      -0.108      -0.063
+==============================================================================
+Omnibus:                    43268.736   Durbin-Watson:                   2.023
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1938.582
+Skew:                           0.272   Prob(JB):                         0.00
+Kurtosis:                       1.095   Cond. No.                         2.53
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_home_win_odds_move_H.png
+
+============================================================
+  total_goals ~ odds_move_H
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.000
+Model:                            OLS   Adj. R-squared:                 -0.000
+Method:                 Least Squares   F-statistic:                    0.2903
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):              0.590
+Time:                        02:13:16   Log-Likelihood:                -22897.
+No. Observations:               11851   AIC:                         4.580e+04
+Df Residuals:                   11849   BIC:                         4.581e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          2.8082      0.015    182.091      0.000       2.778       2.838
+x1            -0.0209      0.039     -0.539      0.590      -0.097       0.055
+==============================================================================
+Omnibus:                      519.070   Durbin-Watson:                   1.977
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              588.563
+Skew:                           0.541   Prob(JB):                    1.57e-128
+Kurtosis:                       3.139   Cond. No.                         2.53
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_total_goals_odds_move_H.png
+
+============================================================
+  total_goals ~ odds_move_H + odds_move_A + odds_move_D
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:            total_goals   R-squared:                       0.012
+Model:                            OLS   Adj. R-squared:                  0.011
+Method:                 Least Squares   F-statistic:                     46.22
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):           1.10e-29
+Time:                        02:13:16   Log-Likelihood:                -22828.
+No. Observations:               11851   AIC:                         4.566e+04
+Df Residuals:                   11847   BIC:                         4.569e+04
+Df Model:                           3                                         
+Covariance Type:            nonrobust                                         
+===============================================================================
+                  coef    std err          t      P>|t|      [0.025      0.975]
+-------------------------------------------------------------------------------
+const           2.8431      0.016    180.777      0.000       2.812       2.874
+odds_move_H    -0.3279      0.048     -6.889      0.000      -0.421      -0.235
+odds_move_A    -0.2809      0.033     -8.479      0.000      -0.346      -0.216
+odds_move_D     0.9990      0.086     11.674      0.000       0.831       1.167
+==============================================================================
+Omnibus:                      506.671   Durbin-Watson:                   1.979
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              572.791
+Skew:                           0.534   Prob(JB):                    4.17e-125
+Kurtosis:                       3.137   Cond. No.                         6.25
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+============================================================
+  home_win ~ odds_move_H + odds_move_A
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:               home_win   R-squared:                       0.006
+Model:                            OLS   Adj. R-squared:                  0.006
+Method:                 Least Squares   F-statistic:                     33.79
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):           2.32e-15
+Time:                        02:13:16   Log-Likelihood:                -8452.1
+No. Observations:               11851   AIC:                         1.691e+04
+Df Residuals:                   11848   BIC:                         1.693e+04
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+===============================================================================
+                  coef    std err          t      P>|t|      [0.025      0.975]
+-------------------------------------------------------------------------------
+const           0.4324      0.005     94.433      0.000       0.423       0.441
+odds_move_H    -0.0793      0.012     -6.816      0.000      -0.102      -0.056
+odds_move_A     0.0200      0.006      3.395      0.001       0.008       0.032
+==============================================================================
+Omnibus:                    43411.297   Durbin-Watson:                   2.023
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1932.161
+Skew:                           0.274   Prob(JB):                         0.00
+Kurtosis:                       1.100   Cond. No.                         2.59
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+============================================================
+  5. EDGE COMO VARIABLE DEPENDIENTE
+============================================================
+
+  el edge mide cuanto se equivoca el mercado: real_% - implied_%
+  si hay patron sistematico con la cuota, el mercado tiene sesgo
+
+  edge por rango de cuota local:
+|    | rango_AvgH   |   mid_cuota |    n |   imp_% |   real_% |   edge |
+|----+--------------+-------------+------+---------+----------+--------|
+|  0 | 1.0-1.3      |       1.15  |  712 |   86.96 |    79.92 |  -7.04 |
+|  1 | 1.3-1.5      |       1.4   | 1132 |   71.43 |    72.7  |   1.27 |
+|  2 | 1.5-1.75     |       1.625 | 1403 |   61.54 |    58.45 |  -3.09 |
+|  3 | 1.75-2.0     |       1.875 | 1307 |   53.33 |    52.79 |  -0.54 |
+|  4 | 2.0-2.5      |       2.25  | 2425 |   44.44 |    42.31 |  -2.14 |
+|  5 | 2.5-3.0      |       2.75  | 1561 |   36.36 |    32.93 |  -3.44 |
+|  6 | 3.0-4.0      |       3.5   | 1536 |   28.57 |    25.33 |  -3.25 |
+|  7 | 4.0-6.0      |       5     | 1125 |   20    |    17.96 |  -2.04 |
+|  8 | 6.0-25.0     |      15.5   |  650 |    6.45 |    10.62 |   4.16 |
+
+============================================================
+  edge ~ mid_cuota  (sesgo del mercado por rango de cuota)
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.475
+Model:                            OLS   Adj. R-squared:                  0.400
+Method:                 Least Squares   F-statistic:                     6.332
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):             0.0400
+Time:                        02:13:16   Log-Likelihood:                -19.738
+No. Observations:                   9   AIC:                             43.48
+Df Residuals:                       7   BIC:                             43.87
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -3.6772      1.111     -3.310      0.013      -6.304      -1.050
+x1             0.4846      0.193      2.516      0.040       0.029       0.940
+==============================================================================
+Omnibus:                        1.094   Durbin-Watson:                   2.362
+Prob(Omnibus):                  0.579   Jarque-Bera (JB):                0.110
+Skew:                           0.271   Prob(JB):                        0.946
+Kurtosis:                       3.000   Cond. No.                         7.93
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_edge_cuota.png
+
+  R² del modelo edge ~ cuota: 0.475
+  si R² > 0 y coeficiente != 0, el mercado tiene sesgo sistematico en ese rango
+
+============================================================
+  edge_visitante ~ mid_cuota
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.274
+Model:                            OLS   Adj. R-squared:                  0.170
+Method:                 Least Squares   F-statistic:                     2.644
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):              0.148
+Time:                        02:13:16   Log-Likelihood:                -19.117
+No. Observations:                   9   AIC:                             42.23
+Df Residuals:                       7   BIC:                             42.63
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -1.8326      1.037     -1.767      0.121      -4.285       0.620
+x1             0.2923      0.180      1.626      0.148      -0.133       0.717
+==============================================================================
+Omnibus:                        9.872   Durbin-Watson:                   1.546
+Prob(Omnibus):                  0.007   Jarque-Bera (JB):                3.743
+Skew:                          -1.425   Prob(JB):                        0.154
+Kurtosis:                       4.364   Cond. No.                         7.93
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_edge_cuota_visitante.png
+
+============================================================
+  6. APERTURA VS CIERRE: CUAL TIENE MEJOR R2 PREDICIENDO HOME_WIN
+============================================================
+
+============================================================
+  home_win ~ AvgH apertura
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.095
+Model:                            OLS   Adj. R-squared:                  0.095
+Method:                 Least Squares   F-statistic:                     1239.
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):          3.42e-258
+Time:                        02:13:16   Log-Likelihood:                -7896.6
+No. Observations:               11851   AIC:                         1.580e+04
+Df Residuals:                   11849   BIC:                         1.581e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.6674      0.008     83.404      0.000       0.652       0.683
+x1            -0.0853      0.002    -35.196      0.000      -0.090      -0.081
+==============================================================================
+Omnibus:                    51473.296   Durbin-Watson:                   2.039
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1501.832
+Skew:                           0.194   Prob(JB):                         0.00
+Kurtosis:                       1.300   Cond. No.                         6.51
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_apertura_vs_cierre_H.png
+
+============================================================
+  home_win ~ AvgCH cierre
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.096
+Model:                            OLS   Adj. R-squared:                  0.095
+Method:                 Least Squares   F-statistic:                     1252.
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):          8.13e-261
+Time:                        02:13:17   Log-Likelihood:                -7890.6
+No. Observations:               11851   AIC:                         1.579e+04
+Df Residuals:                   11849   BIC:                         1.580e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.6617      0.008     84.449      0.000       0.646       0.677
+x1            -0.0821      0.002    -35.385      0.000      -0.087      -0.078
+==============================================================================
+Omnibus:                    53237.888   Durbin-Watson:                   2.037
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1455.371
+Skew:                           0.197   Prob(JB):                         0.00
+Kurtosis:                       1.329   Cond. No.                         6.50
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_apertura_vs_cierre_CH.png
+
+  comparacion apertura vs cierre:
+|    | tipo            |     r2 |   r2_adj |      coef |   pval |
+|----+-----------------+--------+----------+-----------+--------|
+|  0 | apertura (AvgH) | 0.0947 |   0.0946 | -0.085285 |      0 |
+|  1 | cierre  (AvgCH) | 0.0956 |   0.0955 | -0.082065 |      0 |
+
+  mejor predictor: cierre (R² 0.0956 vs 0.0947)
+  grafica guardada: img/lr_ap_vs_ci_comparativa.png
+
+============================================================
+  7. REGRESION POR LIGA  (total_goals ~ imp_prob_H + imp_prob_A + overround)
+============================================================
+|    | liga           |    n |     r2 |   r2_adj |   coef_imp_H |   coef_imp_A |   coef_over |   pval_F |
+|----+----------------+------+--------+----------+--------------+--------------+-------------+----------|
+|  0 | Bundesliga     | 2032 | 0.0494 |   0.048  |       7.8504 |       8.0997 |     -5.663  |        0 |
+|  1 | Premier League | 2541 | 0.0311 |   0.03   |       5.8577 |       6.0134 |     -7.4514 |        0 |
+|  2 | Ligue 1        | 2229 | 0.0382 |   0.0369 |       6.9453 |       7.0335 |     -5.4646 |        0 |
+|  3 | Serie A        | 2530 | 0.0259 |   0.0247 |       5.7002 |       6.0761 |    -10.1204 |        0 |
+|  4 | La Liga        | 2519 | 0.0395 |   0.0383 |       6.4124 |       6.5185 |     -4.0326 |        0 |
+  grafica guardada: img/lr_r2_por_liga.png
+  grafica guardada: img/lr_home_win_por_liga.png
+
+============================================================
+  8. SERIE TEMPORAL — avg goles por fecha
+============================================================
+  mismo enfoque que el profe: agrupar por fecha y correr OLS sobre el indice temporal
+
+  1238 fechas con partidos | desde 2019-08-09 hasta 2026-02-18
+|    | Fecha               |   avg_goals |   t |
+|----+---------------------+-------------+-----|
+|  0 | 2019-08-09 00:00:00 |     4       |   0 |
+|  1 | 2019-08-10 00:00:00 |     2.66667 |   1 |
+|  2 | 2019-08-11 00:00:00 |     2.16667 |   2 |
+|  3 | 2019-08-16 00:00:00 |     3.66667 |   3 |
+|  4 | 2019-08-17 00:00:00 |     2.875   |   4 |
+|  5 | 2019-08-18 00:00:00 |     1.81818 |   5 |
+|  6 | 2019-08-19 00:00:00 |     2       |   6 |
+|  7 | 2019-08-23 00:00:00 |     2.5     |   7 |
+|  8 | 2019-08-24 00:00:00 |     2.95455 |   8 |
+|  9 | 2019-08-25 00:00:00 |     2.78947 |   9 |
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:              avg_goals   R-squared:                       0.000
+Model:                            OLS   Adj. R-squared:                 -0.001
+Method:                 Least Squares   F-statistic:                   0.09439
+Date:                Sun, 22 Mar 2026   Prob (F-statistic):              0.759
+Time:                        02:13:18   Log-Likelihood:                -1546.8
+No. Observations:                1238   AIC:                             3098.
+Df Residuals:                    1236   BIC:                             3108.
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          2.7996      0.048     58.339      0.000       2.705       2.894
+t          -2.064e-05   6.72e-05     -0.307      0.759      -0.000       0.000
+==============================================================================
+Omnibus:                      133.017   Durbin-Watson:                   1.892
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              448.714
+Skew:                           0.504   Prob(JB):                     3.66e-98
+Kurtosis:                       5.772   Cond. No.                     1.43e+03
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 1.43e+03. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+  pendiente: -0.000021 goles por jornada
+  R²: 0.0001
+  tendencia: los partidos son marginalmente menos goleadores con el tiempo
+  grafica guardada: img/lr_serie_temporal_goles.png
+  grafica guardada: img/lr_tendencia_goles_por_liga.png
+
+============================================================
+  RESUMEN FINAL — TODOS LOS MODELOS
+============================================================
+|    | modelo                        | tipo     |     r2 |
+|----+-------------------------------+----------+--------|
+|  0 | ht_goals → total_goals        | simple   | 0.4892 |
+|  1 | mid_cuota → edge (local)      | edge     | 0.475  |
+|  2 | mid_cuota → edge (visitante)  | edge     | 0.2741 |
+|  3 | imp_prob_H → home_win         | simple   | 0.1551 |
+|  4 | AvgCH (cierre) → home_win     | simple   | 0.0956 |
+|  5 | AvgH → home_win               | simple   | 0.0947 |
+|  6 | AvgH+AvgA+AvgD+or → goals     | multiple | 0.0535 |
+|  7 | imp+overround+moves → goals   | multiple | 0.0433 |
+|  8 | imp_H+imp_A+overround → goals | multiple | 0.0431 |
+|  9 | moves_H+A+D → total_goals     | multiple | 0.0116 |
+| 10 | moves_H+A → home_win          | multiple | 0.0057 |
+| 11 | odds_move_H → home_win        | simple   | 0.0047 |
+| 12 | diff_imp → total_goals        | simple   | 0.002  |
+| 13 | overround → total_goals       | simple   | 0.0005 |
+| 14 | t → avg_goals (temporal)      | temporal | 0.0001 |
+| 15 | odds_move_H → total_goals     | simple   | 0      |
+
+  mejor modelo simple:   ht_goals → total_goals
+  mejor modelo multiple: AvgH+AvgA+AvgD+or → goals
+
+  nota: R² bajos son esperados en datos de futbol — el resultado tiene mucha
+  varianza aleatoria. Lo importante es que los coeficientes sean significativos
+  (p < 0.05) y que las direcciones de los efectos tengan sentido economico.
+
+listo — todas las graficas guardadas en img/

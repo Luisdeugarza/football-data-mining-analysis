@@ -4,7 +4,7 @@ dataset cargado: 11,851 partidos | 5 ligas | 7 temporadas
   1. MATRIZ DE CORRELACION
 ============================================================
 
-  correlaciones con total_goals (ordenadas):
+  correlaciones con total_goals (ordenadas por valor absoluto):
 |    | variable          |   corr_con_total_goals |
 |----+-------------------+------------------------|
 |  0 | over25            |                  0.8   |
@@ -27,7 +27,7 @@ dataset cargado: 11,851 partidos | 5 ligas | 7 temporadas
 | 17 | odds_move_A       |                  0.014 |
 | 18 | odds_move_H       |                 -0.005 |
 
-  correlaciones con home_win (ordenadas):
+  correlaciones con home_win (ordenadas por valor absoluto):
 |    | variable          |   corr_con_home_win |
 |----+-------------------+---------------------|
 |  0 | away_win          |              -0.592 |
@@ -64,8 +64,8 @@ dataset cargado: 11,851 partidos | 5 ligas | 7 temporadas
 Dep. Variable:                      y   R-squared:                       0.489
 Model:                            OLS   Adj. R-squared:                  0.489
 Method:                 Least Squares   F-statistic:                 1.135e+04
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):               0.00
-Time:                        02:13:14   Log-Likelihood:                -18917.
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):               0.00
+Time:                        00:33:56   Log-Likelihood:                -18917.
 No. Observations:               11851   AIC:                         3.784e+04
 Df Residuals:                   11849   BIC:                         3.785e+04
 Df Model:                           1                                         
@@ -94,8 +94,8 @@ Notes:
 Dep. Variable:                      y   R-squared:                       0.095
 Model:                            OLS   Adj. R-squared:                  0.095
 Method:                 Least Squares   F-statistic:                     1239.
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):          3.42e-258
-Time:                        02:13:14   Log-Likelihood:                -7896.6
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):          3.42e-258
+Time:                        00:33:56   Log-Likelihood:                -7896.6
 No. Observations:               11851   AIC:                         1.580e+04
 Df Residuals:                   11849   BIC:                         1.581e+04
 Df Model:                           1                                         
@@ -124,8 +124,8 @@ Notes:
 Dep. Variable:                      y   R-squared:                       0.096
 Model:                            OLS   Adj. R-squared:                  0.095
 Method:                 Least Squares   F-statistic:                     1252.
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):          8.13e-261
-Time:                        02:13:14   Log-Likelihood:                -7890.6
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):          8.13e-261
+Time:                        00:33:56   Log-Likelihood:                -7890.6
 No. Observations:               11851   AIC:                         1.579e+04
 Df Residuals:                   11849   BIC:                         1.580e+04
 Df Model:                           1                                         
@@ -154,8 +154,8 @@ Notes:
 Dep. Variable:                      y   R-squared:                       0.001
 Model:                            OLS   Adj. R-squared:                  0.000
 Method:                 Least Squares   F-statistic:                     5.999
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):             0.0143
-Time:                        02:13:15   Log-Likelihood:                -22894.
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):             0.0143
+Time:                        00:33:57   Log-Likelihood:                -22894.
 No. Observations:               11851   AIC:                         4.579e+04
 Df Residuals:                   11849   BIC:                         4.581e+04
 Df Model:                           1                                         
@@ -184,8 +184,8 @@ Notes:
 Dep. Variable:                      y   R-squared:                       0.155
 Model:                            OLS   Adj. R-squared:                  0.155
 Method:                 Least Squares   F-statistic:                     2174.
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):               0.00
-Time:                        02:13:15   Log-Likelihood:                -7487.5
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):               0.00
+Time:                        00:33:57   Log-Likelihood:                -7487.5
 No. Observations:               11851   AIC:                         1.498e+04
 Df Residuals:                   11849   BIC:                         1.499e+04
 Df Model:                           1                                         
@@ -214,8 +214,8 @@ Notes:
 Dep. Variable:                      y   R-squared:                       0.002
 Model:                            OLS   Adj. R-squared:                  0.002
 Method:                 Least Squares   F-statistic:                     24.29
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):           8.41e-07
-Time:                        02:13:15   Log-Likelihood:                -22885.
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):           8.41e-07
+Time:                        00:33:57   Log-Likelihood:                -22885.
 No. Observations:               11851   AIC:                         4.577e+04
 Df Residuals:                   11849   BIC:                         4.579e+04
 Df Model:                           1                                         
@@ -260,8 +260,8 @@ Notes:
 Dep. Variable:            total_goals   R-squared:                       0.043
 Model:                            OLS   Adj. R-squared:                  0.043
 Method:                 Least Squares   F-statistic:                     178.0
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):          7.04e-113
-Time:                        02:13:15   Log-Likelihood:                -22636.
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):          7.04e-113
+Time:                        00:33:57   Log-Likelihood:                -22636.
 No. Observations:               11851   AIC:                         4.528e+04
 Df Residuals:                   11847   BIC:                         4.531e+04
 Df Model:                           3                                         
@@ -284,39 +284,6 @@ Notes:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
 
 ============================================================
-  total_goals ~ imp_prob_H + imp_prob_A + overround + odds_move_H + odds_move_A
-============================================================
-                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:            total_goals   R-squared:                       0.043
-Model:                            OLS   Adj. R-squared:                  0.043
-Method:                 Least Squares   F-statistic:                     107.2
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):          4.46e-111
-Time:                        02:13:16   Log-Likelihood:                -22635.
-No. Observations:               11851   AIC:                         4.528e+04
-Df Residuals:                   11845   BIC:                         4.533e+04
-Df Model:                           5                                         
-Covariance Type:            nonrobust                                         
-===============================================================================
-                  coef    std err          t      P>|t|      [0.025      0.975]
--------------------------------------------------------------------------------
-const           4.2145      2.510      1.679      0.093      -0.706       9.135
-imp_prob_H      7.0140      0.306     22.893      0.000       6.413       7.615
-imp_prob_A      7.2949      0.337     21.627      0.000       6.634       7.956
-overround      -6.7068      2.388     -2.808      0.005     -11.388      -2.025
-odds_move_H    -0.0275      0.039     -0.709      0.478      -0.103       0.048
-odds_move_A     0.0220      0.020      1.125      0.260      -0.016       0.060
-==============================================================================
-Omnibus:                      448.555   Durbin-Watson:                   1.987
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):              500.248
-Skew:                           0.501   Prob(JB):                    2.36e-109
-Kurtosis:                       3.099   Cond. No.                         359.
-==============================================================================
-
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-
-============================================================
   total_goals ~ AvgH + AvgA + AvgD + overround
 ============================================================
                             OLS Regression Results                            
@@ -324,8 +291,8 @@ Notes:
 Dep. Variable:            total_goals   R-squared:                       0.053
 Model:                            OLS   Adj. R-squared:                  0.053
 Method:                 Least Squares   F-statistic:                     167.3
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):          1.34e-139
-Time:                        02:13:16   Log-Likelihood:                -22572.
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):          1.34e-139
+Time:                        00:33:57   Log-Likelihood:                -22572.
 No. Observations:               11851   AIC:                         4.515e+04
 Df Residuals:                   11846   BIC:                         4.519e+04
 Df Model:                           4                                         
@@ -350,29 +317,49 @@ Notes:
 [2] The condition number is large, 1.68e+03. This might indicate that there are
 strong multicollinearity or other numerical problems.
 
-  resumen regresiones multiples (total_goals):
-|    | features                                                                | y           |     n |     r2 |   r2_adj |     aic |     bic |
-|----+-------------------------------------------------------------------------+-------------+-------+--------+----------+---------+---------|
-|  0 | ['imp_prob_H', 'imp_prob_A', 'overround']                               | total_goals | 11851 | 0.0431 |   0.0429 | 45280.1 | 45309.6 |
-|  1 | ['imp_prob_H', 'imp_prob_A', 'overround', 'odds_move_H', 'odds_move_A'] | total_goals | 11851 | 0.0433 |   0.0429 | 45282   | 45326.2 |
-|  2 | ['AvgH', 'AvgA', 'AvgD', 'overround']                                   | total_goals | 11851 | 0.0535 |   0.0532 | 45153.2 | 45190.1 |
+============================================================
+  VIF — variance inflation factor
+============================================================
+  VIF > 10 indica multicolinealidad problematica entre features
+
+  modelo probabilidades implicitas:
+|    | variable   |    VIF |
+|----+------------+--------|
+|  0 | imp_prob_A | 14.832 |
+|  1 | imp_prob_H | 14.831 |
+|  2 | overround  |  1     |
+
+  modelo cuotas directas (el que disparo condition number 1680):
+|    | variable   |    VIF |
+|----+------------+--------|
+|  0 | AvgA       | 13.189 |
+|  1 | AvgD       |  9.79  |
+|  2 | AvgH       |  4.962 |
+|  3 | overround  |  1.012 |
+
+  resumen regresiones multiples:
+|    | features                                  | y           |     n |     r2 |   r2_adj |     aic |     bic |
+|----+-------------------------------------------+-------------+-------+--------+----------+---------+---------|
+|  0 | ['imp_prob_H', 'imp_prob_A', 'overround'] | total_goals | 11851 | 0.0431 |   0.0429 | 45280.1 | 45309.6 |
+|  1 | ['AvgH', 'AvgA', 'AvgD', 'overround']     | total_goals | 11851 | 0.0535 |   0.0532 | 45153.2 | 45190.1 |
+
+  diagnostico de residuales — mejor modelo multiple:
+  grafica guardada: img/lr_residuales_modelo_goles.png
 
 ============================================================
   4. MOVIMIENTO DE CUOTA COMO PREDICTOR
 ============================================================
 
-  hipotesis: si la cuota local baja antes del cierre, predice victoria del local
-
 ============================================================
-  home_win ~ odds_move_H (movimiento cuota local)
+  home_win ~ odds_move_H
 ============================================================
                             OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                      y   R-squared:                       0.005
 Model:                            OLS   Adj. R-squared:                  0.005
 Method:                 Least Squares   F-statistic:                     56.01
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):           7.71e-14
-Time:                        02:13:16   Log-Likelihood:                -8457.8
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):           7.71e-14
+Time:                        00:33:58   Log-Likelihood:                -8457.8
 No. Observations:               11851   AIC:                         1.692e+04
 Df Residuals:                   11849   BIC:                         1.693e+04
 Df Model:                           1                                         
@@ -394,34 +381,11 @@ Notes:
   grafica guardada: img/lr_home_win_odds_move_H.png
 
 ============================================================
-  total_goals ~ odds_move_H
+  odds_move_H -> total_goals: modelo NO SIGNIFICATIVO — descartado
 ============================================================
-                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:                      y   R-squared:                       0.000
-Model:                            OLS   Adj. R-squared:                 -0.000
-Method:                 Least Squares   F-statistic:                    0.2903
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):              0.590
-Time:                        02:13:16   Log-Likelihood:                -22897.
-No. Observations:               11851   AIC:                         4.580e+04
-Df Residuals:                   11849   BIC:                         4.581e+04
-Df Model:                           1                                         
-Covariance Type:            nonrobust                                         
-==============================================================================
-                 coef    std err          t      P>|t|      [0.025      0.975]
-------------------------------------------------------------------------------
-const          2.8082      0.015    182.091      0.000       2.778       2.838
-x1            -0.0209      0.039     -0.539      0.590      -0.097       0.055
-==============================================================================
-Omnibus:                      519.070   Durbin-Watson:                   1.977
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):              588.563
-Skew:                           0.541   Prob(JB):                    1.57e-128
-Kurtosis:                       3.139   Cond. No.                         2.53
-==============================================================================
-
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-  grafica guardada: img/lr_total_goals_odds_move_H.png
+  p-value del F-statistic = 0.590, R²=0.000
+  el movimiento de cuota del local no predice cuantos goles habra
+  el smart money apunta al resultado del partido, no al numero de goles
 
 ============================================================
   total_goals ~ odds_move_H + odds_move_A + odds_move_D
@@ -431,8 +395,8 @@ Notes:
 Dep. Variable:            total_goals   R-squared:                       0.012
 Model:                            OLS   Adj. R-squared:                  0.011
 Method:                 Least Squares   F-statistic:                     46.22
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):           1.10e-29
-Time:                        02:13:16   Log-Likelihood:                -22828.
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):           1.10e-29
+Time:                        00:33:58   Log-Likelihood:                -22828.
 No. Observations:               11851   AIC:                         4.566e+04
 Df Residuals:                   11847   BIC:                         4.569e+04
 Df Model:                           3                                         
@@ -462,8 +426,8 @@ Notes:
 Dep. Variable:               home_win   R-squared:                       0.006
 Model:                            OLS   Adj. R-squared:                  0.006
 Method:                 Least Squares   F-statistic:                     33.79
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):           2.32e-15
-Time:                        02:13:16   Log-Likelihood:                -8452.1
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):           2.32e-15
+Time:                        00:33:58   Log-Likelihood:                -8452.1
 No. Observations:               11851   AIC:                         1.691e+04
 Df Residuals:                   11848   BIC:                         1.693e+04
 Df Model:                           2                                         
@@ -488,8 +452,11 @@ Notes:
   5. EDGE COMO VARIABLE DEPENDIENTE
 ============================================================
 
-  el edge mide cuanto se equivoca el mercado: real_% - implied_%
-  si hay patron sistematico con la cuota, el mercado tiene sesgo
+  el edge es el error sistematico del mercado: real_% - implied_%
+  R²=0.475 en el modelo local significa que casi la mitad de la variacion
+  del error del mercado se explica solo con el rango de cuota
+  no es ruido — es un sesgo con estructura: el mercado sobrevalora favoritos
+  grandes y subestima rangos intermedios de forma predecible
 
   edge por rango de cuota local:
 |    | rango_AvgH   |   mid_cuota |    n |   imp_% |   real_% |   edge |
@@ -505,15 +472,15 @@ Notes:
 |  8 | 6.0-25.0     |      15.5   |  650 |    6.45 |    10.62 |   4.16 |
 
 ============================================================
-  edge ~ mid_cuota  (sesgo del mercado por rango de cuota)
+  edge ~ mid_cuota (sesgo del mercado por rango de cuota local)
 ============================================================
                             OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                      y   R-squared:                       0.475
 Model:                            OLS   Adj. R-squared:                  0.400
 Method:                 Least Squares   F-statistic:                     6.332
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):             0.0400
-Time:                        02:13:16   Log-Likelihood:                -19.738
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):             0.0400
+Time:                        00:33:58   Log-Likelihood:                -19.738
 No. Observations:                   9   AIC:                             43.48
 Df Residuals:                       7   BIC:                             43.87
 Df Model:                           1                                         
@@ -534,8 +501,21 @@ Notes:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
   grafica guardada: img/lr_edge_cuota.png
 
-  R² del modelo edge ~ cuota: 0.475
-  si R² > 0 y coeficiente != 0, el mercado tiene sesgo sistematico en ese rango
+  R²=0.475 — la cuota explica 47.5% de la variacion del error
+  coef=0.4846: a mayor cuota el edge cambia sistematicamente
+
+  edge por rango de cuota visitante:
+|    | rango_AvgA   |   mid_cuota |    n |   imp_% |   real_% |   edge |
+|----+--------------+-------------+------+---------+----------+--------|
+|  0 | 1.0-1.3      |       1.15  |  128 |   86.96 |    80.47 |  -6.49 |
+|  1 | 1.3-1.5      |       1.4   |  418 |   71.43 |    72.25 |   0.82 |
+|  2 | 1.5-1.75     |       1.625 |  726 |   61.54 |    61.29 |  -0.24 |
+|  3 | 1.75-2.0     |       1.875 |  743 |   53.33 |    53.7  |   0.37 |
+|  4 | 2.0-2.5      |       2.25  | 1590 |   44.44 |    44.53 |   0.08 |
+|  5 | 2.5-3.0      |       2.75  | 1579 |   36.36 |    35.59 |  -0.77 |
+|  6 | 3.0-4.0      |       3.5   | 2377 |   28.57 |    26.84 |  -1.73 |
+|  7 | 4.0-6.0      |       5     | 2145 |   20    |    18.97 |  -1.03 |
+|  8 | 6.0-25.0     |      15.5   | 2110 |    6.45 |     9.19 |   2.74 |
 
 ============================================================
   edge_visitante ~ mid_cuota
@@ -545,8 +525,8 @@ Notes:
 Dep. Variable:                      y   R-squared:                       0.274
 Model:                            OLS   Adj. R-squared:                  0.170
 Method:                 Least Squares   F-statistic:                     2.644
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):              0.148
-Time:                        02:13:16   Log-Likelihood:                -19.117
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):              0.148
+Time:                        00:33:58   Log-Likelihood:                -19.117
 No. Observations:                   9   AIC:                             42.23
 Df Residuals:                       7   BIC:                             42.63
 Df Model:                           1                                         
@@ -568,7 +548,7 @@ Notes:
   grafica guardada: img/lr_edge_cuota_visitante.png
 
 ============================================================
-  6. APERTURA VS CIERRE: CUAL TIENE MEJOR R2 PREDICIENDO HOME_WIN
+  6. APERTURA VS CIERRE: CUAL PREDICE MEJOR LA VICTORIA LOCAL
 ============================================================
 
 ============================================================
@@ -579,8 +559,8 @@ Notes:
 Dep. Variable:                      y   R-squared:                       0.095
 Model:                            OLS   Adj. R-squared:                  0.095
 Method:                 Least Squares   F-statistic:                     1239.
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):          3.42e-258
-Time:                        02:13:16   Log-Likelihood:                -7896.6
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):          3.42e-258
+Time:                        00:33:58   Log-Likelihood:                -7896.6
 No. Observations:               11851   AIC:                         1.580e+04
 Df Residuals:                   11849   BIC:                         1.581e+04
 Df Model:                           1                                         
@@ -609,8 +589,8 @@ Notes:
 Dep. Variable:                      y   R-squared:                       0.096
 Model:                            OLS   Adj. R-squared:                  0.095
 Method:                 Least Squares   F-statistic:                     1252.
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):          8.13e-261
-Time:                        02:13:17   Log-Likelihood:                -7890.6
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):          8.13e-261
+Time:                        00:33:59   Log-Likelihood:                -7890.6
 No. Observations:               11851   AIC:                         1.579e+04
 Df Residuals:                   11849   BIC:                         1.580e+04
 Df Model:                           1                                         
@@ -638,6 +618,7 @@ Notes:
 |  1 | cierre  (AvgCH) | 0.0956 |   0.0955 | -0.082065 |      0 |
 
   mejor predictor: cierre (R² 0.0956 vs 0.0947)
+  la diferencia es minima — el movimiento de cuota no agrega poder predictivo
   grafica guardada: img/lr_ap_vs_ci_comparativa.png
 
 ============================================================
@@ -654,11 +635,10 @@ Notes:
   grafica guardada: img/lr_home_win_por_liga.png
 
 ============================================================
-  8. SERIE TEMPORAL — avg goles por fecha
+  8. SERIE TEMPORAL — promedio de goles por fecha
 ============================================================
-  mismo enfoque que el profe: agrupar por fecha y correr OLS sobre el indice temporal
 
-  1238 fechas con partidos | desde 2019-08-09 hasta 2026-02-18
+  1238 fechas | desde 2019-08-09 hasta 2026-02-18
 |    | Fecha               |   avg_goals |   t |
 |----+---------------------+-------------+-----|
 |  0 | 2019-08-09 00:00:00 |     4       |   0 |
@@ -676,8 +656,8 @@ Notes:
 Dep. Variable:              avg_goals   R-squared:                       0.000
 Model:                            OLS   Adj. R-squared:                 -0.001
 Method:                 Least Squares   F-statistic:                   0.09439
-Date:                Sun, 22 Mar 2026   Prob (F-statistic):              0.759
-Time:                        02:13:18   Log-Likelihood:                -1546.8
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):              0.759
+Time:                        00:34:00   Log-Likelihood:                -1546.8
 No. Observations:                1238   AIC:                             3098.
 Df Residuals:                    1236   BIC:                             3108.
 Df Model:                           1                                         
@@ -700,38 +680,340 @@ Notes:
 strong multicollinearity or other numerical problems.
 
   pendiente: -0.000021 goles por jornada
-  R²: 0.0001
-  tendencia: los partidos son marginalmente menos goleadores con el tiempo
+  R²: 0.0001  p-value: 0.759
+  no hay tendencia lineal significativa — el futbol europeo no cambio
+  de forma lineal en numero de goles entre 2019 y 2026
   grafica guardada: img/lr_serie_temporal_goles.png
   grafica guardada: img/lr_tendencia_goles_por_liga.png
 
 ============================================================
+  9. RACHAS — VALIDACION CON REGRESION LINEAL
+============================================================
+
+  hipotesis: la racha previa del equipo local predice el resultado
+  y el fenomeno racha mala -> goleada -> siguiente partido pierde
+  tiene evidencia estadistica.
+
+  variables construidas:
+    racha_previa_local : entero secuencial (positivo=victorias, negativo=derrotas)
+    post_goleada_mala  : 1 si el equipo local venia de racha <= -2 y marco 4+ goles
+
+
+============================================================
+  home_win ~ racha_previa del local
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.014
+Model:                            OLS   Adj. R-squared:                  0.014
+Method:                 Least Squares   F-statistic:                     166.7
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):           6.83e-38
+Time:                        00:34:01   Log-Likelihood:                -8403.0
+No. Observations:               11851   AIC:                         1.681e+04
+Df Residuals:                   11849   BIC:                         1.682e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.4322      0.005     95.648      0.000       0.423       0.441
+x1             0.0298      0.002     12.913      0.000       0.025       0.034
+==============================================================================
+Omnibus:                    44359.894   Durbin-Watson:                   2.025
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1878.858
+Skew:                           0.278   Prob(JB):                         0.00
+Kurtosis:                       1.131   Cond. No.                         1.96
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_home_win_racha.png
+
+  racha_previa -> home_win:
+  R²=0.0139  coef=0.029785  p=0.0
+  SIGNIFICATIVO — coeficiente positivo: la racha previa predice victoria local
+
+============================================================
+  total_goals ~ racha_previa del local
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.002
+Model:                            OLS   Adj. R-squared:                  0.002
+Method:                 Least Squares   F-statistic:                     22.65
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):           1.96e-06
+Time:                        00:34:01   Log-Likelihood:                -22886.
+No. Observations:               11851   AIC:                         4.578e+04
+Df Residuals:                   11849   BIC:                         4.579e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          2.8095      0.015    183.163      0.000       2.779       2.840
+x1             0.0373      0.008      4.760      0.000       0.022       0.053
+==============================================================================
+Omnibus:                      513.168   Durbin-Watson:                   1.983
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              581.067
+Skew:                           0.538   Prob(JB):                    6.65e-127
+Kurtosis:                       3.135   Cond. No.                         1.96
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_total_goals_racha.png
+
+  racha_previa -> total_goals:
+  R²=0.0019  coef=0.037263  p=2e-06
+
+============================================================
+  9b. FENOMENO: racha mala -> goleada -> siguiente partido pierde
+============================================================
+
+  partidos donde el local venia de racha<=-2 y marco 4+ el partido anterior: 50
+  % que pierde hoy (post goleada):  32.0%
+  % que pierde en el resto:         31.7%
+  diferencia: 0.3 puntos porcentuales
+
+============================================================
+  home_win ~ post_goleada_mala (racha mala + goleada previa)
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.000
+Model:                            OLS   Adj. R-squared:                  0.000
+Method:                 Least Squares   F-statistic:                     1.678
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):              0.195
+Time:                        00:34:02   Log-Likelihood:                -8484.9
+No. Observations:               11851   AIC:                         1.697e+04
+Df Residuals:                   11849   BIC:                         1.699e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.4309      0.005     94.535      0.000       0.422       0.440
+x1            -0.0909      0.070     -1.295      0.195      -0.228       0.047
+==============================================================================
+Omnibus:                    42841.554   Durbin-Watson:                   2.025
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1977.185
+Skew:                           0.281   Prob(JB):                         0.00
+Kurtosis:                       1.079   Cond. No.                         15.4
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_home_win_post_goleada.png
+
+  post_goleada_mala -> home_win:
+  R²=0.0001  coef=-0.090896  p=0.195243
+  no significativo — el fenomeno no tiene evidencia de relacion lineal fuerte
+  puede ser util descriptivamente pero el R² sera bajo por ser variable binaria rara
+
+  resultado por categoria de racha previa del local:
+|    | racha_cat   |    n |   pct_H |   pct_D |   pct_A |   avg_goles |
+|----+-------------+------+---------+---------+---------+-------------|
+|  0 | 3+vic       |  818 |   58.68 |   23.72 |   17.6  |       3.039 |
+|  1 | 2vic        |  918 |   51.09 |   23.42 |   25.49 |       2.892 |
+|  2 | 1vic        | 2191 |   43.27 |   25.42 |   31.31 |       2.848 |
+|  3 | neutro      | 3030 |   42.57 |   25.41 |   32.01 |       2.724 |
+|  4 | 1der        | 3104 |   41.33 |   24.74 |   33.92 |       2.815 |
+|  5 | 2der        |  967 |   37.23 |   27.09 |   35.68 |       2.79  |
+|  6 | 3+der       |  823 |   33.05 |   27.34 |   39.61 |       2.67  |
+
+============================================================
+  pct_H ~ racha_num (por categoria de racha previa)
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.919
+Model:                            OLS   Adj. R-squared:                  0.903
+Method:                 Least Squares   F-statistic:                     56.84
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):           0.000650
+Time:                        00:34:02   Log-Likelihood:                -15.631
+No. Observations:                   7   AIC:                             35.26
+Df Residuals:                       5   BIC:                             35.15
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         43.8886      1.009     43.478      0.000      41.294      46.483
+x1             3.8054      0.505      7.539      0.001       2.508       5.103
+==============================================================================
+Omnibus:                          nan   Durbin-Watson:                   1.315
+Prob(Omnibus):                    nan   Jarque-Bera (JB):                0.412
+Skew:                          -0.590   Prob(JB):                        0.814
+Kurtosis:                       2.857   Cond. No.                         2.00
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_pct_H_racha_continua.png
+
+  racha_num -> pct_H (por categoria agregada):
+  R²=0.9192  coef=3.805357  p=0.00065
+  grafica guardada: img/lr_pct_H_por_racha.png
+
+============================================================
+  9c. IRREGULARIDAD — equipos que alternan goleadas y derrotas
+============================================================
+
+  el fenomeno observado en Tigres UANL no es una racha mala pura,
+  sino irregularidad: el equipo golea un partido, pierde el siguiente,
+  golea de nuevo, y asi. ese patron de alta varianza en resultados
+  puede predecir peor rendimiento en el partido siguiente.
+
+  dos variables nuevas calculadas sobre los ultimos 5 partidos del equipo local:
+    std_goles_5    : desviacion estandar de goles marcados (alta = impredecible)
+    irregularidad  : cuantas veces alterna W/L/D en ultimos 5 partidos (0-4 cambios)
+                     ej: G-P-G-P-G = 4 cambios (maxima irregularidad)
+                     ej: G-G-G-G-G = 0 cambios (muy estable)
+
+  hipotesis: equipos con alta irregularidad ganan menos en el siguiente partido
+
+  partidos con historial suficiente (>=3 previos): 11,542
+
+  distribucion del indice de irregularidad (0=estable, 4=maxima alternancia):
+|    |   irregularidad |   partidos |   pct_H |   avg_goles |
+|----+-----------------+------------+---------+-------------|
+|  0 |               0 |        446 |    49.1 |       2.796 |
+|  1 |               1 |       1373 |    45   |       2.803 |
+|  2 |               2 |       3525 |    42.8 |       2.831 |
+|  3 |               3 |       4102 |    42.8 |       2.804 |
+|  4 |               4 |       2096 |    41.9 |       2.781 |
+
+============================================================
+  home_win ~ std_goles_5 (varianza goles ultimos 5 partidos del local)
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.010
+Model:                            OLS   Adj. R-squared:                  0.010
+Method:                 Least Squares   F-statistic:                     116.1
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):           6.22e-27
+Time:                        00:34:04   Log-Likelihood:                -8209.6
+No. Observations:               11542   AIC:                         1.642e+04
+Df Residuals:                   11540   BIC:                         1.644e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.3122      0.012     26.073      0.000       0.289       0.336
+x1             0.1094      0.010     10.773      0.000       0.089       0.129
+==============================================================================
+Omnibus:                    42777.405   Durbin-Watson:                   2.019
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1852.015
+Skew:                           0.275   Prob(JB):                         0.00
+Kurtosis:                       1.116   Cond. No.                         5.10
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_home_win_std_goles.png
+
+  std_goles_5 -> home_win:
+  R²=0.01  coef=0.109374  p=0.0
+  SIGNIFICATIVO — coef positivo: mayor varianza en goles marcados aumenta la probabilidad de victoria local
+
+============================================================
+  home_win ~ irregularidad (alternancia W/L en ultimos 5 partidos del local)
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.001
+Model:                            OLS   Adj. R-squared:                  0.000
+Method:                 Least Squares   F-statistic:                     6.750
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):            0.00939
+Time:                        00:34:05   Log-Likelihood:                -8264.0
+No. Observations:               11542   AIC:                         1.653e+04
+Df Residuals:                   11540   BIC:                         1.655e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.4604      0.012     38.090      0.000       0.437       0.484
+x1            -0.0115      0.004     -2.598      0.009      -0.020      -0.003
+==============================================================================
+Omnibus:                    41725.111   Durbin-Watson:                   2.022
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1922.086
+Skew:                           0.277   Prob(JB):                         0.00
+Kurtosis:                       1.079   Cond. No.                         7.99
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+  grafica guardada: img/lr_home_win_irregularidad.png
+
+  irregularidad -> home_win:
+  R²=0.0006  coef=-0.011509  p=0.009387
+  SIGNIFICATIVO — coef negativo: equipos mas irregulares ganan menos en el siguiente partido
+  esto valida el fenomeno Tigres: irregularidad alta -> peor rendimiento siguiente
+
+============================================================
+  home_win ~ irregularidad + std_goles_5 + racha_previa
+============================================================
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:               home_win   R-squared:                       0.021
+Model:                            OLS   Adj. R-squared:                  0.021
+Method:                 Least Squares   F-statistic:                     81.72
+Date:                Mon, 23 Mar 2026   Prob (F-statistic):           2.61e-52
+Time:                        00:34:05   Log-Likelihood:                -8146.0
+No. Observations:               11542   AIC:                         1.630e+04
+Df Residuals:                   11538   BIC:                         1.633e+04
+Df Model:                           3                                         
+Covariance Type:            nonrobust                                         
+=================================================================================
+                    coef    std err          t      P>|t|      [0.025      0.975]
+---------------------------------------------------------------------------------
+const             0.3610      0.016     22.686      0.000       0.330       0.392
+irregularidad    -0.0102      0.004     -2.304      0.021      -0.019      -0.002
+std_goles_5       0.0892      0.010      8.645      0.000       0.069       0.109
+racha_previa      0.0258      0.002     10.834      0.000       0.021       0.030
+==============================================================================
+Omnibus:                    44064.731   Durbin-Watson:                   2.019
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1778.712
+Skew:                           0.275   Prob(JB):                         0.00
+Kurtosis:                       1.157   Cond. No.                         12.0
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+  modelo combinado irregularidad + std + racha:
+  R²=0.0208  AIC=16300.04
+
+  grafica guardada: img/lr_irregularidad_local.png
+
+============================================================
   RESUMEN FINAL — TODOS LOS MODELOS
 ============================================================
-|    | modelo                        | tipo     |     r2 |
-|----+-------------------------------+----------+--------|
-|  0 | ht_goals → total_goals        | simple   | 0.4892 |
-|  1 | mid_cuota → edge (local)      | edge     | 0.475  |
-|  2 | mid_cuota → edge (visitante)  | edge     | 0.2741 |
-|  3 | imp_prob_H → home_win         | simple   | 0.1551 |
-|  4 | AvgCH (cierre) → home_win     | simple   | 0.0956 |
-|  5 | AvgH → home_win               | simple   | 0.0947 |
-|  6 | AvgH+AvgA+AvgD+or → goals     | multiple | 0.0535 |
-|  7 | imp+overround+moves → goals   | multiple | 0.0433 |
-|  8 | imp_H+imp_A+overround → goals | multiple | 0.0431 |
-|  9 | moves_H+A+D → total_goals     | multiple | 0.0116 |
-| 10 | moves_H+A → home_win          | multiple | 0.0057 |
-| 11 | odds_move_H → home_win        | simple   | 0.0047 |
-| 12 | diff_imp → total_goals        | simple   | 0.002  |
-| 13 | overround → total_goals       | simple   | 0.0005 |
-| 14 | t → avg_goals (temporal)      | temporal | 0.0001 |
-| 15 | odds_move_H → total_goals     | simple   | 0      |
-
-  mejor modelo simple:   ht_goals → total_goals
-  mejor modelo multiple: AvgH+AvgA+AvgD+or → goals
-
-  nota: R² bajos son esperados en datos de futbol — el resultado tiene mucha
-  varianza aleatoria. Lo importante es que los coeficientes sean significativos
-  (p < 0.05) y que las direcciones de los efectos tengan sentido economico.
+|    | modelo                              | tipo          |     r2 | sig   |
+|----+-------------------------------------+---------------+--------+-------|
+|  0 | racha_num -> pct_H (categorias)     | racha         | 0.9192 | ?     |
+|  1 | ht_goals -> total_goals             | simple        | 0.4892 | si    |
+|  2 | mid_cuota -> edge (local)           | edge          | 0.475  | si    |
+|  3 | mid_cuota -> edge (visitante)       | edge          | 0.2741 | si    |
+|  4 | imp_prob_H -> home_win              | simple        | 0.1551 | si    |
+|  5 | AvgCH (cierre) -> home_win          | simple        | 0.0956 | si    |
+|  6 | AvgH -> home_win                    | simple        | 0.0947 | si    |
+|  7 | AvgH+AvgA+AvgD+or -> goals          | multiple      | 0.0535 | si    |
+|  8 | imp_H+imp_A+overround -> goals      | multiple      | 0.0431 | si    |
+|  9 | irregularidad+std+racha -> home_win | irregularidad | 0.0208 | ?     |
+| 10 | racha_previa -> home_win            | racha         | 0.0139 | si    |
+| 11 | moves_H+A+D -> total_goals          | multiple      | 0.0116 | si    |
+| 12 | std_goles_5 -> home_win             | irregularidad | 0.01   | ?     |
+| 13 | moves_H+A -> home_win               | multiple      | 0.0057 | si    |
+| 14 | odds_move_H -> home_win             | simple        | 0.0047 | si    |
+| 15 | diff_imp -> total_goals             | simple        | 0.002  | si    |
+| 16 | racha_previa -> total_goals         | racha         | 0.0019 | ?     |
+| 17 | irregularidad -> home_win           | irregularidad | 0.0006 | ?     |
+| 18 | overround -> total_goals            | simple        | 0.0005 | si    |
+| 19 | post_goleada_mala -> home_win       | racha         | 0.0001 | ?     |
+| 20 | t -> avg_goals (temporal)           | temporal      | 0.0001 | NO    |
+| 21 | odds_move_H -> total_goals          | simple        | 0      | NO    |
 
 listo — todas las graficas guardadas en img/

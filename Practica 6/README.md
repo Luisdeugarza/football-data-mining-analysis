@@ -98,6 +98,9 @@ Los 5 folds producen accuracies similares con desviación estándar baja, lo que
 ### 6. La racha previa aporta información que las cuotas no capturan
 Su inclusión mejora marginalmente el accuracy, consistente con el hallazgo de la práctica 5 (racha previa predice home_win con R²=0.014, p<0.001).
 
+### 7. El F1 del empate en partidos equilibrados
+Cuando se filtra por partidos donde el mercado señala equilibrio real (AvgH, AvgA y AvgD todas en rango similar), el F1 del empate cambia respecto al modelo general. Si sube, confirma que el KNN detecta mejor el empate cuando los vecinos cercanos ya son partidos inciertos. Si no sube, indica que el problema del empate es estructural y no se resuelve filtrando — los vecinos de un partido equilibrado siguen siendo mayoritariamente victorias locales o visitantes.
+
 ---
 
 ## Gráficas generadas (`img/`)
@@ -112,7 +115,7 @@ Su inclusión mejora marginalmente el accuracy, consistente con el hallazgo de l
 | `knn_feature_importance.png` | Permutation importance de los 15 features |
 | `knn_scatter_imp_probs.png` | Scatter real vs predicho en espacio imp_prob |
 | `knn_pca_scatter.png` | Proyección PCA 2D: clases reales vs predichas |
-| `knn_accuracy_por_liga.png` | Accuracy del modelo por liga |
+| `knn_equilibrados_f1.png` | F1 por clase: todos los partidos vs partidos equilibrados |
 
 ---
 
@@ -146,5 +149,7 @@ El empate sigue siendo la clase más difícil en los dos modelos. En el espacio 
 ```bash
 pip install scikit-learn
 cd "Practica 6"
-python knn_classification.py > resultados_knn.txt
+python knn_classification.py > resultados.txt
 ```
+
+> **Nota:** el paquete se instala como `scikit-learn` pero se importa como `sklearn` en el código. Son lo mismo — `pip install sklearn` está deprecado y da error.

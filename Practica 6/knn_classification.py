@@ -218,8 +218,8 @@ preds_manual = k_nearest_neighbors(
 acc_final_manual = sum(p == t for p, t in zip(preds_manual, test_labels)) / len(test_labels)
 
 print(f"\n  accuracy implementación manual K={best_k_manual}: {acc_final_manual:.4f}")
-print(f"  distribución predicha: {pd.Series(preds_manual).value_counts().to_dict()}")
-print(f"  distribución real:     {pd.Series(test_labels).value_counts().to_dict()}")
+print(f"  distribución predicha: {pd.Series([str(p) for p in preds_manual]).value_counts().to_dict()}")
+print(f"  distribución real:     {pd.Series([str(t) for t in test_labels]).value_counts().to_dict()}")
 
 # predije 5 partidos hipotéticos con cuotas conocidas para mostrar el modelo en acción
 print("\n  predicción de partidos hipotéticos (implementación manual):")
@@ -696,7 +696,93 @@ for ej in ejemplos:
 
 
 
-# imprimeción de ambos modelos
+# analicé el rendimiento del modelo en partidos equilibrados donde el empate es más probable
+# un partido equilibrado tiene cuotas H, D y A todas en rango similar
+
+print(f"\n{'='*60}")
+print("  12. PARTIDOS EQUILIBRADOS — donde el empate deberia ser predecible")
+print(f"{'='*60}")
+print("""
+  el empate tuvo F1=0.17 en el modelo general porque en el espacio de
+  features los empates no tienen zona propia. pero cuando el mercado
+  señala equilibrio (cuotas similares para los tres resultados) los
+  empates deberían concentrarse más y el modelo debería detectarlos mejor.
+""")
+
+mask_eq_test = (
+    (X_test["AvgH"].between(2.2, 4.0)) &
+    (X_test["AvgA"].between(2.2, 4.0)) &
+    (X_test["AvgD"].between(2.8, 3.8))
+)
+n_eq = mask_eq_test.sum()
+
+if n_eq >= 20:
+    acc_eq  = accuracy_score(y_test[mask_eq_test], y_pred[mask_eq_test])
+    f1_eq   = f1_score(y_test[mask_eq_test], y_pred[mask_eq_test], average="macro")
+    dist_eq = y_test[mask_eq_test].value_counts().to_dict()
+    pred_eq = pd.Series(y_pred[mask_eq_test]).value_counts().to_dict()
+    cm_eq   = confusion_matrix(y_test[mask_eq_test], y_pred[mask_eq_test], labels=["H","D","A"])
+
+    print(f"  partidos equilibrados en test: {n_eq}")
+    print(f"  distribución real:   {dist_eq}")
+    print(f"  distribución pred:   {pred_eq}")
+    print(f"  accuracy:            {acc_eq:.4f}  (vs {acc_final:.4f} general)")
+    print(f"  F1 macro:            {f1_eq:.4f}  (vs {f1_final:.4f} general)")
+
+    print("\n  classification report en partidos equilibrados:")
+    print(classification_report(
+        y_test[mask_eq_test], y_pred[mask_eq_test],
+        target_names=["H","D","A"]
+    ))
+
+    print("  matriz de confusión en partidos equilibrados:")
+    print_tabulate(pd.DataFrame(
+        cm_eq,
+        index=["real H","real D","real A"],
+        columns=["pred H","pred D","pred A"]
+    ).reset_index())
+
+    # grafica comparativa: F1 por clase general vs equilibrados
+    report_gen = classification_report(y_test, y_pred, target_names=["H","D","A"],
+                                        output_dict=True)
+    report_eq  = classification_report(y_test[mask_eq_test], y_pred[mask_eq_test],
+                                        target_names=["H","D","A"], output_dict=True)
+    clases = ["H","D","A"]
+    f1_gen_vals = [report_gen[c]["f1-score"] for c in clases]
+    f1_eq_vals  = [report_eq[c]["f1-score"]  for c in clases]
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    x = np.arange(3); w = 0.35
+    ax.bar(x - w/2, f1_gen_vals, w, label="todos los partidos",
+           color="#3498db", alpha=0.85)
+    ax.bar(x + w/2, f1_eq_vals,  w, label="partidos equilibrados",
+           color="#2ecc71", alpha=0.85)
+    for i, (vg, ve) in enumerate(zip(f1_gen_vals, f1_eq_vals)):
+        ax.text(i - w/2, vg + 0.005, f"{vg:.2f}", ha="center", fontsize=9)
+        ax.text(i + w/2, ve + 0.005, f"{ve:.2f}", ha="center", fontsize=9)
+    ax.set_xticks(x); ax.set_xticklabels(["H (local)","D (empate)","A (visitante)"])
+    ax.set_ylabel("F1-score por clase")
+    ax.set_title("F1 por clase: todos los partidos vs partidos equilibrados",
+                 fontweight="bold")
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig("img/knn_equilibrados_f1.png", dpi=130)
+    plt.close()
+    print("  grafica guardada: img/knn_equilibrados_f1.png")
+
+    if report_eq["D"]["f1-score"] > report_gen["D"]["f1-score"]:
+        print(f"\n  el F1 del empate sube de {report_gen['D']['f1-score']:.3f} a "
+              f"{report_eq['D']['f1-score']:.3f} en partidos equilibrados")
+        print("  confirma que el KNN detecta mejor el empate cuando el mercado ya señala incertidumbre")
+    else:
+        print(f"\n  el F1 del empate no mejora en partidos equilibrados "
+              f"({report_eq['D']['f1-score']:.3f} vs {report_gen['D']['f1-score']:.3f})")
+        print("  el problema del empate no se resuelve filtrando por equilibrio de cuotas")
+else:
+    print(f"  solo {n_eq} partidos equilibrados en test — muestra insuficiente para comparar")
+
+
+# imprimí los números finales de ambos modelos para referencia
 
 print(f"\n{'='*60}")
 print("  NUMEROS FINALES")

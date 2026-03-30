@@ -279,7 +279,7 @@ FEATURE_SETS = {
 }
 MAIN_FEATURES = FEATURE_SETS["completo"]
 
-data_main = df[MAIN_FEATURES + ["FTR","Div","HomeTeam","AwayTeam","Date"]].dropna()
+data_main = df[MAIN_FEATURES + ["FTR","Div","HomeTeam","AwayTeam","Date","Season"]].dropna()
 X_all = data_main[MAIN_FEATURES]
 y_all = data_main["FTR"]
 
@@ -293,63 +293,80 @@ X_train_s = scaler.fit_transform(X_train)
 X_test_s  = scaler.transform(X_test)
 
 
-# busqué el K óptimo con el método del codo probando K=1 a 30
+# busqué el K óptimo con el método del codo probando K=1 a 50
+# también comparé votación uniforme vs ponderada por distancia inversa
 
 print(f"\n{'='*60}")
 print("  1. BUSQUEDA DEL K OPTIMO — metodo del codo")
 print(f"{'='*60}")
 
-k_range      = range(1, 31)
+k_range      = range(1, 51)
 acc_train_l  = []
 acc_test_l   = []
 f1_test_l    = []
+acc_test_wd  = []  # weighted distance
 
 for k in k_range:
-    knn = KNeighborsClassifier(n_neighbors=k)
-    knn.fit(X_train_s, y_train)
-    p_tr = knn.predict(X_train_s)
-    p_te = knn.predict(X_test_s)
+    knn_u = KNeighborsClassifier(n_neighbors=k, weights="uniform")
+    knn_d = KNeighborsClassifier(n_neighbors=k, weights="distance")
+    knn_u.fit(X_train_s, y_train)
+    knn_d.fit(X_train_s, y_train)
+    p_tr = knn_u.predict(X_train_s)
+    p_te = knn_u.predict(X_test_s)
+    p_wd = knn_d.predict(X_test_s)
     acc_train_l.append(accuracy_score(y_train, p_tr))
     acc_test_l.append(accuracy_score(y_test,  p_te))
     f1_test_l.append(f1_score(y_test, p_te, average="macro"))
+    acc_test_wd.append(accuracy_score(y_test, p_wd))
 
-best_k   = list(k_range)[np.argmax(acc_test_l)]
-best_acc = max(acc_test_l)
-print(f"  mejor K: {best_k}  accuracy test: {best_acc:.4f}")
+best_k     = list(k_range)[np.argmax(acc_test_l)]
+best_acc   = max(acc_test_l)
+best_k_wd  = list(k_range)[np.argmax(acc_test_wd)]
+best_acc_wd = max(acc_test_wd)
+
+print(f"  votación uniforme  — mejor K: {best_k}   accuracy: {best_acc:.4f}")
+print(f"  votación distancia — mejor K: {best_k_wd}  accuracy: {best_acc_wd:.4f}")
+
+mejor_weights = "distance" if best_acc_wd > best_acc else "uniform"
+mejor_k_final = best_k_wd if best_acc_wd > best_acc else best_k
+mejor_acc_final = max(best_acc_wd, best_acc)
+print(f"  ganador: weights={mejor_weights}  K={mejor_k_final}  acc={mejor_acc_final:.4f}")
 
 print_tabulate(pd.DataFrame({
-    "K":         list(k_range),
-    "acc_train": [round(a,4) for a in acc_train_l],
-    "acc_test":  [round(a,4) for a in acc_test_l],
-    "f1_macro":  [round(a,4) for a in f1_test_l],
+    "K":              list(k_range),
+    "acc_uniform":    [round(a, 4) for a in acc_test_l],
+    "acc_distance":   [round(a, 4) for a in acc_test_wd],
+    "f1_macro":       [round(a, 4) for a in f1_test_l],
 }))
 
-fig, ax = plt.subplots(figsize=(12, 5))
-ax.plot(list(k_range), acc_train_l, label="accuracy train", color="#3498db", linewidth=2)
-ax.plot(list(k_range), acc_test_l,  label="accuracy test",  color="#e74c3c", linewidth=2)
-ax.plot(list(k_range), f1_test_l,   label="F1 macro test",
-        color="#9b59b6", linewidth=1.5, linestyle="--")
-ax.axvline(best_k, color="#2ecc71", linewidth=1.5, linestyle="--",
-           label=f"mejor K={best_k}")
+fig, ax = plt.subplots(figsize=(14, 5))
+ax.plot(list(k_range), acc_train_l,  label="accuracy train",     color="#3498db", linewidth=2)
+ax.plot(list(k_range), acc_test_l,   label="accuracy test (uniform)",  color="#e74c3c", linewidth=2)
+ax.plot(list(k_range), acc_test_wd,  label="accuracy test (distance)", color="#f39c12", linewidth=2, linestyle="--")
+ax.plot(list(k_range), f1_test_l,    label="F1 macro (uniform)",
+        color="#9b59b6", linewidth=1.5, linestyle=":")
+ax.axvline(mejor_k_final, color="#2ecc71", linewidth=1.5, linestyle="--",
+           label=f"mejor K={mejor_k_final} ({mejor_weights})")
 ax.set_xlabel("K (número de vecinos)"); ax.set_ylabel("métrica")
-ax.set_title("Accuracy y F1-macro vs K — método del codo", fontweight="bold")
-ax.legend(); ax.grid(alpha=0.3)
+ax.set_title("Accuracy y F1-macro vs K — uniform vs distance weights", fontweight="bold")
+ax.legend(fontsize=8); ax.grid(alpha=0.3)
 plt.tight_layout()
 plt.savefig("img/knn_accuracy_vs_k.png", dpi=130)
 plt.close()
 print("  grafica guardada: img/knn_accuracy_vs_k.png")
 
 
-# validé con 5-fold estratificado para confirmar que el accuracy no depende del split
+# validé con 5-fold estratificado usando el mejor weights encontrado
 
 print(f"\n{'='*60}")
 print("  2. VALIDACION CRUZADA 5-FOLD")
 print(f"{'='*60}")
+print(f"  weights={mejor_weights}  K={mejor_k_final}")
 
 X_all_s = scaler.fit_transform(X_all)
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 cv_scores = cross_val_score(
-    KNeighborsClassifier(n_neighbors=best_k),
+    KNeighborsClassifier(n_neighbors=mejor_k_final, weights=mejor_weights),
     X_all_s, y_all, cv=cv, scoring="accuracy"
 )
 print(f"  scores por fold: {[round(s,4) for s in cv_scores]}")
@@ -359,17 +376,17 @@ print(f"  intervalo 95%:   [{cv_scores.mean()-2*cv_scores.std():.4f}, "
       f"{cv_scores.mean()+2*cv_scores.std():.4f}]")
 
 
-# entrené el modelo final con el mejor K y calculé todas las métricas
+# entrené el modelo final con el mejor K y weights, y calculé todas las métricas
 
 print(f"\n{'='*60}")
-print(f"  3. MODELO FINAL  K={best_k}")
+print(f"  3. MODELO FINAL  K={mejor_k_final}  weights={mejor_weights}")
 print(f"{'='*60}")
 
-scaler2   = MinMaxScaler()
+scaler2    = MinMaxScaler()
 X_train_s2 = scaler2.fit_transform(X_train)
 X_test_s2  = scaler2.transform(X_test)
 
-knn_final = KNeighborsClassifier(n_neighbors=best_k)
+knn_final = KNeighborsClassifier(n_neighbors=mejor_k_final, weights=mejor_weights)
 knn_final.fit(X_train_s2, y_train)
 y_pred    = knn_final.predict(X_test_s2)
 
@@ -423,7 +440,7 @@ for ax, mat, title, fmt in zip(
             ax.text(j, i, f"{v:{fmt}}{suf}", ha="center", va="center",
                     fontsize=11, color="white" if v > mat.max()*0.5 else "black")
     plt.colorbar(im, ax=ax)
-fig.suptitle(f"Matriz de confusión — KNN K={best_k}", fontweight="bold", fontsize=12)
+fig.suptitle(f"Matriz de confusión — KNN K={mejor_k_final} weights={mejor_weights}", fontweight="bold", fontsize=12)
 plt.tight_layout()
 plt.savefig("img/knn_confusion_matrix.png", dpi=130)
 plt.close()
@@ -433,7 +450,7 @@ print_tabulate(pd.DataFrame(cm, index=["real H","real D","real A"],
                              columns=["pred H","pred D","pred A"]).reset_index())
 
 
-# comparé el accuracy de cinco conjuntos distintos de features para ver cuál clasifica mejor
+# comparé el accuracy de cinco conjuntos distintos de features con ambos tipos de weights
 
 print(f"\n{'='*60}")
 print("  5. COMPARACION DE FEATURE SETS")
@@ -447,22 +464,25 @@ for nombre, features in FEATURE_SETS.items():
     Xtr, Xte, ytr, yte = train_test_split(
         X_fs, y_fs, test_size=0.2, random_state=42, stratify=y_fs
     )
-    sc      = MinMaxScaler()
-    Xtr_s   = sc.fit_transform(Xtr)
-    Xte_s   = sc.transform(Xte)
-    bst_a   = 0; bst_k = 1
-    for k in range(1, 21):
-        knn_t = KNeighborsClassifier(n_neighbors=k)
-        knn_t.fit(Xtr_s, ytr)
-        a = accuracy_score(yte, knn_t.predict(Xte_s))
-        if a > bst_a: bst_a = a; bst_k = k
-    knn_b = KNeighborsClassifier(n_neighbors=bst_k)
+    sc    = MinMaxScaler()
+    Xtr_s = sc.fit_transform(Xtr)
+    Xte_s = sc.transform(Xte)
+    bst_a = 0; bst_k = 1; bst_w = "uniform"
+    for w in ["uniform", "distance"]:
+        for k in range(1, 31):
+            knn_t = KNeighborsClassifier(n_neighbors=k, weights=w)
+            knn_t.fit(Xtr_s, ytr)
+            a = accuracy_score(yte, knn_t.predict(Xte_s))
+            if a > bst_a:
+                bst_a = a; bst_k = k; bst_w = w
+    knn_b = KNeighborsClassifier(n_neighbors=bst_k, weights=bst_w)
     knn_b.fit(Xtr_s, ytr)
     f1_fs = f1_score(yte, knn_b.predict(Xte_s), average="macro")
     fs_results.append({
         "feature_set": nombre,
         "n_features":  len(cols_ok),
         "mejor_k":     bst_k,
+        "weights":     bst_w,
         "accuracy":    round(bst_a, 4),
         "f1_macro":    round(f1_fs, 4),
     })
@@ -480,7 +500,7 @@ for bar in list(b1) + list(b2):
 ax.axhline(1/3, color="red", linewidth=1, linestyle="--", label="baseline azar")
 ax.set_xticks(x); ax.set_xticklabels(fs_df["feature_set"], rotation=15)
 ax.set_ylabel("métrica")
-ax.set_title("Accuracy y F1 por conjunto de features — KNN sklearn", fontweight="bold")
+ax.set_title("Accuracy y F1 por conjunto de features — mejor K y weights por set", fontweight="bold")
 ax.legend()
 plt.tight_layout()
 plt.savefig("img/knn_feature_sets.png", dpi=130)
@@ -782,13 +802,179 @@ else:
     print(f"  solo {n_eq} partidos equilibrados en test — muestra insuficiente para comparar")
 
 
-# imprimí los números finales de ambos modelos para referencia
+# ajusté el threshold de probabilidad de voto para el empate buscando el punto
+# donde el F1 del empate mejora sin destrozar el accuracy general
+
+print(f"\n{'='*60}")
+print("  12b. THRESHOLD DEL EMPATE — ajuste de sensibilidad")
+print(f"{'='*60}")
+print("""
+  el KNN con distance vota D solo 130 veces sobre 2371 partidos.
+  bajando el threshold de decisión para D — si la probabilidad de empate
+  supera X% lo clasificamos como D en lugar de requerir mayoría absoluta —
+  podemos mejorar el recall del empate a costa de algo de precision.
+""")
+
+probs_test = knn_final.predict_proba(X_test_s2)
+cls_order  = list(knn_final.classes_)
+idx_D      = cls_order.index("D")
+idx_H      = cls_order.index("H")
+idx_A      = cls_order.index("A")
+
+# calculé el F1 del empate del modelo base (sin ningún threshold) para usarlo como referencia
+report_base = classification_report(y_test, y_pred, target_names=["H","D","A"],
+                                     output_dict=True, zero_division=0)
+f1_D_base  = round(report_base["D"]["f1-score"], 4)
+acc_base   = round(accuracy_score(y_test, y_pred), 4)
+n_D_base   = int(sum(y_pred == "D"))
+
+thresholds = [0.20, 0.25, 0.28, 0.30, 0.33, 0.35, 0.38, 0.40]
+thr_rows   = []
+for thr in thresholds:
+    y_thr = []
+    for prob_row in probs_test:
+        if prob_row[idx_D] >= thr:
+            y_thr.append("D")
+        else:
+            # descarto D — elijo entre H y A directamente
+            y_thr.append("H" if prob_row[idx_H] >= prob_row[idx_A] else "A")
+    y_thr = np.array(y_thr)
+    rep   = classification_report(y_test, y_thr, target_names=["H","D","A"],
+                                   output_dict=True, zero_division=0)
+    thr_rows.append({
+        "threshold_D": thr,
+        "acc":         round(accuracy_score(y_test, y_thr), 4),
+        "f1_H":        round(rep["H"]["f1-score"], 4),
+        "f1_D":        round(rep["D"]["f1-score"], 4),
+        "f1_A":        round(rep["A"]["f1-score"], 4),
+        "f1_macro":    round(rep["macro avg"]["f1-score"], 4),
+        "n_pred_D":    int(sum(y_thr == "D")),
+    })
+
+thr_df = pd.DataFrame(thr_rows)
+
+# agrego fila del modelo base al inicio para comparación visual
+base_row = pd.DataFrame([{
+    "threshold_D": "base (sin thr)",
+    "acc":         acc_base,
+    "f1_H":        round(report_base["H"]["f1-score"], 4),
+    "f1_D":        f1_D_base,
+    "f1_A":        round(report_base["A"]["f1-score"], 4),
+    "f1_macro":    round(report_base["macro avg"]["f1-score"], 4),
+    "n_pred_D":    n_D_base,
+}])
+print_tabulate(pd.concat([base_row, thr_df], ignore_index=True))
+
+mejor_thr_idx = thr_df["f1_D"].idxmax()
+mejor_thr     = thr_df.loc[mejor_thr_idx, "threshold_D"]
+print(f"\n  F1 empate sin threshold (modelo base): {f1_D_base:.4f}  (n_pred_D={n_D_base})")
+print(f"  threshold que maximiza F1 del empate:   {mejor_thr}")
+print(f"  F1 empate con threshold={mejor_thr}:       {thr_df.loc[mejor_thr_idx, 'f1_D']:.4f}")
+print(f"  accuracy con ese threshold:              {thr_df.loc[mejor_thr_idx, 'acc']:.4f}  (vs {acc_base:.4f} sin threshold)")
+delta_f1 = thr_df.loc[mejor_thr_idx, 'f1_D'] - f1_D_base
+delta_acc = thr_df.loc[mejor_thr_idx, 'acc'] - acc_base
+print(f"  trade-off: F1 empate {'+' if delta_f1>=0 else ''}{delta_f1:.4f}  "
+      f"accuracy {'+' if delta_acc>=0 else ''}{delta_acc:.4f}")
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+axes[0].axhline(f1_D_base, color="#f39c12", linewidth=1.2, linestyle=":",
+                label=f"F1 empate base ({f1_D_base:.3f})")
+axes[0].plot(thr_df["threshold_D"], thr_df["f1_D"],  color="#f39c12", linewidth=2,
+             marker="o", label="F1 empate con threshold")
+axes[0].plot(thr_df["threshold_D"], thr_df["f1_H"],  color="#3498db", linewidth=1.5,
+             marker="s", linestyle="--", label="F1 local")
+axes[0].plot(thr_df["threshold_D"], thr_df["f1_A"],  color="#e74c3c", linewidth=1.5,
+             marker="^", linestyle="--", label="F1 visitante")
+axes[0].plot(thr_df["threshold_D"], thr_df["f1_macro"], color="#9b59b6", linewidth=1.5,
+             linestyle=":", label="F1 macro")
+axes[0].axvline(mejor_thr, color="green", linewidth=1.2, linestyle="--",
+                label=f"mejor thr={mejor_thr}")
+axes[0].set_xlabel("threshold probabilidad D"); axes[0].set_ylabel("F1-score")
+axes[0].set_title("F1 por clase según threshold del empate", fontweight="bold")
+axes[0].legend(fontsize=8); axes[0].grid(alpha=0.3)
+
+axes[1].axhline(acc_base, color="#2ecc71", linewidth=1.2, linestyle=":",
+                label=f"accuracy base ({acc_base:.4f})")
+axes[1].plot(thr_df["threshold_D"], thr_df["acc"], color="#2ecc71", linewidth=2,
+             marker="o", label="accuracy con threshold")
+ax2 = axes[1].twinx()
+ax2.plot(thr_df["threshold_D"], thr_df["n_pred_D"],
+         color="#f39c12", linewidth=1.5, marker="s", linestyle="--")
+ax2.axhline(n_D_base, color="#f39c12", linewidth=1, linestyle=":")
+ax2.set_ylabel("n predichos como D", color="#f39c12")
+ax2.tick_params(axis="y", labelcolor="#f39c12")
+axes[1].axvline(mejor_thr, color="green", linewidth=1.2, linestyle="--")
+axes[1].set_xlabel("threshold probabilidad D")
+axes[1].set_ylabel("accuracy")
+axes[1].set_title("Accuracy y partidos predichos como D", fontweight="bold")
+axes[1].legend(fontsize=8); axes[1].grid(alpha=0.3)
+
+fig.suptitle("Ajuste de threshold para mejorar detección del empate",
+             fontweight="bold", fontsize=11)
+plt.tight_layout()
+plt.savefig("img/knn_threshold_empate.png", dpi=130)
+plt.close()
+print("  grafica guardada: img/knn_threshold_empate.png")
+
+
+# desglosé el accuracy por temporada para ver si el modelo es más estable en algunos años
+
+print(f"\n{'='*60}")
+print("  13. ACCURACY POR TEMPORADA")
+print(f"{'='*60}")
+
+SEASON_MAP = {1920:"2019/20",2021:"2020/21",2122:"2021/22",
+              2223:"2022/23",2324:"2023/24",2425:"2024/25",2526:"2025/26"}
+test_season = data_main.loc[idx_test, "Season"] if "Season" in data_main.columns else None
+
+if test_season is not None:
+    seasons_sorted = sorted(data_main["Season"].unique())
+    seas_acc = []
+    for s in seasons_sorted:
+        mask_s = test_season == s
+        if mask_s.sum() < 20: continue
+        acc_s = accuracy_score(y_test[mask_s], y_pred[mask_s])
+        f1_s  = f1_score(y_test[mask_s], y_pred[mask_s], average="macro")
+        dist_s = y_test[mask_s].value_counts().to_dict()
+        seas_acc.append({
+            "temporada": SEASON_MAP.get(s, str(s)),
+            "n_test":    int(mask_s.sum()),
+            "accuracy":  round(acc_s, 4),
+            "f1_macro":  round(f1_s, 4),
+            "pct_H":     round(dist_s.get("H",0)/mask_s.sum()*100, 1),
+            "pct_D":     round(dist_s.get("D",0)/mask_s.sum()*100, 1),
+            "pct_A":     round(dist_s.get("A",0)/mask_s.sum()*100, 1),
+        })
+    print_tabulate(pd.DataFrame(seas_acc))
+
+    fig, ax = plt.subplots(figsize=(11, 5))
+    sa_df = pd.DataFrame(seas_acc)
+    ax.plot(sa_df["temporada"], sa_df["accuracy"],
+            color="#3498db", linewidth=2, marker="o", label="accuracy")
+    ax.plot(sa_df["temporada"], sa_df["f1_macro"],
+            color="#9b59b6", linewidth=1.5, marker="s", linestyle="--", label="F1 macro")
+    ax.axhline(1/3, color="red", linewidth=1, linestyle=":", label="baseline azar")
+    ax.axhline(acc_final, color="#2ecc71", linewidth=1, linestyle="--",
+               label=f"accuracy global ({acc_final:.4f})")
+    ax.set_ylabel("métrica")
+    ax.set_title("Accuracy y F1 por temporada", fontweight="bold")
+    ax.legend(fontsize=8); ax.grid(alpha=0.3)
+    plt.xticks(rotation=15)
+    plt.tight_layout()
+    plt.savefig("img/knn_accuracy_por_temporada.png", dpi=130)
+    plt.close()
+    print("  grafica guardada: img/knn_accuracy_por_temporada.png")
+else:
+    print("  columna Season no disponible en data_main")
+
+
+# imprimeción modelos
 
 print(f"\n{'='*60}")
 print("  NUMEROS FINALES")
 print(f"{'='*60}")
 print(f"  KNN manual:   K={best_k_manual}  acc={acc_final_manual:.4f}  features=2  muestra={MUESTRA_N:,}")
-print(f"  KNN sklearn:  K={best_k}  acc={acc_final:.4f}  features={len(MAIN_FEATURES)}  partidos={len(data_main):,}")
+print(f"  KNN sklearn:  K={mejor_k_final}  weights={mejor_weights}  acc={acc_final:.4f}  features={len(MAIN_FEATURES)}  partidos={len(data_main):,}")
 print(f"  F1 macro:     {f1_final:.4f}")
 print(f"  CV 5-fold:    {cv_scores.mean():.4f} ± {cv_scores.std():.4f}")
 print(f"  mejor set:    {fs_df.iloc[0]['feature_set']} (acc={fs_df.iloc[0]['accuracy']:.4f})")

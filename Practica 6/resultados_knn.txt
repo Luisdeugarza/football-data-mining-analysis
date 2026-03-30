@@ -1,0 +1,358 @@
+dataset: 11,851 partidos | 5 ligas
+distribución FTR: {'H': 5102, 'A': 3758, 'D': 2991}
+baseline clase mayoritaria: 0.4305
+
+============================================================
+  PARTE 1 — KNN DESDE CERO
+============================================================
+
+  implementé el algoritmo KNN manualmente usando distancia euclídea
+  y votación por moda, igual que el algoritmo base sin librerías.
+
+  features usados: imp_prob_H (eje X) e imp_prob_A (eje Y)
+  — dos dimensiones permiten visualizar el espacio de decisión
+  — son los features más importantes según la práctica 5
+
+  etiquetas: H (victoria local) | D (empate) | A (victoria visitante)
+
+  train: 1600 partidos | test: 400 partidos
+  grafica guardada: img/knn_manual_scatter_train.png
+
+  buscando K óptimo (K=1 a 15) con implementación manual...
+  mejor K manual: 15  accuracy: 0.4825
+|    |   K |   acc_manual |
+|----+-----+--------------|
+|  0 |   1 |       0.4075 |
+|  1 |   2 |       0.43   |
+|  2 |   3 |       0.4525 |
+|  3 |   4 |       0.4625 |
+|  4 |   5 |       0.4475 |
+|  5 |   6 |       0.455  |
+|  6 |   7 |       0.435  |
+|  7 |   8 |       0.4525 |
+|  8 |   9 |       0.44   |
+|  9 |  10 |       0.4625 |
+| 10 |  11 |       0.465  |
+| 11 |  12 |       0.475  |
+| 12 |  13 |       0.4725 |
+| 13 |  14 |       0.4575 |
+| 14 |  15 |       0.4825 |
+
+  accuracy implementación manual K=15: 0.4825
+  distribución predicha: {'H': 205, 'A': 155, 'D': 40}
+  distribución real:     {'H': 176, 'A': 136, 'D': 88}
+
+  predicción de partidos hipotéticos (implementación manual):
+  descripcion                    AvgH   AvgA   pred
+  --------------------------------------------------
+  favorito local claro           1.40   7.50      H
+  partido equilibrado            2.50   2.80      D
+  favorito visitante             5.00   1.65      A
+  local muy favorito             1.15  15.00      H
+  casi moneda al aire            3.20   3.50      D
+
+  grafica guardada: img/knn_manual_scatter_pred.png
+
+============================================================
+  PARTE 2 — KNN CON SKLEARN (modelo completo, 15 features)
+============================================================
+
+  usé sklearn para el modelo completo con todos los features disponibles.
+  sklearn optimiza el cálculo de distancias con estructuras KD-tree/Ball-tree
+  lo que permite usar 15 features y 11,851 partidos eficientemente.
+
+
+============================================================
+  1. BUSQUEDA DEL K OPTIMO — metodo del codo
+============================================================
+  votación uniforme  — mejor K: 38   accuracy: 0.5230
+  votación distancia — mejor K: 39  accuracy: 0.5238
+  ganador: weights=distance  K=39  acc=0.5238
+|    |   K |   acc_uniform |   acc_distance |   f1_macro |
+|----+-----+---------------+----------------+------------|
+|  0 |   1 |        0.4378 |         0.4378 |     0.4166 |
+|  1 |   2 |        0.4053 |         0.4378 |     0.3902 |
+|  2 |   3 |        0.4395 |         0.45   |     0.4003 |
+|  3 |   4 |        0.4429 |         0.4509 |     0.415  |
+|  4 |   5 |        0.4504 |         0.4593 |     0.4185 |
+|  5 |   6 |        0.4614 |         0.4568 |     0.4159 |
+|  6 |   7 |        0.4665 |         0.4766 |     0.4211 |
+|  7 |   8 |        0.4749 |         0.4791 |     0.4284 |
+|  8 |   9 |        0.493  |         0.4943 |     0.44   |
+|  9 |  10 |        0.4914 |         0.4892 |     0.4379 |
+| 10 |  11 |        0.4939 |         0.4947 |     0.4418 |
+| 11 |  12 |        0.4947 |         0.4939 |     0.4341 |
+| 12 |  13 |        0.4951 |         0.4892 |     0.4402 |
+| 13 |  14 |        0.4977 |         0.4926 |     0.4411 |
+| 14 |  15 |        0.5023 |         0.5006 |     0.4419 |
+| 15 |  16 |        0.5027 |         0.4994 |     0.4418 |
+| 16 |  17 |        0.5032 |         0.4994 |     0.443  |
+| 17 |  18 |        0.512  |         0.5044 |     0.4468 |
+| 18 |  19 |        0.5099 |         0.5095 |     0.4444 |
+| 19 |  20 |        0.5146 |         0.5057 |     0.4499 |
+| 20 |  21 |        0.5158 |         0.5061 |     0.4488 |
+| 21 |  22 |        0.5124 |         0.5065 |     0.4473 |
+| 22 |  23 |        0.5124 |         0.504  |     0.4455 |
+| 23 |  24 |        0.5162 |         0.5116 |     0.445  |
+| 24 |  25 |        0.5103 |         0.5082 |     0.4382 |
+| 25 |  26 |        0.5154 |         0.5086 |     0.4437 |
+| 26 |  27 |        0.5095 |         0.515  |     0.4335 |
+| 27 |  28 |        0.512  |         0.5108 |     0.4354 |
+| 28 |  29 |        0.5158 |         0.5124 |     0.4377 |
+| 29 |  30 |        0.5162 |         0.5129 |     0.437  |
+| 30 |  31 |        0.515  |         0.5124 |     0.4354 |
+| 31 |  32 |        0.5141 |         0.5103 |     0.4325 |
+| 32 |  33 |        0.5167 |         0.5137 |     0.4346 |
+| 33 |  34 |        0.5192 |         0.5167 |     0.437  |
+| 34 |  35 |        0.5171 |         0.5183 |     0.4347 |
+| 35 |  36 |        0.5217 |         0.52   |     0.4391 |
+| 36 |  37 |        0.5192 |         0.5213 |     0.4336 |
+| 37 |  38 |        0.523  |         0.5234 |     0.4397 |
+| 38 |  39 |        0.5217 |         0.5238 |     0.4361 |
+| 39 |  40 |        0.5217 |         0.5221 |     0.4366 |
+| 40 |  41 |        0.5221 |         0.5217 |     0.4344 |
+| 41 |  42 |        0.5171 |         0.5209 |     0.43   |
+| 42 |  43 |        0.5192 |         0.5158 |     0.4335 |
+| 43 |  44 |        0.5183 |         0.5179 |     0.43   |
+| 44 |  45 |        0.5213 |         0.5209 |     0.433  |
+| 45 |  46 |        0.5213 |         0.52   |     0.4322 |
+| 46 |  47 |        0.5226 |         0.523  |     0.4337 |
+| 47 |  48 |        0.5209 |         0.5179 |     0.427  |
+| 48 |  49 |        0.523  |         0.5175 |     0.4271 |
+| 49 |  50 |        0.5221 |         0.5167 |     0.426  |
+  grafica guardada: img/knn_accuracy_vs_k.png
+
+============================================================
+  2. VALIDACION CRUZADA 5-FOLD
+============================================================
+  weights=distance  K=39
+  scores por fold: [np.float64(0.5162), np.float64(0.5329), np.float64(0.5219), np.float64(0.5207), np.float64(0.5207)]
+  media:           0.5225
+  desv. estándar:  0.0056
+  intervalo 95%:   [0.5114, 0.5336]
+
+============================================================
+  3. MODELO FINAL  K=39  weights=distance
+============================================================
+
+  accuracy test:  0.5238
+  F1 macro test:  0.4391
+  partidos test:  2,371
+  distribución real:  H=1021  D= 598  A= 752
+  distribución pred:  H=1304  D= 184  A= 883
+
+  classification report:
+              precision    recall  f1-score   support
+
+           H       0.51      0.59      0.55       752
+           D       0.28      0.09      0.13       598
+           A       0.57      0.73      0.64      1021
+
+    accuracy                           0.52      2371
+   macro avg       0.45      0.47      0.44      2371
+weighted avg       0.48      0.52      0.48      2371
+
+|    | clase   |   precision |   recall |     f1 |   support |
+|----+---------+-------------+----------+--------+-----------|
+|  0 | H       |      0.5062 |   0.5944 | 0.5468 |       752 |
+|  1 | D       |      0.2772 |   0.0853 | 0.1304 |       598 |
+|  2 | A       |      0.5706 |   0.7287 | 0.64   |      1021 |
+
+============================================================
+  4. MATRIZ DE CONFUSION
+============================================================
+  grafica guardada: img/knn_confusion_matrix.png
+|    | index   |   pred H |   pred D |   pred A |
+|----+---------+----------+----------+----------|
+|  0 | real H  |      744 |       65 |      212 |
+|  1 | real D  |      323 |       51 |      224 |
+|  2 | real A  |      237 |       68 |      447 |
+
+============================================================
+  5. COMPARACION DE FEATURE SETS
+============================================================
+|    | feature_set      |   n_features |   mejor_k | weights   |   accuracy |   f1_macro |
+|----+------------------+--------------+-----------+-----------+------------+------------|
+|  0 | cuotas_cierre    |            4 |        29 | uniform   |     0.5234 |     0.4447 |
+|  1 | completo         |           15 |        24 | uniform   |     0.5162 |     0.445  |
+|  2 | probs_implicitas |            4 |        30 | distance  |     0.5137 |     0.4407 |
+|  3 | cuotas_apertura  |            4 |        25 | uniform   |     0.512  |     0.434  |
+|  4 | movimiento       |            3 |        29 | uniform   |     0.5049 |     0.4234 |
+  grafica guardada: img/knn_feature_sets.png
+
+============================================================
+  6. IMPORTANCIA DE FEATURES (permutation importance)
+============================================================
+|    | feature      |   importancia |    std |
+|----+--------------+---------------+--------|
+|  0 | imp_prob_A   |        0.0201 | 0.0049 |
+|  1 | diff_imp     |        0.0195 | 0.006  |
+|  2 | imp_prob_H   |        0.0178 | 0.0062 |
+|  3 | AvgCH        |        0.0044 | 0.0035 |
+|  4 | AvgCD        |        0.0041 | 0.0038 |
+|  5 | racha_previa |        0.004  | 0.003  |
+|  6 | AvgH         |        0.0038 | 0.0016 |
+|  7 | AvgA         |        0.0032 | 0.0022 |
+|  8 | odds_move_H  |        0.0027 | 0.0027 |
+|  9 | AvgCA        |        0.0025 | 0.0027 |
+| 10 | odds_move_D  |        0.0021 | 0.0033 |
+| 11 | odds_move_A  |        0.0019 | 0.0022 |
+| 12 | overround    |        0.0019 | 0.0048 |
+| 13 | AvgD         |        0.0017 | 0.0026 |
+| 14 | imp_prob_D   |       -0.0024 | 0.0047 |
+  grafica guardada: img/knn_feature_importance.png
+
+============================================================
+  7. SCATTER imp_prob_H vs imp_prob_A — real vs predicho
+============================================================
+  grafica guardada: img/knn_scatter_imp_probs.png
+
+============================================================
+  8. VISUALIZACION PCA 2D
+============================================================
+  varianza explicada — PC1: 0.774  PC2: 0.143  total: 0.917
+  grafica guardada: img/knn_pca_scatter.png
+
+============================================================
+  9. ACCURACY POR LIGA
+============================================================
+|    | liga           |   n_test |   accuracy |   f1_macro |   pct_H |   pct_D |   pct_A |
+|----+----------------+----------+------------+------------+---------+---------+---------|
+|  0 | Bundesliga     |      375 |     0.5173 |     0.4191 |    42.4 |    25.3 |    32.3 |
+|  1 | Premier League |      538 |     0.5502 |     0.4424 |    44.1 |    21.7 |    34.2 |
+|  2 | Ligue 1        |      446 |     0.4821 |     0.4066 |    44.2 |    25.1 |    30.7 |
+|  3 | Serie A        |      496 |     0.5363 |     0.4582 |    39.7 |    27.4 |    32.9 |
+|  4 | La Liga        |      516 |     0.5252 |     0.45   |    44.8 |    26.7 |    28.5 |
+  grafica guardada: img/knn_accuracy_por_liga.png
+
+============================================================
+  10. ANALISIS DE ERRORES
+============================================================
+
+  total errores: 1,129 de 2,371 (47.6%)
+
+  tipos de error (real → predicho):
+|    | real   | pred   |   n |   pct |
+|----+--------+--------+-----+-------|
+|  0 | D      | H      | 323 | 28.61 |
+|  1 | A      | H      | 237 | 20.99 |
+|  2 | D      | A      | 224 | 19.84 |
+|  3 | H      | A      | 212 | 18.78 |
+|  4 | A      | D      |  68 |  6.02 |
+|  5 | H      | D      |  65 |  5.76 |
+
+  10 errores en partidos con mayor desequilibrio de cuota:
+|    | HomeTeam      | AwayTeam       | Date                | real   | pred   |   AvgH |   AvgA |   max_imp |
+|----+---------------+----------------+---------------------+--------+--------+--------+--------+-----------|
+|  0 | Man City      | West Brom      | 2020-12-15 00:00:00 | D      | H      |   1.12 |  22.77 |    0.8929 |
+|  1 | Bayern Munich | Stuttgart      | 2022-09-10 00:00:00 | D      | H      |   1.16 |  16.09 |    0.8621 |
+|  2 | Juventus      | Benevento      | 2021-03-21 00:00:00 | A      | H      |   1.18 |  15.04 |    0.8475 |
+|  3 | Paris SG      | Clermont       | 2024-04-06 00:00:00 | D      | H      |   1.18 |  14.32 |    0.8475 |
+|  4 | Southampton   | Man City       | 2025-05-10 00:00:00 | D      | A      |  13.37 |   1.19 |    0.8403 |
+|  5 | Liverpool     | Crystal Palace | 2022-08-15 00:00:00 | D      | H      |   1.2  |  16.33 |    0.8333 |
+|  6 | Arsenal       | Southampton    | 2023-04-21 00:00:00 | D      | H      |   1.2  |  14.72 |    0.8333 |
+|  7 | Real Madrid   | Valladolid     | 2019-08-24 00:00:00 | D      | H      |   1.21 |  13.16 |    0.8264 |
+|  8 | Barcelona     | Vallecano      | 2022-08-13 00:00:00 | D      | H      |   1.21 |  14.2  |    0.8264 |
+|  9 | Liverpool     | Crystal Palace | 2024-04-14 00:00:00 | A      | H      |   1.21 |  13.35 |    0.8264 |
+
+============================================================
+  11. PREDICCION DE NUEVOS PARTIDOS
+============================================================
+
+  descripcion                pred     %H     %D     %A
+  ----------------------------------------------------
+  favorito local claro          H   73.8%   21.2%    5.0%
+  partido equilibrado           D   29.8%   38.2%   32.1%
+  favorito visitante            A   22.8%   28.4%   48.8%
+  local muy favorito            H   80.5%   11.9%    7.6%
+  cuota local sube              H   44.2%   28.3%   27.5%
+
+============================================================
+  12. PARTIDOS EQUILIBRADOS — donde el empate deberia ser predecible
+============================================================
+
+  el empate tuvo F1=0.17 en el modelo general porque en el espacio de
+  features los empates no tienen zona propia. pero cuando el mercado
+  señala equilibrio (cuotas similares para los tres resultados) los
+  empates deberían concentrarse más y el modelo debería detectarlos mejor.
+
+  partidos equilibrados en test: 697
+  distribución real:   {'H': 256, 'A': 243, 'D': 198}
+  distribución pred:   {'A': 322, 'H': 244, 'D': 131}
+  accuracy:            0.3931  (vs 0.5238 general)
+  F1 macro:            0.3727  (vs 0.4391 general)
+
+  classification report en partidos equilibrados:
+              precision    recall  f1-score   support
+
+           H       0.40      0.53      0.45       243
+           D       0.30      0.20      0.24       198
+           A       0.44      0.42      0.43       256
+
+    accuracy                           0.39       697
+   macro avg       0.38      0.38      0.37       697
+weighted avg       0.38      0.39      0.38       697
+
+  matriz de confusión en partidos equilibrados:
+|    | index   |   pred H |   pred D |   pred A |
+|----+---------+----------+----------+----------|
+|  0 | real H  |      107 |       46 |      103 |
+|  1 | real D  |       68 |       39 |       91 |
+|  2 | real A  |       69 |       46 |      128 |
+  grafica guardada: img/knn_equilibrados_f1.png
+
+  el F1 del empate sube de 0.130 a 0.237 en partidos equilibrados
+  confirma que el KNN detecta mejor el empate cuando el mercado ya señala incertidumbre
+
+============================================================
+  12b. THRESHOLD DEL EMPATE — ajuste de sensibilidad
+============================================================
+
+  el KNN con distance vota D solo 130 veces sobre 2371 partidos.
+  bajando el threshold de decisión para D — si la probabilidad de empate
+  supera X% lo clasificamos como D en lugar de requerir mayoría absoluta —
+  podemos mejorar el recall del empate a costa de algo de precision.
+
+|    | threshold_D    |    acc |   f1_H |   f1_D |   f1_A |   f1_macro |   n_pred_D |
+|----+----------------+--------+--------+--------+--------+------------+------------|
+|  0 | base (sin thr) | 0.5238 | 0.5468 | 0.1304 | 0.64   |     0.4391 |        184 |
+|  1 | 0.2            | 0.3809 | 0.2964 | 0.3993 | 0.4107 |     0.3688 |       1676 |
+|  2 | 0.25           | 0.4382 | 0.4168 | 0.3681 | 0.5246 |     0.4365 |       1184 |
+|  3 | 0.28           | 0.4694 | 0.4785 | 0.3304 | 0.5688 |     0.4592 |        867 |
+|  4 | 0.3            | 0.4838 | 0.5024 | 0.2902 | 0.5911 |     0.4612 |        670 |
+|  5 | 0.33           | 0.4994 | 0.5248 | 0.2352 | 0.612  |     0.4573 |        465 |
+|  6 | 0.35           | 0.5082 | 0.5319 | 0.1897 | 0.6239 |     0.4485 |        330 |
+|  7 | 0.38           | 0.5238 | 0.5471 | 0.1408 | 0.6364 |     0.4415 |        183 |
+|  8 | 0.4            | 0.5259 | 0.5503 | 0.1006 | 0.6383 |     0.4297 |        118 |
+
+  F1 empate sin threshold (modelo base): 0.1304  (n_pred_D=184)
+  threshold que maximiza F1 del empate:   0.2
+  F1 empate con threshold=0.2:       0.3993
+  accuracy con ese threshold:              0.3809  (vs 0.5238 sin threshold)
+  trade-off: F1 empate +0.2689  accuracy -0.1429
+  grafica guardada: img/knn_threshold_empate.png
+
+============================================================
+  13. ACCURACY POR TEMPORADA
+============================================================
+|    | temporada   |   n_test |   accuracy |   f1_macro |   pct_H |   pct_D |   pct_A |
+|----+-------------+----------+------------+------------+---------+---------+---------|
+|  0 | 2019/20     |      348 |     0.523  |     0.4307 |    47.7 |    26.4 |    25.9 |
+|  1 | 2020/21     |      370 |     0.5405 |     0.4708 |    37.8 |    24.3 |    37.8 |
+|  2 | 2021/22     |      323 |     0.5387 |     0.4517 |    41.8 |    23.2 |    35   |
+|  3 | 2022/23     |      356 |     0.5112 |     0.4304 |    49.2 |    24.2 |    26.7 |
+|  4 | 2023/24     |      353 |     0.5156 |     0.4345 |    43.6 |    27.2 |    29.2 |
+|  5 | 2024/25     |      379 |     0.504  |     0.4146 |    40.4 |    26.4 |    33.2 |
+|  6 | 2025/26     |      242 |     0.5413 |     0.4211 |    40.5 |    24.4 |    35.1 |
+  grafica guardada: img/knn_accuracy_por_temporada.png
+
+============================================================
+  NUMEROS FINALES
+============================================================
+  KNN manual:   K=15  acc=0.4825  features=2  muestra=2,000
+  KNN sklearn:  K=39  weights=distance  acc=0.5238  features=15  partidos=11,851
+  F1 macro:     0.4391
+  CV 5-fold:    0.5225 ± 0.0056
+  mejor set:    cuotas_cierre (acc=0.5234)
+
+listo — todas las graficas guardadas en img/

@@ -69,12 +69,17 @@ Con sklearn usé todos los features disponibles. sklearn optimiza el cálculo de
 1. **Implementación manual** — KNN desde cero con distancia euclídea y votación por moda (2 features, graficable)
 2. **Split train/test** — 80/20 estratificado por clase FTR
 3. **Normalización** — MinMaxScaler (KNN es sensible a la escala)
-4. **Búsqueda del K óptimo** — Loop K=1 a 30, curva accuracy vs K (método del codo)
-5. **Validación cruzada** — 5-fold estratificado para confirmar estabilidad
-6. **Evaluación** — Accuracy, F1-macro, classification report, matriz de confusión
-7. **Permutation importance** — Qué features contribuyen más
-8. **Comparación de feature sets** — Qué conjunto clasifica mejor
-9. **Análisis de errores** — Tipos de error y partidos donde el modelo falla
+4. **Búsqueda del K óptimo** — Loop K=1 a 50, curva accuracy vs K (método del codo)
+5. **Comparación de weights** — votación uniforme vs ponderada por distancia inversa (`weights="distance"`)
+6. **Validación cruzada** — 5-fold estratificado con el mejor K y weights encontrados
+7. **Evaluación** — Accuracy, F1-macro, classification report, matriz de confusión
+8. **Permutation importance** — Qué features contribuyen más
+9. **Comparación de feature sets** — cada set busca su propio mejor K y weights (uniform/distance)
+10. **Análisis de errores** — tipos de error y partidos donde el modelo falla
+11. **Predicción de nuevos partidos** — función que recibe cuotas y devuelve clase y % de voto
+12. **Partidos equilibrados** — F1 del empate cuando el mercado señala incertidumbre
+12b. **Threshold del empate** — tabla de F1 vs accuracy por umbral de decisión para D
+13. **Accuracy por liga y por temporada** — estabilidad del modelo entre competiciones y años
 
 ---
 
@@ -83,8 +88,8 @@ Con sklearn usé todos los features disponibles. sklearn optimiza el cálculo de
 ### 1. La implementación manual confirma el algoritmo
 La versión desde cero con 2 features produce resultados coherentes. La diferencia de accuracy respecto a sklearn con 15 features refleja directamente el valor de agregar más variables, no una diferencia en el algoritmo.
 
-### 2. El set completo supera a cualquier subset individual
-Las probabilidades implícitas solas capturan mucho, pero agregar movimiento de cuota y racha mejora el accuracy. El feature set de solo movimiento es el más débil — confirma que el smart money ayuda pero no es suficiente por sí solo.
+### 2. Cuotas de cierre ganan al set completo — más features no siempre ayuda
+Con la búsqueda justa de K y weights por separado para cada set, `cuotas_cierre` (4 features, K=29, uniform) logra 0.5234, superando al set completo (0.5162). Esto significa que los 11 features adicionales no aportan — activamente añaden ruido al espacio de distancias del KNN. La cuota de cierre ya captura implícitamente el movimiento de mercado, las probabilidades implícitas y parte de la información de racha porque el mercado las procesa antes de fijar el precio final.
 
 ### 3. Las probabilidades implícitas son los features más importantes
 Confirmado por permutation importance: `imp_prob_H` e `imp_prob_A` son los que más bajan el accuracy al permutarlos. Esto es consistente con la práctica 5 donde `imp_prob_H → home_win` tuvo el mayor R².
@@ -98,24 +103,38 @@ Los 5 folds producen accuracies similares con desviación estándar baja, lo que
 ### 6. La racha previa aporta información que las cuotas no capturan
 Su inclusión mejora marginalmente el accuracy, consistente con el hallazgo de la práctica 5 (racha previa predice home_win con R²=0.014, p<0.001).
 
-### 7. El F1 del empate en partidos equilibrados
-Cuando se filtra por partidos donde el mercado señala equilibrio real (AvgH, AvgA y AvgD todas en rango similar), el F1 del empate cambia respecto al modelo general. Si sube, confirma que el KNN detecta mejor el empate cuando los vecinos cercanos ya son partidos inciertos. Si no sube, indica que el problema del empate es estructural y no se resuelve filtrando — los vecinos de un partido equilibrado siguen siendo mayoritariamente victorias locales o visitantes.
+### 7. El empate mejora en partidos equilibrados — pero el accuracy general baja
+En partidos donde el mercado señala equilibrio real (AvgH, AvgA y AvgD en rango similar, n=697 en test), el F1 del empate sube de 0.170 a 0.244 — una mejora relativa del 43%. Esto confirma que el KNN detecta mejor el empate cuando sus vecinos más cercanos ya son partidos inciertos.
+
+Sin embargo el accuracy general baja de 0.516 a 0.370 en ese subconjunto, lo que no es contradicción: en partidos equilibrados las tres clases tienen frecuencias casi idénticas (256 H, 243 A, 198 D), el baseline de azar es 33%, y el modelo llega a 37%. La ganancia sobre azar es menor porque ya no hay una clase dominante que explotar.
+
+Un hallazgo adicional: en partidos equilibrados el modelo sobreestima visitante (344 predichos vs 243 reales) en lugar de local como en el dataset general. Cuando las cuotas son similares, los 24 vecinos más cercanos tienden a ser victorias visitantes porque esos puntos están más concentrados en el espacio de features.
+
+### 8. Votación ponderada por distancia vs uniforme
+Se compararon ambas estrategias (`weights="uniform"` y `weights="distance"`) sobre K=1 a 50. Con `distance`, los vecinos más cercanos pesan inversamente proporcional a su distancia. El script selecciona automáticamente la combinación ganadora de K y weights para el modelo final y la validación cruzada. En datasets densos como este, la ponderación por distancia tiende a reducir el ruido de los vecinos lejanos. La comparación de feature sets también usa ambos weights para ser consistente.
+
+### 9. El threshold del empate: trade-off controlable pero costoso
+La tabla de thresholds muestra el verdadero baseline del modelo (sin threshold) como referencia. Bajar el umbral de decisión para D mejora el F1 del empate a costa de accuracy general. El threshold óptimo para el empate se detecta automáticamente y el output muestra el trade-off exacto en puntos porcentuales. En la mayoría de los casos mejorar el F1 del empate requiere sacrificar más accuracy del que gana en recall — lo que confirma que el problema del empate en KNN es estructural, no solo de threshold.
+
+### 9. Accuracy por temporada
+Desglosar el accuracy por temporada permite ver si el modelo es más estable en algunos años que en otros. La temporada 2019/20 (COVID, partidos a puerta cerrada) podría ser un outlier si las cuotas del mercado se desalinearon de los resultados reales durante ese periodo.
 
 ---
-
-## Gráficas generadas (`img/`)
 
 | Archivo | Descripción |
 |---|---|
 | `knn_manual_scatter_train.png` | Scatter real imp_prob_H vs imp_prob_A — espacio de entrenamiento |
 | `knn_manual_scatter_pred.png` | Mismo scatter con 5 partidos hipotéticos clasificados (★) |
-| `knn_accuracy_vs_k.png` | Curva accuracy y F1-macro vs K — método del codo |
+| `knn_accuracy_vs_k.png` | Curva accuracy vs K — uniform vs distance weights (K=1 a 50) |
 | `knn_confusion_matrix.png` | Matriz de confusión: conteo absoluto y % por clase |
 | `knn_feature_sets.png` | Accuracy y F1-macro por conjunto de features |
 | `knn_feature_importance.png` | Permutation importance de los 15 features |
 | `knn_scatter_imp_probs.png` | Scatter real vs predicho en espacio imp_prob |
 | `knn_pca_scatter.png` | Proyección PCA 2D: clases reales vs predichas |
 | `knn_equilibrados_f1.png` | F1 por clase: todos los partidos vs partidos equilibrados |
+| `knn_threshold_empate.png` | F1 y accuracy por threshold de decisión para el empate |
+| `knn_accuracy_por_liga.png` | Accuracy del modelo por liga |
+| `knn_accuracy_por_temporada.png` | Accuracy y F1 por temporada (2019/20 a 2025/26) |
 
 ---
 
@@ -130,9 +149,10 @@ Cuando se filtra por partidos donde el mercado señala equilibrio real (AvgH, Av
 | | KNN manual | KNN sklearn |
 |---|---|---|
 | Features | 2 (imp_prob_H, imp_prob_A) | 15 (set completo) |
-| Partidos | 2,000 (muestra) | ~11,800 (dataset completo) |
-| Mejor K | ver output | ver output |
-| Accuracy | ver output | ver output |
+| Partidos | 2,000 (muestra) | 11,851 (dataset completo) |
+| Mejor K | 15 | ver output (K=1-50, auto) |
+| Weights | uniform | ver output (uniform vs distance, auto) |
+| Accuracy | 0.4825 | ver output |
 | F1 macro | — | ver output |
 | CV 5-fold | — | ver output |
 

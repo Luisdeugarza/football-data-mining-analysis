@@ -1,0 +1,213 @@
+dataset: 11,851 partidos | 5 ligas
+distribución FTR: {'H': 5102, 'A': 3758, 'D': 2991}
+
+============================================================
+  PARTE 1 — K-MEANS DESDE CERO
+============================================================
+
+  implementé K-means manualmente con distancia euclídea e
+  inicialización aleatoria como base del algoritmo.
+
+  features: imp_prob_H (eje X) e total_goals (eje Y)
+  2 dimensiones permiten visualizar la convergencia de centroides.
+  genera una imagen por iteración en img/kmeans_iter_N.png
+
+  grafica guardada: img/kmeans_espacio_original.png
+
+  corriendo K-means manual K=4 sobre 2,000 partidos...
+
+  centroides finales (valores reales):
+|    |   cluster |   imp_prob_H |   total_goals |   n |
+|----+-----------+--------------+---------------+-----|
+|  0 |         0 |        0.56  |          1.77 | 624 |
+|  1 |         1 |        0.334 |          4.84 | 345 |
+|  2 |         2 |        0.72  |          4.41 | 341 |
+|  3 |         3 |        0.297 |          1.97 | 690 |
+  grafica guardada: img/kmeans_manual_resultado.png
+
+============================================================
+  PARTE 2 — K-MEANS CON SKLEARN (modelo completo)
+============================================================
+
+  partidos disponibles: 11,851
+  features: ['imp_prob_H', 'imp_prob_A', 'total_goals', 'ht_goals', 'odds_move_H', 'odds_move_A']
+
+============================================================
+  1. BUSQUEDA DEL K OPTIMO
+============================================================
+  K óptimo por silhouette: 2  (score=0.3461)
+|    |   K |   inercia |   silhouette |
+|----+-----+-----------+--------------|
+|  0 |   2 |    914.16 |       0.3461 |
+|  1 |   3 |    702.71 |       0.291  |
+|  2 |   4 |    563.36 |       0.3019 |
+|  3 |   5 |    475.11 |       0.2896 |
+|  4 |   6 |    416.4  |       0.2895 |
+|  5 |   7 |    378    |       0.2691 |
+|  6 |   8 |    345.72 |       0.2653 |
+|  7 |   9 |    317.63 |       0.2567 |
+|  8 |  10 |    298.13 |       0.2498 |
+  grafica guardada: img/kmeans_elbow_silhouette.png
+
+============================================================
+  2. MODELO FINAL  K=2
+============================================================
+
+  centroides en valores reales:
+|    |   cluster |   imp_prob_H |   imp_prob_A |   total_goals |   ht_goals |   odds_move_H |   odds_move_A |
+|----+-----------+--------------+--------------+---------------+------------+---------------+---------------|
+|  0 |         0 |       0.6061 |       0.1976 |        2.9236 |     1.3169 |        0.0052 |        0.1003 |
+|  1 |         1 |       0.2987 |       0.4719 |        2.6845 |     1.1895 |        0.0751 |        0.019  |
+
+  tamaño de cada cluster:
+|    |   cluster |   n_partidos |
+|----+-----------+--------------|
+|  0 |         0 |         6096 |
+|  1 |         1 |         5755 |
+
+============================================================
+  3. PERFIL DE CADA CLUSTER
+============================================================
+|    |   cluster |    n |   avg_goals |   avg_ht |   avg_iph |   avg_ipa |   avg_mov_h |   pct_H |   pct_D |   pct_A |   pct_btts |   pct_over25 |
+|----+-----------+------+-------------+----------+-----------+-----------+-------------+---------+---------+---------+------------+--------------|
+|  0 |         0 | 6096 |        2.92 |     1.32 |     0.606 |     0.198 |      0.0052 |    58.8 |    23.4 |    17.7 |       54.8 |         55.9 |
+|  1 |         1 | 5755 |        2.68 |     1.19 |     0.299 |     0.472 |      0.0752 |    26.3 |    27.1 |    46.5 |       54.1 |         50.5 |
+
+  etiquetas descriptivas asignadas:
+|    |   cluster | tipo              |    n |   avg_goals |   avg_iph |   avg_ipa |   pct_H |   pct_D |   pct_A |   pct_over25 |
+|----+-----------+-------------------+------+-------------+-----------+-----------+---------+---------+---------+--------------|
+|  0 |         0 | dominio_local     | 6096 |        2.92 |     0.606 |     0.198 |    58.8 |    23.4 |    17.7 |         55.9 |
+|  1 |         1 | dominio_visitante | 5755 |        2.68 |     0.299 |     0.472 |    26.3 |    27.1 |    46.5 |         50.5 |
+  grafica guardada: img/kmeans_perfil_clusters.png
+
+============================================================
+  4. VISUALIZACION 2D
+============================================================
+  varianza explicada PCA — PC1: 0.614  PC2: 0.310  total: 0.924
+  grafica guardada: img/kmeans_pca_scatter.png
+  grafica guardada: img/kmeans_scatter_directo.png
+
+============================================================
+  5. COMPOSICION POR LIGA Y TEMPORADA
+============================================================
+
+  distribución de clusters por liga (%):
+|    | liga   |    0 |    1 |
+|----+--------+------+------|
+|  0 | D1     | 51.6 | 48.4 |
+|  1 | E0     | 50.3 | 49.7 |
+|  2 | F1     | 52.4 | 47.6 |
+|  3 | I1     | 49.5 | 50.5 |
+|  4 | SP1    | 53.6 | 46.4 |
+
+  distribución de clusters por temporada (%):
+|    | Season_label   |    0 |    1 |
+|----+----------------+------+------|
+|  0 | 2019/20        | 52.9 | 47.1 |
+|  1 | 2020/21        | 47.5 | 52.5 |
+|  2 | 2021/22        | 51.1 | 48.9 |
+|  3 | 2022/23        | 51.4 | 48.6 |
+|  4 | 2023/24        | 52.6 | 47.4 |
+|  5 | 2024/25        | 52.6 | 47.4 |
+|  6 | 2025/26        | 52.4 | 47.6 |
+  grafica guardada: img/kmeans_composicion_liga_temporada.png
+
+============================================================
+  6. ROI HIPOTETICO POR CLUSTER
+============================================================
+
+  simulé apostar siempre al resultado más frecuente de cada cluster
+  usando la cuota promedio de apertura real del dataset.
+  ROI = (tasa_acierto × cuota_promedio - 1) × 100
+  si el ROI es positivo el cluster tiene valor de apuesta histórico.
+
+|    |   cluster | tipo              |    n | res_frec   |   pct_res |   avg_cuota |   roi_% |
+|----+-----------+-------------------+------+------------+-----------+-------------+---------|
+|  0 |         1 | dominio_visitante | 5755 | A          |      46.5 |       2.261 |    5.23 |
+|  1 |         0 | dominio_local     | 6096 | H          |      58.8 |       1.716 |    0.98 |
+  grafica guardada: img/kmeans_roi_por_cluster.png
+
+  validación estadística del ROI (test binomial):
+  H0: la tasa de acierto real == tasa implícita por la cuota (mercado perfectamente calibrado)
+|    |   cluster | tipo              |    n |   aciertos |   p_implicita |   p_real |   roi_% |   p_value | sig    |
+|----+-----------+-------------------+------+------------+---------------+----------+---------+-----------+--------|
+|  0 |         1 | dominio_visitante | 5755 |       2676 |        0.4423 |    0.465 |    5.23 |    0.0003 | ✓ sig  |
+|  1 |         0 | dominio_local     | 6096 |       3584 |        0.5828 |    0.588 |    0.98 |    0.2123 | no sig |
+
+============================================================
+  6b. K=4 FORZADO — subclusters para mayor granularidad
+============================================================
+
+  el silhouette prefiere K=2 — la separación más limpia.
+  con K=4 forzado busco si existe más estructura dentro de cada cluster
+  que tenga valor interpretativo aunque no sea estadísticamente óptimo.
+
+|    |   cluster4 |    n |   avg_goals |   avg_iph |   avg_ipa |   pct_H |   pct_D |   pct_A |   pct_over25 |   pct_btts |
+|----+------------+------+-------------+-----------+-----------+---------+---------+---------+--------------+------------|
+|  0 |          0 | 2477 |        2.85 |     0.211 |     0.589 |    18.7 |    22.3 |    59   |         57.8 |       55.8 |
+|  1 |          1 | 3015 |        2.94 |     0.701 |     0.139 |    68.3 |    19   |    12.7 |         60   |       52.8 |
+|  2 |          2 | 2364 |        4.62 |     0.446 |     0.32  |    49   |    17.5 |    33.5 |        100   |       88   |
+|  3 |          3 | 3995 |        1.61 |     0.431 |     0.322 |    35.6 |    36.3 |    28.1 |         17.6 |       34.9 |
+
+  ROI por subcluster (K=4):
+|    |   cluster4 |    n | res_frec   |   pct_res |   avg_cuota |   roi_% |
+|----+------------+------+------------+-----------+-------------+---------|
+|  0 |          3 | 3995 | D          |      36.3 |       3.414 |   24.1  |
+|  1 |          2 | 2364 | H          |      49   |       2.373 |   16.35 |
+|  2 |          0 | 2477 | A          |      59   |       1.747 |    3.1  |
+|  3 |          1 | 3015 | H          |      68.3 |       1.451 |   -0.89 |
+
+============================================================
+  7. ACCURACY DEL KNN POR CLUSTER — conexion con P6
+============================================================
+
+  en P6 el KNN alcanzó accuracy=0.524 global.
+  aquí mido si clasifica mejor en algunos tipos de partido.
+  nota: el F1 bajo en dominio_local no indica fallo del modelo —
+  con 58.8% de victorias locales el KNN tiende a predecir siempre H
+  y acierta en accuracy pero falla en recall de D y A (F1 macro bajo).
+
+|    |   cluster | tipo              |   n_test |   acc_knn |   f1_macro |   pct_H |   pct_D |   pct_A |
+|----+-----------+-------------------+----------+-----------+------------+---------+---------+---------|
+|  0 |         0 | dominio_local     |     1215 |    0.5687 |     0.2953 |    58.6 |    24.5 |    16.9 |
+|  1 |         1 | dominio_visitante |     1156 |    0.468  |     0.3648 |    26.7 |    26   |    47.3 |
+  grafica guardada: img/kmeans_knn_accuracy_por_cluster.png
+
+============================================================
+  8. TOP EQUIPOS POR CLUSTER
+============================================================
+  qué equipos protagonizan más partidos de cada tipo
+
+  cluster 0 (dominio_local)  n=6096:
+  Valencia(141), Sevilla(138), Getafe(136), Betis(135), Osasuna(134), Villarreal(132), Celta(132), Everton(131)
+
+  cluster 1 (dominio_visitante)  n=5755:
+  Bologna(137), Wolves(132), Udinese(130), Verona(130), Torino(130), Lazio(130), Tottenham(130), Man United(129)
+
+============================================================
+  9. IRREGULARIDAD POR CLUSTER — conexion con P5
+============================================================
+
+  en P5 descubrimos que la irregularidad de resultados previos predice
+  peor rendimiento siguiente (p=0.009). aquí veo si algunos clusters
+  tienen equipos más irregulares — lo que conectaría con el fenómeno
+  Tigres: partidos del cluster 'equilibrado' podrían tener más equipos
+  en racha irregular que llevan a resultados sorpresivos.
+
+|    |   cluster | tipo              |   avg_racha |   pct_racha_neg |   pct_racha_pos |   pct_racha_0 |
+|----+-----------+-------------------+-------------+-----------------+-----------------+---------------|
+|  0 |         0 | dominio_local     |       0.368 |            34.8 |            40.4 |          24.8 |
+|  1 |         1 | dominio_visitante |      -0.509 |            48.1 |            25.4 |          26.4 |
+  grafica guardada: img/kmeans_racha_por_cluster.png
+
+============================================================
+  NUMEROS FINALES
+============================================================
+  K-means manual:  K=4  features=2  muestra=2,000
+  K-means sklearn: K=2  silhouette=0.3461  features=6  partidos=11,851
+  cluster con mayor ROI:         ver tabla sección 6
+  cluster más fácil de predecir: ver tabla sección 7
+  cluster más goleador:          dominio_local
+  cluster más equilibrado:       dominio_visitante
+
+listo — todas las graficas guardadas en img/

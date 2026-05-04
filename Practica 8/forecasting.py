@@ -13,7 +13,13 @@ import statsmodels.api as sm
 import os
 from tabulate import tabulate
 
-os.makedirs("img", exist_ok=True)
+# resolví el problema de rutas relativas usando __file__ para que funcione
+# desde cualquier directorio sin importar desde dónde se ejecute el script
+
+BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "..", "Practica 1", "data", "clean", "football_clean.csv")
+IMG_DIR   = os.path.join(BASE_DIR, "img")
+os.makedirs(IMG_DIR, exist_ok=True)
 
 def print_tabulate(df: pd.DataFrame):
     print(tabulate(df, headers=df.columns, tablefmt="orgtbl"))
@@ -38,135 +44,431 @@ SEASON_MAP = {
 }
 
 
-# cargué el dataset limpio y construí las variables de goles que necesito para la serie de tiempo
+# cargué el dataset y construí todas las variables necesarias para los 6 análisis
+# incluí odds derivadas, probabilidades implícitas, movimiento de mercado y bias
 
-df = pd.read_csv("../Practica 1/data/clean/football_clean.csv", parse_dates=["Date"])
+df = pd.read_csv(DATA_PATH, parse_dates=["Date"])
 
-df["total_goals"] = df["FTHG"] + df["FTAG"]
-df["ht_goals"]    = df["HTHG"] + df["HTAG"]
-df["home_win"]    = (df["FTR"] == "H").astype(int)
-df["over25"]      = (df["total_goals"] > 2).astype(int)
-df["btts"]        = ((df["FTHG"] > 0) & (df["FTAG"] > 0)).astype(int)
+df["total_goals"]  = df["FTHG"] + df["FTAG"]
+df["home_win"]     = (df["FTR"] == "H").astype(int)
+df["draw"]         = (df["FTR"] == "D").astype(int)
+df["away_win"]     = (df["FTR"] == "A").astype(int)
+df["over25"]       = (df["total_goals"] > 2).astype(int)
+df["btts"]         = ((df["FTHG"] > 0) & (df["FTAG"] > 0)).astype(int)
+df["imp_prob_H"]   = round(1 / df["AvgH"], 4)
+df["imp_prob_D"]   = round(1 / df["AvgD"], 4)
+df["imp_prob_A"]   = round(1 / df["AvgA"], 4)
+df["overround"]    = round(df["imp_prob_H"] + df["imp_prob_D"] + df["imp_prob_A"], 4)
+df["odds_move_H"]  = round(df["AvgCH"] - df["AvgH"], 4)
+df["odds_move_A"]  = round(df["AvgCA"] - df["AvgA"], 4)
+df["odds_move_D"]  = round(df["AvgCD"] - df["AvgD"], 4)
 
+# calculé el bias como diferencia entre probabilidad implícita y resultado real
+# bias positivo significa que la casa sobreestima la probabilidad del local
 
-# agrupé los partidos por semana y calculé el promedio de goles por jornada
-# usé resample('W') sobre el índice de fecha para tener una observación por semana
+df["bias_H"] = round(df["imp_prob_H"] - df["home_win"], 4)
+df["bias_A"] = round(df["imp_prob_A"] - df["away_win"], 4)
+df["bias_D"] = round(df["imp_prob_D"] - df["draw"],     4)
 
-df_ts = (
-    df.set_index("Date")["total_goals"]
-    .resample("W")
-    .mean()
-    .dropna()
-    .reset_index()
-)
-df_ts.columns = ["Fecha", "avg_goals"]
-df_ts["t"] = range(len(df_ts))
-
-print("=" * 60)
-print("  SERIE DE TIEMPO — promedio semanal de goles por partido")
-print("=" * 60)
-print(f"\n  semanas totales : {len(df_ts)}")
-print(f"  desde           : {df_ts['Fecha'].min().date()}")
-print(f"  hasta           : {df_ts['Fecha'].max().date()}")
-print(f"  media global    : {df_ts['avg_goals'].mean():.4f}")
-print(f"  desv. estándar  : {df_ts['avg_goals'].std():.4f}")
-print()
-print_tabulate(df_ts.head(10))
+df["Season_label"] = df["Season"].map(SEASON_MAP)
 
 
-# ajusté la regresión lineal usando OLS de statsmodels con t como variable independiente
-# convertí la fecha a índice numérico porque OLS no acepta datetime directamente
+# encapsulé la lógica de regresión en una función reutilizable para poder
+# aplicarla sobre cualquier métrica y cualquier liga sin repetir código
 
-X = sm.add_constant(df_ts["t"])
-model = sm.OLS(df_ts["avg_goals"], X).fit()
+def forecast_serie(data: pd.DataFrame, col_fecha: str, col_valor: str,
+                   n_weeks: int = 12, freq: str = "W"):
+    ts = (
+        data.set_index(col_fecha)[col_valor]
+        .resample(freq)
+        .mean()
+        .dropna()
+        .reset_index()
+    )
+    ts.columns = ["Fecha", "valor"]
+    ts["t"]    = range(len(ts))
 
-print("\n" + "=" * 60)
-print("  RESULTADOS DE LA REGRESIÓN LINEAL")
-print("=" * 60)
-print(model.summary())
+    X     = sm.add_constant(ts["t"])
+    model = sm.OLS(ts["valor"], X).fit()
 
-b     = model.params["const"]
-m     = model.params["t"]
-r2    = model.rsquared
-r2adj = model.rsquared_adj
-pval  = model.pvalues["t"]
+    m = model.params["t"]
+    b = model.params["const"]
 
-conf  = model.conf_int()
-lo    = conf.loc["const", 0]
-hi    = conf.loc["const", 1]
+    t_last    = ts["t"].max()
+    f_last    = ts["Fecha"].max()
+    fut_t     = np.arange(t_last + 1, t_last + 1 + n_weeks)
+    fut_dates = pd.date_range(start=f_last + pd.Timedelta(weeks=1),
+                              periods=n_weeks, freq=freq)
 
-print(f"\n  pendiente (m)  : {m:.6f} goles por semana")
-print(f"  intercepto (b) : {b:.4f}")
-print(f"  R²             : {r2:.4f}")
-print(f"  R² ajustado    : {r2adj:.4f}")
-print(f"  p-value (t)    : {pval:.4f}")
+    df_fut = pd.DataFrame({
+        "Fecha": fut_dates,
+        "t":     fut_t,
+        "pred":  np.round(m * fut_t + b, 4),
+    })
+
+    return model, ts, df_fut
 
 
-# generé la gráfica de la serie de tiempo con su línea de tendencia y banda de confianza
+# separé cada serie en 80% train / 20% test para validar el modelo
+# sobre datos que nunca vio y obtener MAE y RMSE reales
 
-y_pred  = model.predict(X)
-y_lo    = model.get_prediction(X).conf_int()[:, 0]
-y_hi    = model.get_prediction(X).conf_int()[:, 1]
+def train_test_ols(ts: pd.DataFrame, test_pct: float = 0.20):
+    split     = int(len(ts) * (1 - test_pct))
+    train     = ts.iloc[:split].copy()
+    test      = ts.iloc[split:].copy()
+    X_train   = sm.add_constant(train["t"])
+    model     = sm.OLS(train["valor"], X_train).fit()
+    X_test    = sm.add_constant(test["t"])
+    pred_test = model.predict(X_test)
+    mae  = float(np.mean(np.abs(test["valor"].values - pred_test.values)))
+    rmse = float(np.sqrt(np.mean((test["valor"].values - pred_test.values) ** 2)))
+    return model, train, test, pred_test, mae, rmse
 
-fig, ax = plt.subplots(figsize=(14, 5))
-ax.scatter(df_ts["Fecha"], df_ts["avg_goals"],
-           alpha=0.4, s=12, color="#3498db", label="avg goles por semana")
-ax.plot(df_ts["Fecha"], y_pred,
-        color="red", linewidth=2,
-        label=f"tendencia lineal  R²={r2:.4f}  p={pval:.4f}")
-ax.fill_between(df_ts["Fecha"], y_lo, y_hi, alpha=0.15, color="red",
-                label="intervalo de confianza 95%")
-ax.set_xlabel("Fecha")
-ax.set_ylabel("avg goles por partido")
-ax.set_title("Serie temporal: promedio semanal de goles con regresión lineal",
-             fontweight="bold")
-ax.legend()
+
+ligas = list(LIGAS_NAME.keys())
+
+
+# analicé el % over 2.5 por liga como serie de tiempo semanal
+# elegí esta métrica porque es la línea más transaccionada en el mercado europeo
+
+print("over 2.5 por liga")
+
+resumen_o25 = []
+fig, axes   = plt.subplots(len(ligas), 1, figsize=(14, 4 * len(ligas)), sharex=False)
+
+for i, liga in enumerate(ligas):
+    sub = df[df["Div"] == liga].copy()
+    model_tr, train, test, pred_test, mae, rmse = train_test_ols(
+        forecast_serie(sub, "Date", "over25", n_weeks=16)[1]
+    )
+    model_full, ts_full, fut_full = forecast_serie(sub, "Date", "over25", n_weeks=16)
+    m_f     = model_full.params["t"]
+    fut_pct = fut_full["pred"] * 100
+    col     = LIGA_COLORS[liga]
+
+    resumen_o25.append({
+        "Liga":          LIGAS_NAME[liga],
+        "Media":         f"{ts_full['valor'].mean()*100:.1f}%",
+        "Tendencia/sem": round(m_f * 100, 5),
+        "R²":            round(model_full.rsquared, 4),
+        "p-value":       round(model_full.pvalues["t"], 4),
+        "MAE test":      round(mae * 100, 2),
+        "RMSE test":     round(rmse * 100, 2),
+        "Pred +16w":     f"{fut_pct.iloc[-1]:.1f}%",
+    })
+
+    ax = axes[i]
+    ax.plot(ts_full["Fecha"], ts_full["valor"] * 100,
+            color=col, alpha=0.45, linewidth=1, label="observado")
+    ax.plot(train["Fecha"], model_tr.predict(sm.add_constant(train["t"])) * 100,
+            color="red", linewidth=1.8, label=f"tendencia train  R²={model_tr.rsquared:.4f}")
+    ax.plot(test["Fecha"], pred_test * 100,
+            color="red", linewidth=1.8, linestyle="--")
+    ax.scatter(test["Fecha"], test["valor"] * 100,
+               color="black", s=12, zorder=5, label=f"test  MAE={mae*100:.1f}pp")
+    ax.plot(fut_full["Fecha"], fut_pct, color="orange",
+            linewidth=2, linestyle="--", label=f"pred +16w  {fut_pct.iloc[-1]:.1f}%")
+    ax.axvline(test["Fecha"].iloc[0], color="gray", linestyle=":", linewidth=1)
+    ax.set_ylabel("% over 2.5")
+    ax.set_title(
+        f"{LIGAS_NAME[liga]}  tendencia: {m_f*100:+.4f}pp/sem  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}",
+        fontweight="bold")
+    ax.legend(fontsize=7)
+    ax.set_ylim(20, 90)
+    print(f"  {LIGAS_NAME[liga]}: {m_f*100:+.5f}pp/sem  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}  MAE={mae*100:.2f}pp  pred+16w={fut_pct.iloc[-1]:.1f}%")
+
 plt.tight_layout()
-plt.savefig("img/forecasting_serie_goles.png", dpi=130)
+plt.savefig(os.path.join(IMG_DIR, "forecasting_over25_por_liga.png"), dpi=130)
 plt.close()
-print("\n  gráfica guardada: img/forecasting_serie_goles.png")
+print("  guardado: img/forecasting_over25_por_liga.png\n")
+print_tabulate(pd.DataFrame(resumen_o25))
 
 
-# predije las próximas 12 semanas usando la ecuación del modelo: ŷ = m*t + b
-# extendí el índice t más allá del último punto observado
+# analicé el % de victorias local por liga para detectar si la home advantage
+# tiene tendencia lineal — un descenso sostenido obligaría a reajustar cuotas
 
-n_weeks   = 12
-t_last    = df_ts["t"].max()
-fecha_last = df_ts["Fecha"].max()
+print("\nvictorias local por liga")
 
-future_t     = np.arange(t_last + 1, t_last + 1 + n_weeks)
-future_dates = pd.date_range(start=fecha_last + pd.Timedelta(weeks=1),
-                             periods=n_weeks, freq="W")
-future_pred  = m * future_t + b
+resumen_hw = []
+fig, axes  = plt.subplots(len(ligas), 1, figsize=(14, 4 * len(ligas)), sharex=False)
 
-df_future = pd.DataFrame({
-    "Semana": future_dates.date,
-    "t":      future_t,
-    "avg_goals_predicho": np.round(future_pred, 4),
-})
+for i, liga in enumerate(ligas):
+    sub = df[df["Div"] == liga].copy()
+    model_tr, train, test, pred_test, mae, rmse = train_test_ols(
+        forecast_serie(sub, "Date", "home_win", n_weeks=16)[1]
+    )
+    model_full, ts_full, fut_full = forecast_serie(sub, "Date", "home_win", n_weeks=16)
+    m_f     = model_full.params["t"]
+    fut_pct = fut_full["pred"] * 100
+    col     = LIGA_COLORS[liga]
 
-print("\n" + "=" * 60)
-print("  PREDICCIÓN — próximas 12 semanas")
-print("=" * 60)
-print_tabulate(df_future)
+    resumen_hw.append({
+        "Liga":          LIGAS_NAME[liga],
+        "Media":         f"{ts_full['valor'].mean()*100:.1f}%",
+        "Tendencia/sem": round(m_f * 100, 5),
+        "R²":            round(model_full.rsquared, 4),
+        "p-value":       round(model_full.pvalues["t"], 4),
+        "MAE test":      round(mae * 100, 2),
+        "RMSE test":     round(rmse * 100, 2),
+        "Pred +16w":     f"{fut_pct.iloc[-1]:.1f}%",
+    })
 
+    ax = axes[i]
+    ax.plot(ts_full["Fecha"], ts_full["valor"] * 100,
+            color=col, alpha=0.45, linewidth=1, label="observado")
+    ax.plot(train["Fecha"], model_tr.predict(sm.add_constant(train["t"])) * 100,
+            color="red", linewidth=1.8, label=f"tendencia train  R²={model_tr.rsquared:.4f}")
+    ax.plot(test["Fecha"], pred_test * 100,
+            color="red", linewidth=1.8, linestyle="--")
+    ax.scatter(test["Fecha"], test["valor"] * 100,
+               color="black", s=12, zorder=5, label=f"test  MAE={mae*100:.1f}pp")
+    ax.plot(fut_full["Fecha"], fut_pct, color="orange",
+            linewidth=2, linestyle="--", label=f"pred +16w  {fut_pct.iloc[-1]:.1f}%")
+    ax.axvline(test["Fecha"].iloc[0], color="gray", linestyle=":", linewidth=1)
+    ax.set_ylabel("% victoria local")
+    ax.set_title(
+        f"{LIGAS_NAME[liga]}  tendencia: {m_f*100:+.4f}pp/sem  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}",
+        fontweight="bold")
+    ax.legend(fontsize=7)
+    ax.set_ylim(20, 75)
+    print(f"  {LIGAS_NAME[liga]}: {m_f*100:+.5f}pp/sem  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}  MAE={mae*100:.2f}pp  pred+16w={fut_pct.iloc[-1]:.1f}%")
 
-# grafiqué la serie histórica junto con el tramo predicho para visualizar el forecast
-
-fig, ax = plt.subplots(figsize=(14, 5))
-ax.plot(df_ts["Fecha"], df_ts["avg_goals"],
-        color="#3498db", linewidth=1, alpha=0.7, label="histórico")
-ax.plot(df_ts["Fecha"], y_pred,
-        color="red", linewidth=2, label=f"tendencia  R²={r2:.4f}")
-ax.plot(future_dates, future_pred,
-        color="orange", linewidth=2, linestyle="--", label="predicción (12 semanas)")
-ax.axvline(fecha_last, color="gray", linestyle=":", linewidth=1.2, label="hoy")
-ax.set_xlabel("Fecha")
-ax.set_ylabel("avg goles por partido")
-ax.set_title("Forecasting: tendencia histórica + predicción a 12 semanas",
-             fontweight="bold")
-ax.legend()
 plt.tight_layout()
-plt.savefig("img/forecasting_prediccion_12w.png", dpi=130)
+plt.savefig(os.path.join(IMG_DIR, "forecasting_homewin_por_liga.png"), dpi=130)
 plt.close()
-print("  gráfica guardada: img/forecasting_prediccion_12w.png")
+print("  guardado: img/forecasting_homewin_por_liga.png\n")
+print_tabulate(pd.DataFrame(resumen_hw))
+
+
+# analicé el movimiento de cuotas de apertura a cierre (odds_move_H)
+# si la tendencia es consistente en una dirección, el smart money está corrigiendo
+# un sesgo sistemático en la apertura de la casa
+
+print("\nmovimiento de odds apertura a cierre por liga")
+
+resumen_mov = []
+fig, axes   = plt.subplots(len(ligas), 1, figsize=(14, 4 * len(ligas)), sharex=False)
+
+for i, liga in enumerate(ligas):
+    sub = df[df["Div"] == liga].copy()
+    model_full, ts_full, fut_full = forecast_serie(sub, "Date", "odds_move_H", n_weeks=16)
+    model_tr, train, test, pred_test, mae, rmse = train_test_ols(ts_full)
+
+    m_f = model_full.params["t"]
+    col = LIGA_COLORS[liga]
+    yp  = model_full.predict(sm.add_constant(ts_full["t"]))
+
+    resumen_mov.append({
+        "Liga":          LIGAS_NAME[liga],
+        "Media mov_H":   round(ts_full["valor"].mean(), 5),
+        "Tendencia/sem": round(m_f, 6),
+        "R²":            round(model_full.rsquared, 4),
+        "p-value":       round(model_full.pvalues["t"], 4),
+        "MAE test":      round(mae, 4),
+        "Pred +16w":     round(fut_full["pred"].iloc[-1], 5),
+    })
+
+    ax = axes[i]
+    ax.plot(ts_full["Fecha"], ts_full["valor"],
+            color=col, alpha=0.45, linewidth=1, label="mov semanal avg")
+    ax.plot(ts_full["Fecha"], yp,
+            color="red", linewidth=1.8,
+            label=f"tendencia  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}")
+    ax.plot(fut_full["Fecha"], fut_full["pred"],
+            color="orange", linewidth=2, linestyle="--",
+            label=f"pred +16w  {fut_full['pred'].iloc[-1]:.4f}")
+    ax.axhline(0, color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
+    ax.axvline(test["Fecha"].iloc[0], color="gray", linestyle=":", linewidth=1)
+    ax.set_ylabel("odds_move_H (cierre - apertura)")
+    ax.set_title(
+        f"{LIGAS_NAME[liga]}  tendencia: {m_f:+.6f}/sem  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}",
+        fontweight="bold")
+    ax.legend(fontsize=7)
+    print(f"  {LIGAS_NAME[liga]}: media={ts_full['valor'].mean():+.5f}  tendencia={m_f:+.6f}/sem  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}")
+
+plt.tight_layout()
+plt.savefig(os.path.join(IMG_DIR, "forecasting_odds_move.png"), dpi=130)
+plt.close()
+print("  guardado: img/forecasting_odds_move.png\n")
+print_tabulate(pd.DataFrame(resumen_mov))
+
+
+# analicé el overround semanal para ver si el margen de la casa sube o baja
+# un margen creciente indica que la casa se vuelve menos competitiva con el tiempo
+
+print("\noverround semanal por liga")
+
+resumen_or = []
+fig, axes  = plt.subplots(len(ligas), 1, figsize=(14, 4 * len(ligas)), sharex=False)
+
+for i, liga in enumerate(ligas):
+    sub = df[df["Div"] == liga].copy()
+    model_full, ts_full, fut_full = forecast_serie(sub, "Date", "overround", n_weeks=16)
+    model_tr, train, test, pred_test, mae, rmse = train_test_ols(ts_full)
+
+    m_f         = model_full.params["t"]
+    col         = LIGA_COLORS[liga]
+    yp          = model_full.predict(sm.add_constant(ts_full["t"]))
+    margen_medio = (ts_full["valor"].mean() - 1) * 100
+
+    resumen_or.append({
+        "Liga":           LIGAS_NAME[liga],
+        "Overround avg":  round(ts_full["valor"].mean(), 5),
+        "Margen casa %":  f"{margen_medio:.2f}%",
+        "Tendencia/sem":  round(m_f, 6),
+        "R²":             round(model_full.rsquared, 4),
+        "p-value":        round(model_full.pvalues["t"], 4),
+        "Pred +16w":      round(fut_full["pred"].iloc[-1], 5),
+    })
+
+    ax = axes[i]
+    ax.plot(ts_full["Fecha"], (ts_full["valor"] - 1) * 100,
+            color=col, alpha=0.45, linewidth=1, label="margen semanal %")
+    ax.plot(ts_full["Fecha"], (yp - 1) * 100,
+            color="red", linewidth=1.8,
+            label=f"tendencia  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}")
+    ax.plot(fut_full["Fecha"], (fut_full["pred"] - 1) * 100,
+            color="orange", linewidth=2, linestyle="--",
+            label=f"pred +16w  {(fut_full['pred'].iloc[-1]-1)*100:.2f}%")
+    ax.axvline(test["Fecha"].iloc[0], color="gray", linestyle=":", linewidth=1)
+    ax.set_ylabel("margen casa (%)")
+    ax.set_title(
+        f"{LIGAS_NAME[liga]}  margen medio: {margen_medio:.2f}%  tendencia: {m_f*100:+.5f}pp/sem  R²={model_full.rsquared:.4f}",
+        fontweight="bold")
+    ax.legend(fontsize=7)
+    print(f"  {LIGAS_NAME[liga]}: margen={margen_medio:.2f}%  tendencia={m_f*100:+.5f}pp/sem  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}")
+
+plt.tight_layout()
+plt.savefig(os.path.join(IMG_DIR, "forecasting_overround.png"), dpi=130)
+plt.close()
+print("  guardado: img/forecasting_overround.png\n")
+print_tabulate(pd.DataFrame(resumen_or))
+
+
+# bajé al nivel de equipo específico para mostrar que el análisis es granular
+# usé períodos de 4 semanas porque cada equipo juega pocos partidos de local por mes (al menos en liga ya que juegan otras compes)
+
+print("\nvictorias local por equipo específico")
+
+equipos = [
+    ("Man City",     "E0",  "#6caddf"),
+    ("Arsenal",      "E0",  "#ef0107"),
+    ("Real Madrid",  "SP1", "#ffd700"),
+    ("Barcelona",    "SP1", "#a50044"),
+    ("Bayern Munich","D1",  "#dc052d"),
+    ("Juventus",     "I1",  "#000000"),
+    ("Paris SG",     "F1",  "#004170"),
+]
+
+resumen_eq = []
+fig, axes  = plt.subplots(len(equipos), 1, figsize=(14, 4 * len(equipos)), sharex=False)
+
+for i, (equipo, liga, col) in enumerate(equipos):
+    sub = df[df["HomeTeam"] == equipo].copy()
+
+    if len(sub) < 20:
+        print(f"  {equipo}: pocos datos ({len(sub)} partidos), omitido")
+        continue
+
+    model_full, ts_full, fut_full = forecast_serie(sub, "Date", "home_win",
+                                                    n_weeks=16, freq="4W")
+    model_tr, train, test, pred_test, mae, rmse = train_test_ols(ts_full)
+
+    m_f = model_full.params["t"]
+    yp  = model_full.predict(sm.add_constant(ts_full["t"]))
+
+    resumen_eq.append({
+        "Equipo":        equipo,
+        "Liga":          LIGAS_NAME[liga],
+        "Partidos":      len(sub),
+        "Media %local":  f"{ts_full['valor'].mean()*100:.1f}%",
+        "Tendencia/per": round(m_f * 100, 4),
+        "R²":            round(model_full.rsquared, 4),
+        "p-value":       round(model_full.pvalues["t"], 4),
+        "Pred +16w":     f"{fut_full['pred'].iloc[-1]*100:.1f}%",
+    })
+
+    ax = axes[i]
+    ax.plot(ts_full["Fecha"], ts_full["valor"] * 100,
+            color=col, alpha=0.55, linewidth=1.2, label="observado (4W)")
+    ax.plot(ts_full["Fecha"], yp * 100,
+            color="red", linewidth=1.8,
+            label=f"tendencia  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}")
+    ax.scatter(test["Fecha"], test["valor"] * 100,
+               color="black", s=14, zorder=5, label=f"test  MAE={mae*100:.1f}pp")
+    ax.plot(fut_full["Fecha"], fut_full["pred"] * 100,
+            color="orange", linewidth=2, linestyle="--",
+            label=f"pred  {fut_full['pred'].iloc[-1]*100:.1f}%")
+    ax.axvline(test["Fecha"].iloc[0], color="gray", linestyle=":", linewidth=1)
+    ax.set_ylabel("% victorias local")
+    ax.set_title(
+        f"{equipo} ({LIGAS_NAME[liga]})  tendencia: {m_f*100:+.4f}pp/per  R²={model_full.rsquared:.4f}",
+        fontweight="bold")
+    ax.legend(fontsize=7)
+    ax.set_ylim(-10, 120)
+    print(f"  {equipo}: media={ts_full['valor'].mean()*100:.1f}%  tendencia={m_f*100:+.4f}pp/per  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}")
+
+plt.tight_layout()
+plt.savefig(os.path.join(IMG_DIR, "forecasting_equipos.png"), dpi=130)
+plt.close()
+print("  guardado: img/forecasting_equipos.png\n")
+print_tabulate(pd.DataFrame(resumen_eq))
+
+
+# calculé el bias semanal entre probabilidad implícita y resultado real
+# un bias con tendencia lineal significativa indica una ineficiencia estructural de las casas de apuestas
+# detectable — la casa está sistemáticamente equivocada en una dirección
+
+print("\nbias probabilidad implícita vs resultado real por liga")
+
+resumen_bias = []
+fig, axes    = plt.subplots(len(ligas), 1, figsize=(14, 4 * len(ligas)), sharex=False)
+
+for i, liga in enumerate(ligas):
+    sub = df[df["Div"] == liga].copy()
+    model_full, ts_full, fut_full = forecast_serie(sub, "Date", "bias_H", n_weeks=16)
+    model_tr, train, test, pred_test, mae, rmse = train_test_ols(ts_full)
+
+    m_f   = model_full.params["t"]
+    col   = LIGA_COLORS[liga]
+    yp    = model_full.predict(sm.add_constant(ts_full["t"]))
+    media = ts_full["valor"].mean()
+
+    direccion = "sobreestima local" if media > 0 else "subestima local"
+    tendencia = "bias creciente"    if m_f > 0   else "bias decreciente"
+
+    resumen_bias.append({
+        "Liga":          LIGAS_NAME[liga],
+        "Bias medio":    round(media, 5),
+        "Dirección":     direccion,
+        "Tendencia/sem": round(m_f, 6),
+        "Tendencia dir": tendencia,
+        "R²":            round(model_full.rsquared, 4),
+        "p-value":       round(model_full.pvalues["t"], 4),
+        "Pred +16w":     round(fut_full["pred"].iloc[-1], 5),
+    })
+
+    ax = axes[i]
+    ax.plot(ts_full["Fecha"], ts_full["valor"],
+            color=col, alpha=0.45, linewidth=1, label="bias semanal")
+    ax.plot(ts_full["Fecha"], yp,
+            color="red", linewidth=1.8,
+            label=f"tendencia  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}")
+    ax.plot(fut_full["Fecha"], fut_full["pred"],
+            color="orange", linewidth=2, linestyle="--",
+            label=f"pred +16w  {fut_full['pred'].iloc[-1]:.4f}")
+    ax.axhline(0, color="gray", linestyle="--", linewidth=0.9, alpha=0.7,
+               label="bias=0 (mercado perfecto)")
+    ax.axvline(test["Fecha"].iloc[0], color="gray", linestyle=":", linewidth=1)
+    ax.set_ylabel("bias (imp_prob_H - home_win)")
+    ax.set_title(
+        f"{LIGAS_NAME[liga]}  bias medio: {media:+.4f} ({direccion})  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}",
+        fontweight="bold")
+    ax.legend(fontsize=7)
+    print(f"  {LIGAS_NAME[liga]}: bias={media:+.5f} ({direccion})  tendencia={m_f:+.6f}/sem  R²={model_full.rsquared:.4f}  p={model_full.pvalues['t']:.4f}")
+
+plt.tight_layout()
+plt.savefig(os.path.join(IMG_DIR, "forecasting_bias.png"), dpi=130)
+plt.close()
+print("  guardado: img/forecasting_bias.png\n")
+print_tabulate(pd.DataFrame(resumen_bias))

@@ -1,78 +1,99 @@
-============================================================
-  SERIE DE TIEMPO — promedio semanal de goles por partido
-============================================================
+over 2.5 por liga
+  Premier League: +0.04262pp/sem  R²=0.0257  p=0.0135  MAE=13.47pp  pred+16w=60.4%
+  La Liga: +0.03372pp/sem  R²=0.0196  p=0.0320  MAE=12.50pp  pred+16w=51.5%
+  Bundesliga: -0.00814pp/sem  R²=0.0010  p=0.6452  MAE=13.16pp  pred+16w=60.4%
+  Serie A: -0.07786pp/sem  R²=0.1009  p=0.0000  MAE=15.01pp  pred+16w=41.9%
+  Ligue 1: +0.03110pp/sem  R²=0.0142  p=0.0769  MAE=15.09pp  pred+16w=57.0%
+  guardado: img/forecasting_over25_por_liga.png
 
-  semanas totales : 252
-  desde           : 2019-08-11
-  hasta           : 2026-02-22
-  media global    : 2.8046
-  desv. estándar  : 0.3113
+|    | Liga           | Media   |   Tendencia/sem |     R² |   p-value |   MAE test |   RMSE test | Pred +16w   |
+|----+----------------+---------+-----------------+--------+-----------+------------+-------------+-------------|
+|  0 | Premier League | 54.7%   |         0.04262 | 0.0257 |    0.0135 |      13.47 |       18.14 | 60.4%       |
+|  1 | La Liga        | 47.0%   |         0.03372 | 0.0196 |    0.032  |      12.5  |       17.55 | 51.5%       |
+|  2 | Bundesliga     | 61.4%   |        -0.00814 | 0.001  |    0.6452 |      13.16 |       16.07 | 60.4%       |
+|  3 | Serie A        | 52.2%   |        -0.07786 | 0.1009 |    0      |      15.01 |       18.03 | 41.9%       |
+|  4 | Ligue 1        | 53.0%   |         0.0311  | 0.0142 |    0.0769 |      15.09 |       18.87 | 57.0%       |
 
-|    | Fecha               |   avg_goals |   t |
-|----+---------------------+-------------+-----|
-|  0 | 2019-08-11 00:00:00 |     2.65    |   0 |
-|  1 | 2019-08-18 00:00:00 |     2.63158 |   1 |
-|  2 | 2019-08-25 00:00:00 |     2.82609 |   2 |
-|  3 | 2019-09-01 00:00:00 |     2.9434  |   3 |
-|  4 | 2019-09-15 00:00:00 |     2.93617 |   4 |
-|  5 | 2019-09-22 00:00:00 |     2.58    |   5 |
-|  6 | 2019-09-29 00:00:00 |     2.5641  |   6 |
-|  7 | 2019-10-06 00:00:00 |     2.68    |   7 |
-|  8 | 2019-10-20 00:00:00 |     2.29787 |   8 |
-|  9 | 2019-10-27 00:00:00 |     2.78    |   9 |
+victorias local por liga
+  Premier League: -0.00375pp/sem  R²=0.0002  p=0.8254  MAE=13.65pp  pred+16w=42.7%
+  La Liga: +0.00582pp/sem  R²=0.0006  p=0.7035  MAE=14.20pp  pred+16w=44.7%
+  Bundesliga: -0.00427pp/sem  R²=0.0002  p=0.8297  MAE=14.53pp  pred+16w=42.9%
+  Serie A: -0.02044pp/sem  R²=0.0106  p=0.1178  MAE=12.69pp  pred+16w=37.9%
+  Ligue 1: +0.02173pp/sem  R²=0.0065  p=0.2323  MAE=16.60pp  pred+16w=45.6%
+  guardado: img/forecasting_homewin_por_liga.png
 
-============================================================
-  RESULTADOS DE LA REGRESIÓN LINEAL
-============================================================
-                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:              avg_goals   R-squared:                       0.001
-Model:                            OLS   Adj. R-squared:                 -0.003
-Method:                 Least Squares   F-statistic:                    0.2090
-Date:                Sun, 03 May 2026   Prob (F-statistic):              0.648
-Time:                        22:52:39   Log-Likelihood:                -62.878
-No. Observations:                 252   AIC:                             129.8
-Df Residuals:                     250   BIC:                             136.8
-Df Model:                           1                                         
-Covariance Type:            nonrobust                                         
-==============================================================================
-                 coef    std err          t      P>|t|      [0.025      0.975]
-------------------------------------------------------------------------------
-const          2.7891      0.039     71.215      0.000       2.712       2.866
-t              0.0001      0.000      0.457      0.648      -0.000       0.001
-==============================================================================
-Omnibus:                       82.622   Durbin-Watson:                   1.908
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1734.179
-Skew:                           0.702   Prob(JB):                         0.00
-Kurtosis:                      15.775   Cond. No.                         289.
-==============================================================================
+|    | Liga           | Media   |   Tendencia/sem |     R² |   p-value |   MAE test |   RMSE test | Pred +16w   |
+|----+----------------+---------+-----------------+--------+-----------+------------+-------------+-------------|
+|  0 | Premier League | 43.2%   |        -0.00375 | 0.0002 |    0.8254 |      13.65 |       18.67 | 42.7%       |
+|  1 | La Liga        | 44.0%   |         0.00582 | 0.0006 |    0.7035 |      14.2  |       18.97 | 44.7%       |
+|  2 | Bundesliga     | 43.5%   |        -0.00427 | 0.0002 |    0.8297 |      14.53 |       19.69 | 42.9%       |
+|  3 | Serie A        | 40.6%   |        -0.02044 | 0.0106 |    0.1178 |      12.69 |       15.58 | 37.9%       |
+|  4 | Ligue 1        | 42.8%   |         0.02173 | 0.0065 |    0.2323 |      16.6  |       19.98 | 45.6%       |
 
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+movimiento de odds apertura a cierre por liga
+  Premier League: media=+0.03936  tendencia=+0.000124/sem  R²=0.0022  p=0.4741
+  La Liga: media=+0.03761  tendencia=-0.000014/sem  R²=0.0001  p=0.9004
+  Bundesliga: media=+0.02047  tendencia=-0.000147/sem  R²=0.0051  p=0.2944
+  Serie A: media=+0.05186  tendencia=+0.000353/sem  R²=0.0351  p=0.0041
+  Ligue 1: media=+0.05555  tendencia=+0.000194/sem  R²=0.0080  p=0.1851
+  guardado: img/forecasting_odds_move.png
 
-  pendiente (m)  : 0.000123 goles por semana
-  intercepto (b) : 2.7891
-  R²             : 0.0008
-  R² ajustado    : -0.0032
-  p-value (t)    : 0.6479
+|    | Liga           |   Media mov_H |   Tendencia/sem |     R² |   p-value |   MAE test |   Pred +16w |
+|----+----------------+---------------+-----------------+--------+-----------+------------+-------------|
+|  0 | Premier League |       0.03936 |        0.000124 | 0.0022 |    0.4741 |     0.1174 |      0.056  |
+|  1 | La Liga        |       0.03761 |       -1.4e-05  | 0.0001 |    0.9004 |     0.0987 |      0.0357 |
+|  2 | Bundesliga     |       0.02047 |       -0.000147 | 0.0051 |    0.2944 |     0.0884 |      0.0023 |
+|  3 | Serie A        |       0.05186 |        0.000353 | 0.0351 |    0.0041 |     0.0998 |      0.0985 |
+|  4 | Ligue 1        |       0.05555 |        0.000194 | 0.008  |    0.1851 |     0.1161 |      0.0801 |
 
-  gráfica guardada: img/forecasting_serie_goles.png
+overround semanal por liga
+  Premier League: margen=4.38%  tendencia=+0.00368pp/sem  R²=0.2888  p=0.0000
+  La Liga: margen=4.76%  tendencia=+0.00346pp/sem  R²=0.1586  p=0.0000
+  Bundesliga: margen=4.71%  tendencia=+0.00383pp/sem  R²=0.1195  p=0.0000
+  Serie A: margen=4.88%  tendencia=+0.00306pp/sem  R²=0.1447  p=0.0000
+  Ligue 1: margen=5.07%  tendencia=+0.00264pp/sem  R²=0.0997  p=0.0000
+  guardado: img/forecasting_overround.png
 
-============================================================
-  PREDICCIÓN — próximas 12 semanas
-============================================================
-|    | Semana     |   t |   avg_goals_predicho |
-|----+------------+-----+----------------------|
-|  0 | 2026-03-01 | 252 |               2.8202 |
-|  1 | 2026-03-08 | 253 |               2.8203 |
-|  2 | 2026-03-15 | 254 |               2.8205 |
-|  3 | 2026-03-22 | 255 |               2.8206 |
-|  4 | 2026-03-29 | 256 |               2.8207 |
-|  5 | 2026-04-05 | 257 |               2.8208 |
-|  6 | 2026-04-12 | 258 |               2.8209 |
-|  7 | 2026-04-19 | 259 |               2.8211 |
-|  8 | 2026-04-26 | 260 |               2.8212 |
-|  9 | 2026-05-03 | 261 |               2.8213 |
-| 10 | 2026-05-10 | 262 |               2.8214 |
-| 11 | 2026-05-17 | 263 |               2.8216 |
-  gráfica guardada: img/forecasting_prediccion_12w.png
+|    | Liga           |   Overround avg | Margen casa %   |   Tendencia/sem |     R² |   p-value |   Pred +16w |
+|----+----------------+-----------------+-----------------+-----------------+--------+-----------+-------------|
+|  0 | Premier League |         1.04377 | 4.38%           |         3.7e-05 | 0.2888 |         0 |      1.0487 |
+|  1 | La Liga        |         1.04755 | 4.76%           |         3.5e-05 | 0.1586 |         0 |      1.0522 |
+|  2 | Bundesliga     |         1.04715 | 4.71%           |         3.8e-05 | 0.1195 |         0 |      1.0519 |
+|  3 | Serie A        |         1.04875 | 4.88%           |         3.1e-05 | 0.1447 |         0 |      1.0528 |
+|  4 | Ligue 1        |         1.05073 | 5.07%           |         2.6e-05 | 0.0997 |         0 |      1.0541 |
+
+victorias local por equipo específico
+  Man City: media=72.9%  tendencia=+0.1430pp/per  R²=0.0055  p=0.5461
+  Arsenal: media=67.4%  tendencia=+0.4439pp/per  R²=0.0587  p=0.0449
+  Real Madrid: media=74.4%  tendencia=+0.3934pp/per  R²=0.0522  p=0.0672
+  Barcelona: media=77.9%  tendencia=+0.1244pp/per  R²=0.0055  p=0.5517
+  Bayern Munich: media=76.1%  tendencia=+0.1091pp/per  R²=0.0033  p=0.6439
+  Juventus: media=67.1%  tendencia=-0.3266pp/per  R²=0.0363  p=0.1139
+  Paris SG: media=76.0%  tendencia=-0.0602pp/per  R²=0.0012  p=0.7856
+  guardado: img/forecasting_equipos.png
+
+|    | Equipo        | Liga           |   Partidos | Media %local   |   Tendencia/per |     R² |   p-value | Pred +16w   |
+|----+---------------+----------------+------------+----------------+-----------------+--------+-----------+-------------|
+|  0 | Man City      | Premier League |        127 | 72.9%          |          0.143  | 0.0055 |    0.5461 | 80.0%       |
+|  1 | Arsenal       | Premier League |        127 | 67.4%          |          0.4439 | 0.0587 |    0.0449 | 89.6%       |
+|  2 | Real Madrid   | La Liga        |        126 | 74.4%          |          0.3934 | 0.0522 |    0.0672 | 93.2%       |
+|  3 | Barcelona     | La Liga        |        125 | 77.9%          |          0.1244 | 0.0055 |    0.5517 | 84.0%       |
+|  4 | Bayern Munich | Bundesliga     |        113 | 76.1%          |          0.1091 | 0.0033 |    0.6439 | 81.5%       |
+|  5 | Juventus      | Serie A        |        126 | 67.1%          |         -0.3266 | 0.0363 |    0.1139 | 50.6%       |
+|  6 | Paris SG      | Ligue 1        |        115 | 76.0%          |         -0.0602 | 0.0012 |    0.7856 | 73.1%       |
+
+bias probabilidad implícita vs resultado real por liga
+  Premier League: bias=+0.02571 (sobreestima local)  tendencia=+0.000088/sem  R²=0.0014  p=0.5732
+  La Liga: bias=+0.01585 (sobreestima local)  tendencia=+0.000004/sem  R²=0.0000  p=0.9749
+  Bundesliga: bias=+0.03103 (sobreestima local)  tendencia=+0.000141/sem  R²=0.0028  p=0.4364
+  Serie A: bias=+0.04408 (sobreestima local)  tendencia=+0.000171/sem  R²=0.0078  p=0.1778
+  Ligue 1: bias=+0.02733 (sobreestima local)  tendencia=-0.000168/sem  R²=0.0047  p=0.3102
+  guardado: img/forecasting_bias.png
+
+|    | Liga           |   Bias medio | Dirección         |   Tendencia/sem | Tendencia dir    |     R² |   p-value |   Pred +16w |
+|----+----------------+--------------+-------------------+-----------------+------------------+--------+-----------+-------------|
+|  0 | Premier League |      0.02571 | sobreestima local |        8.8e-05  | bias creciente   | 0.0014 |    0.5732 |      0.0374 |
+|  1 | La Liga        |      0.01585 | sobreestima local |        4e-06    | bias creciente   | 0      |    0.9749 |      0.0164 |
+|  2 | Bundesliga     |      0.03103 | sobreestima local |        0.000141 | bias creciente   | 0.0028 |    0.4364 |      0.0485 |
+|  3 | Serie A        |      0.04408 | sobreestima local |        0.000171 | bias creciente   | 0.0078 |    0.1778 |      0.0667 |
+|  4 | Ligue 1        |      0.02733 | sobreestima local |       -0.000168 | bias decreciente | 0.0047 |    0.3102 |      0.006  |

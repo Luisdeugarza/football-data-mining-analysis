@@ -1,4 +1,4 @@
-over 2.5 por liga
+1. over 2.5 por liga
   Premier League: +0.04262pp/sem  R²=0.0257  p=0.0135  MAE=13.47pp  pred+16w=60.4%
   La Liga: +0.03372pp/sem  R²=0.0196  p=0.0320  MAE=12.50pp  pred+16w=51.5%
   Bundesliga: -0.00814pp/sem  R²=0.0010  p=0.6452  MAE=13.16pp  pred+16w=60.4%
@@ -14,7 +14,7 @@ over 2.5 por liga
 |  3 | Serie A        | 52.2%   |        -0.07786 | 0.1009 |    0      |      15.01 |       18.03 | 41.9%       |
 |  4 | Ligue 1        | 53.0%   |         0.0311  | 0.0142 |    0.0769 |      15.09 |       18.87 | 57.0%       |
 
-victorias local por liga
+2. victorias local por liga
   Premier League: -0.00375pp/sem  R²=0.0002  p=0.8254  MAE=13.65pp  pred+16w=42.7%
   La Liga: +0.00582pp/sem  R²=0.0006  p=0.7035  MAE=14.20pp  pred+16w=44.7%
   Bundesliga: -0.00427pp/sem  R²=0.0002  p=0.8297  MAE=14.53pp  pred+16w=42.9%
@@ -30,7 +30,7 @@ victorias local por liga
 |  3 | Serie A        | 40.6%   |        -0.02044 | 0.0106 |    0.1178 |      12.69 |       15.58 | 37.9%       |
 |  4 | Ligue 1        | 42.8%   |         0.02173 | 0.0065 |    0.2323 |      16.6  |       19.98 | 45.6%       |
 
-movimiento de odds apertura a cierre por liga
+3. movimiento de odds apertura a cierre por liga
   Premier League: media=+0.03936  tendencia=+0.000124/sem  R²=0.0022  p=0.4741
   La Liga: media=+0.03761  tendencia=-0.000014/sem  R²=0.0001  p=0.9004
   Bundesliga: media=+0.02047  tendencia=-0.000147/sem  R²=0.0051  p=0.2944
@@ -46,7 +46,7 @@ movimiento de odds apertura a cierre por liga
 |  3 | Serie A        |       0.05186 |        0.000353 | 0.0351 |    0.0041 |     0.0998 |      0.0985 |
 |  4 | Ligue 1        |       0.05555 |        0.000194 | 0.008  |    0.1851 |     0.1161 |      0.0801 |
 
-overround semanal por liga
+4. overround semanal por liga
   Premier League: margen=4.38%  tendencia=+0.00368pp/sem  R²=0.2888  p=0.0000
   La Liga: margen=4.76%  tendencia=+0.00346pp/sem  R²=0.1586  p=0.0000
   Bundesliga: margen=4.71%  tendencia=+0.00383pp/sem  R²=0.1195  p=0.0000
@@ -62,27 +62,27 @@ overround semanal por liga
 |  3 | Serie A        |         1.04875 | 4.88%           |         3.1e-05 | 0.1447 |         0 |      1.0528 |
 |  4 | Ligue 1        |         1.05073 | 5.07%           |         2.6e-05 | 0.0997 |         0 |      1.0541 |
 
-victorias local por equipo específico
-  Man City: media=72.9%  tendencia=+0.1430pp/per  R²=0.0055  p=0.5461
-  Arsenal: media=67.4%  tendencia=+0.4439pp/per  R²=0.0587  p=0.0449
-  Real Madrid: media=74.4%  tendencia=+0.3934pp/per  R²=0.0522  p=0.0672
-  Barcelona: media=77.9%  tendencia=+0.1244pp/per  R²=0.0055  p=0.5517
-  Bayern Munich: media=76.1%  tendencia=+0.1091pp/per  R²=0.0033  p=0.6439
-  Juventus: media=67.1%  tendencia=-0.3266pp/per  R²=0.0363  p=0.1139
-  Paris SG: media=76.0%  tendencia=-0.0602pp/per  R²=0.0012  p=0.7856
+5. victorias local vs visitante por equipo
+  Man City: local=72.9% (+0.1430pp/per p=0.5461)  visita=61.4% (-0.3418pp/per p=0.1414)
+  Arsenal: local=67.4% (+0.4439pp/per p=0.0449)  visita=49.9% (+0.3516pp/per p=0.1459)
+  Real Madrid: local=74.4% (+0.3934pp/per p=0.0672)  visita=67.3% (+0.1655pp/per p=0.4265)
+  Barcelona: local=77.9% (+0.1244pp/per p=0.5517)  visita=59.2% (+0.3931pp/per p=0.1048)
+  Bayern Munich: local=76.1% (+0.1091pp/per p=0.6439)  visita=62.9% (+0.0811pp/per p=0.7519)
+  Juventus: local=67.1% (-0.3266pp/per p=0.1139)  visita=49.2% (-0.2207pp/per p=0.3984)
+  Paris SG: local=76.0% (-0.0602pp/per p=0.7856)  visita=67.2% (+0.1310pp/per p=0.5959)
   guardado: img/forecasting_equipos.png
 
-|    | Equipo        | Liga           |   Partidos | Media %local   |   Tendencia/per |     R² |   p-value | Pred +16w   |
-|----+---------------+----------------+------------+----------------+-----------------+--------+-----------+-------------|
-|  0 | Man City      | Premier League |        127 | 72.9%          |          0.143  | 0.0055 |    0.5461 | 80.0%       |
-|  1 | Arsenal       | Premier League |        127 | 67.4%          |          0.4439 | 0.0587 |    0.0449 | 89.6%       |
-|  2 | Real Madrid   | La Liga        |        126 | 74.4%          |          0.3934 | 0.0522 |    0.0672 | 93.2%       |
-|  3 | Barcelona     | La Liga        |        125 | 77.9%          |          0.1244 | 0.0055 |    0.5517 | 84.0%       |
-|  4 | Bayern Munich | Bundesliga     |        113 | 76.1%          |          0.1091 | 0.0033 |    0.6439 | 81.5%       |
-|  5 | Juventus      | Serie A        |        126 | 67.1%          |         -0.3266 | 0.0363 |    0.1139 | 50.6%       |
-|  6 | Paris SG      | Ligue 1        |        115 | 76.0%          |         -0.0602 | 0.0012 |    0.7856 | 73.1%       |
+|    | Equipo        | Media local   |   Tend local/per |   R² local |   p local | Media visita   |   Tend visita/per |   R² visita |   p visita |
+|----+---------------+---------------+------------------+------------+-----------+----------------+-------------------+-------------+------------|
+|  0 | Man City      | 72.9%         |           0.143  |     0.0055 |    0.5461 | 61.4%          |           -0.3418 |      0.0315 |     0.1414 |
+|  1 | Arsenal       | 67.4%         |           0.4439 |     0.0587 |    0.0449 | 49.9%          |            0.3516 |      0.0308 |     0.1459 |
+|  2 | Real Madrid   | 74.4%         |           0.3934 |     0.0522 |    0.0672 | 67.3%          |            0.1655 |      0.0093 |     0.4265 |
+|  3 | Barcelona     | 77.9%         |           0.1244 |     0.0055 |    0.5517 | 59.2%          |            0.3931 |      0.0388 |     0.1048 |
+|  4 | Bayern Munich | 76.1%         |           0.1091 |     0.0033 |    0.6439 | 62.9%          |            0.0811 |      0.0015 |     0.7519 |
+|  5 | Juventus      | 67.1%         |          -0.3266 |     0.0363 |    0.1139 | 49.2%          |           -0.2207 |      0.0107 |     0.3984 |
+|  6 | Paris SG      | 76.0%         |          -0.0602 |     0.0012 |    0.7856 | 67.2%          |            0.131  |      0.0044 |     0.5959 |
 
-bias probabilidad implícita vs resultado real por liga
+6. bias probabilidad implícita vs resultado real por liga
   Premier League: bias=+0.02571 (sobreestima local)  tendencia=+0.000088/sem  R²=0.0014  p=0.5732
   La Liga: bias=+0.01585 (sobreestima local)  tendencia=+0.000004/sem  R²=0.0000  p=0.9749
   Bundesliga: bias=+0.03103 (sobreestima local)  tendencia=+0.000141/sem  R²=0.0028  p=0.4364
@@ -97,3 +97,200 @@ bias probabilidad implícita vs resultado real por liga
 |  2 | Bundesliga     |      0.03103 | sobreestima local |        0.000141 | bias creciente   | 0.0028 |    0.4364 |      0.0485 |
 |  3 | Serie A        |      0.04408 | sobreestima local |        0.000171 | bias creciente   | 0.0078 |    0.1778 |      0.0667 |
 |  4 | Ligue 1        |      0.02733 | sobreestima local |       -0.000168 | bias decreciente | 0.0047 |    0.3102 |      0.006  |
+
+7. calibración del bias por temporada
+|    | Liga           | Temporada   |   Bias local |   Partidos |
+|----+----------------+-------------+--------------+------------|
+|  0 | Premier League | 2019/20     |      0.00511 |        380 |
+|  1 | Premier League | 2020/21     |      0.05678 |        380 |
+|  2 | Premier League | 2021/22     |      0.0221  |        380 |
+|  3 | Premier League | 2022/23     |     -0.02873 |        380 |
+|  4 | Premier League | 2023/24     |      0.00554 |        380 |
+|  5 | Premier League | 2024/25     |      0.06004 |        380 |
+|  6 | Premier League | 2025/26     |      0.02968 |        261 |
+|  7 | La Liga        | 2019/20     |      0.00629 |        380 |
+|  8 | La Liga        | 2020/21     |      0.02235 |        380 |
+|  9 | La Liga        | 2021/22     |      0.024   |        380 |
+| 10 | La Liga        | 2022/23     |     -0.02143 |        380 |
+| 11 | La Liga        | 2023/24     |      0.02865 |        380 |
+| 12 | La Liga        | 2024/25     |      0.0218  |        380 |
+| 13 | La Liga        | 2025/26     |     -0.00596 |        239 |
+| 14 | Bundesliga     | 2019/20     |      0.06456 |        306 |
+| 15 | Bundesliga     | 2020/21     |      0.01882 |        306 |
+| 16 | Bundesliga     | 2021/22     |     -0.00849 |        306 |
+| 17 | Bundesliga     | 2022/23     |     -0.00796 |        306 |
+| 18 | Bundesliga     | 2023/24     |      0.03568 |        306 |
+| 19 | Bundesliga     | 2024/25     |      0.08826 |        305 |
+| 20 | Bundesliga     | 2025/26     |      0.01342 |        197 |
+| 21 | Serie A        | 2019/20     |      0.0399  |        380 |
+| 22 | Serie A        | 2020/21     |      0.0296  |        380 |
+| 23 | Serie A        | 2021/22     |      0.06692 |        380 |
+| 24 | Serie A        | 2022/23     |      0.02371 |        380 |
+| 25 | Serie A        | 2023/24     |      0.03005 |        380 |
+| 26 | Serie A        | 2024/25     |      0.05176 |        380 |
+| 27 | Serie A        | 2025/26     |      0.07307 |        250 |
+| 28 | Ligue 1        | 2019/20     |     -0.0152  |        279 |
+| 29 | Ligue 1        | 2020/21     |      0.06674 |        380 |
+| 30 | Ligue 1        | 2021/22     |      0.02794 |        380 |
+| 31 | Ligue 1        | 2022/23     |      0.03283 |        380 |
+| 32 | Ligue 1        | 2023/24     |      0.06303 |        306 |
+| 33 | Ligue 1        | 2024/25     |     -0.00561 |        306 |
+| 34 | Ligue 1        | 2025/26     |     -0.03321 |        198 |
+  guardado: img/forecasting_bias_temporada.png
+
+
+8. overround por semana del año
+  Premier League: OR medio=4.35%  máx sem=1  mín sem=36
+  La Liga: OR medio=4.72%  máx sem=29  mín sem=36
+  Bundesliga: OR medio=4.68%  máx sem=3  mín sem=32
+  Serie A: OR medio=4.85%  máx sem=30  mín sem=36
+  Ligue 1: OR medio=5.03%  máx sem=3  mín sem=36
+  guardado: img/forecasting_overround_semana.png
+
+|    | Liga           |   OR medio |   OR max sem |   OR min sem |   Rango |
+|----+----------------+------------+--------------+--------------+---------|
+|  0 | Premier League |    1.04347 |            1 |           36 | 0.00944 |
+|  1 | La Liga        |    1.0472  |           29 |           36 | 0.00743 |
+|  2 | Bundesliga     |    1.04678 |            3 |           32 | 0.00724 |
+|  3 | Serie A        |    1.04845 |           30 |           36 | 0.00824 |
+|  4 | Ligue 1        |    1.05029 |            3 |           36 | 0.00749 |
+
+9. value bet acumulado — apuesta sistemática al visitante
+  Premier League: win_rate=33.1%  odd_media=4.534  ROI=-1.97%  P&L=-50.03u
+  La Liga: win_rate=28.3%  odd_media=4.360  ROI=-13.60%  P&L=-342.59u
+  Bundesliga: win_rate=31.9%  odd_media=4.355  ROI=-8.47%  P&L=-172.06u
+  Serie A: win_rate=33.0%  odd_media=4.215  ROI=-6.49%  P&L=-164.12u
+  Ligue 1: win_rate=32.3%  odd_media=4.117  ROI=-2.74%  P&L=-61.05u
+  guardado: img/forecasting_valuebet_visitante.png
+
+|    | Liga           |   Partidos |   Win rate % |   Odd media |   ROI % |   P&L final |
+|----+----------------+------------+--------------+-------------+---------+-------------|
+|  0 | Premier League |       2541 |        33.1  |       4.534 |   -1.97 |      -50.03 |
+|  1 | La Liga        |       2519 |        28.34 |       4.36  |  -13.6  |     -342.59 |
+|  2 | Bundesliga     |       2032 |        31.89 |       4.355 |   -8.47 |     -172.06 |
+|  3 | Serie A        |       2530 |        32.96 |       4.215 |   -6.49 |     -164.12 |
+|  4 | Ligue 1        |       2229 |        32.35 |       4.117 |   -2.74 |      -61.05 |
+
+10. underdog visitante — ¿está subvaluado por la casa?
+  Premier League: n=919  imp=15.3%  real=14.5%  bias=+0.00851  ROI=-3.23%
+  La Liga: n=985  imp=16.6%  real=13.2%  bias=+0.03402  ROI=-21.65%
+  Bundesliga: n=700  imp=16.1%  real=12.7%  bias=+0.03407  ROI=-19.17%
+  Serie A: n=914  imp=16.0%  real=14.1%  bias=+0.01858  ROI=-11.87%
+  Ligue 1: n=758  imp=16.8%  real=15.3%  bias=+0.01534  ROI=-8.59%
+  guardado: img/forecasting_underdog.png
+
+|    | Liga           |   N underdogs | % del total   |   imp_prob avg | win rate real   |    Bias |   ROI % |
+|----+----------------+---------------+---------------+----------------+-----------------+---------+---------|
+|  0 | Premier League |           919 | 36.2%         |          15.32 | 14.5%           | 0.00851 |   -3.23 |
+|  1 | La Liga        |           985 | 39.1%         |          16.6  | 13.2%           | 0.03402 |  -21.65 |
+|  2 | Bundesliga     |           700 | 34.4%         |          16.12 | 12.7%           | 0.03407 |  -19.17 |
+|  3 | Serie A        |           914 | 36.1%         |          15.97 | 14.1%           | 0.01858 |  -11.87 |
+|  4 | Ligue 1        |           758 | 34.0%         |          16.84 | 15.3%           | 0.01534 |   -8.59 |
+
+11. efecto semanas post fecha FIFA
+  Premier League: local normal=42.8% vs post-FIFA=44.7% (Δ+1.9pp)  over2.5 normal=54.6% vs post-FIFA=55.5% (Δ+0.9pp)
+  La Liga: local normal=43.9% vs post-FIFA=46.0% (Δ+2.2pp)  over2.5 normal=46.0% vs post-FIFA=47.0% (Δ+1.0pp)
+  Bundesliga: local normal=44.1% vs post-FIFA=42.6% (Δ-1.5pp)  over2.5 normal=61.3% vs post-FIFA=60.9% (Δ-0.4pp)
+  Serie A: local normal=39.8% vs post-FIFA=41.6% (Δ+1.8pp)  over2.5 normal=52.6% vs post-FIFA=52.1% (Δ-0.5pp)
+  Ligue 1: local normal=43.2% vs post-FIFA=43.2% (Δ+0.0pp)  over2.5 normal=54.9% vs post-FIFA=49.7% (Δ-5.2pp)
+|    | Liga           | Local normal   | Local post-FIFA   | Δ local   | O2.5 normal   | O2.5 post-FIFA   | Δ over2.5   | OR normal   | OR post-FIFA   |
+|----+----------------+----------------+-------------------+-----------+---------------+------------------+-------------+-------------+----------------|
+|  0 | Premier League | 42.8%          | 44.7%             | +1.9pp    | 54.6%         | 55.5%            | +0.9pp      | 4.40%       | 4.32%          |
+|  1 | La Liga        | 43.9%          | 46.0%             | +2.2pp    | 46.0%         | 47.0%            | +1.0pp      | 4.75%       | 4.71%          |
+|  2 | Bundesliga     | 44.1%          | 42.6%             | -1.5pp    | 61.3%         | 60.9%            | -0.4pp      | 4.72%       | 4.71%          |
+|  3 | Serie A        | 39.8%          | 41.6%             | +1.8pp    | 52.6%         | 52.1%            | -0.5pp      | 4.89%       | 4.83%          |
+|  4 | Ligue 1        | 43.2%          | 43.2%             | +0.0pp    | 54.9%         | 49.7%            | -5.2pp      | 5.07%       | 5.05%          |
+  guardado: img/forecasting_post_fifa.png
+
+12. ROI under 2.5 en Ligue 1 post fecha FIFA
+  post-FIFA: n=885  win_rate=50.3%  ROI=-6.98%  P&L=-61.75u
+  normal:    n=1344  win_rate=45.1%  ROI=-16.58%  P&L=-222.90u
+  diferencia win rate: +5.2pp
+  diferencia ROI:      +9.61pp
+  guardado: img/forecasting_under_ligue1_postfifa.png
+
+
+13. Arsenal local — cuota implícita vs win rate rodante
+  partidos totales     : 127
+  partidos con value   : 58 (45.7%)
+  gap medio histórico  : +0.0111
+  gap últimas 10 fechas: -0.0008
+  NO hay value en Arsenal local actualmente
+  guardado: img/forecasting_arsenal_value.png
+
+
+14. rolling win rate vs cuota implícita — todos los equipos
+  Man City: local gap=+12.0pp (VALUE)  visita gap=-9.1pp (sin value)
+  Arsenal: local gap=-0.1pp (sin value)  visita gap=-9.7pp (sin value)
+  Real Madrid: local gap=+15.1pp (VALUE)  visita gap=+0.1pp (VALUE)
+  Barcelona: local gap=+7.8pp (VALUE)  visita gap=+6.7pp (VALUE)
+  Bayern Munich: local gap=-3.4pp (sin value)  visita gap=+0.8pp (VALUE)
+  Juventus: local gap=+2.7pp (VALUE)  visita gap=-13.1pp (sin value)
+  Paris SG: local gap=+1.9pp (VALUE)  visita gap=-10.9pp (sin value)
+|    | Equipo        | WR local rec   | Imp local rec   | Gap local   | Value local   | WR visita rec   | Imp visita rec   | Gap visita   | Value visita   |
+|----+---------------+----------------+-----------------+-------------+---------------+-----------------+------------------+--------------+----------------|
+|  0 | Man City      | 80.0%          | 73.0%           | +12.0pp     | SI            | 50.0%           | 56.1%            | -9.1pp       | no             |
+|  1 | Arsenal       | 80.0%          | 74.1%           | -0.1pp      | no            | 40.0%           | 64.7%            | -9.7pp       | no             |
+|  2 | Real Madrid   | 90.0%          | 75.9%           | +15.1pp     | SI            | 60.0%           | 63.9%            | +0.1pp       | SI             |
+|  3 | Barcelona     | 100.0%         | 80.2%           | +7.8pp      | SI            | 60.0%           | 63.3%            | +6.7pp       | SI             |
+|  4 | Bayern Munich | 80.0%          | 87.4%           | -3.4pp      | no            | 80.0%           | 77.2%            | +0.8pp       | SI             |
+|  5 | Juventus      | 50.0%          | 63.3%           | +2.7pp      | SI            | 50.0%           | 52.1%            | -13.1pp      | no             |
+|  6 | Paris SG      | 90.0%          | 81.1%           | +1.9pp      | SI            | 50.0%           | 67.9%            | -10.9pp      | no             |
+  guardado: img/forecasting_rolling_gap_equipos.png
+
+
+15. tabla resumen — mejor liga por tipo de apuesta
+|    | Liga           | % over2.5   | % local   | % visitante   | Bias local   | Margen casa   | Bias underdog   | Efecto FIFA o25   | Mejor apuesta     |
+|----+----------------+-------------+-----------+---------------+--------------+---------------+-----------------+-------------------+-------------------|
+|  0 | Premier League | 54.9%       | 43.5%     | 33.1%         | +2.11pp      | 4.37%         | +0.85pp         | +0.9pp            | mercado eficiente |
+|  1 | La Liga        | 46.4%       | 44.7%     | 28.3%         | +1.18pp      | 4.74%         | +3.40pp         | +1.0pp            | mercado eficiente |
+|  2 | Bundesliga     | 61.1%       | 43.5%     | 31.9%         | +3.00pp      | 4.72%         | +3.41pp         | -0.4pp            | over2.5           |
+|  3 | Serie A        | 52.4%       | 40.5%     | 33.0%         | +4.36pp      | 4.86%         | +1.86pp         | -0.5pp            | visitante         |
+|  4 | Ligue 1        | 52.8%       | 43.2%     | 32.3%         | +2.48pp      | 5.06%         | +1.53pp         | -5.2pp            | under post-FIFA   |
+  guardado: img/forecasting_resumen_final.png
+
+16. racha corta (5) vs racha larga (10) — detección de value creciente
+  Man City: local  gap10=+12.0pp gap5=-3.0pp (decreciente)
+            visita gap10=-9.1pp gap5=-4.2pp (creciente)
+  Arsenal: local  gap10=-0.1pp gap5=+9.9pp (creciente)
+           visita gap10=-9.7pp gap5=-18.9pp (decreciente)
+  Real Madrid: local  gap10=+15.1pp gap5=+5.5pp (decreciente)
+               visita gap10=+0.1pp gap5=-13.2pp (decreciente)
+  Barcelona: local  gap10=+7.8pp gap5=+19.2pp (creciente)
+             visita gap10=+6.7pp gap5=+5.3pp (decreciente)
+  Bayern Munich: local  gap10=-3.4pp gap5=-13.1pp (decreciente)
+                 visita gap10=+0.8pp gap5=+1.5pp (creciente)
+  Juventus: local  gap10=+2.7pp gap5=-1.7pp (decreciente)
+            visita gap10=-13.1pp gap5=+6.1pp (creciente)
+  Paris SG: local  gap10=+1.9pp gap5=+8.5pp (creciente)
+            visita gap10=-10.9pp gap5=-11.3pp (decreciente)
+|    | Equipo        | Gap10 local   | Gap5 local   | Tendencia L   | Value L      | Gap10 visita   | Gap5 visita   | Tendencia V   | Value V      |
+|----+---------------+---------------+--------------+---------------+--------------+----------------+---------------+---------------+--------------|
+|  0 | Man City      | +12.0pp       | -3.0pp       | decreciente   | no           | -9.1pp         | -4.2pp        | creciente     | no           |
+|  1 | Arsenal       | -0.1pp        | +9.9pp       | creciente     | SI CRECIENTE | -9.7pp         | -18.9pp       | decreciente   | no           |
+|  2 | Real Madrid   | +15.1pp       | +5.5pp       | decreciente   | SI           | +0.1pp         | -13.2pp       | decreciente   | no           |
+|  3 | Barcelona     | +7.8pp        | +19.2pp      | creciente     | SI CRECIENTE | +6.7pp         | +5.3pp        | decreciente   | SI           |
+|  4 | Bayern Munich | -3.4pp        | -13.1pp      | decreciente   | no           | +0.8pp         | +1.5pp        | creciente     | SI CRECIENTE |
+|  5 | Juventus      | +2.7pp        | -1.7pp       | decreciente   | no           | -13.1pp        | +6.1pp        | creciente     | SI CRECIENTE |
+|  6 | Paris SG      | +1.9pp        | +8.5pp       | creciente     | SI CRECIENTE | -10.9pp        | -11.3pp       | decreciente   | no           |
+  guardado: img/forecasting_racha_value.png
+
+
+17. over/under por equipo de local — ¿la casa estima bien los goles?
+  Man City: over hist=69.3%  rec=60.0%  gap=-9.3pp  avg_goles=3.57  señal=UNDER
+  Arsenal: over hist=65.4%  rec=60.0%  gap=-5.4pp  avg_goles=3.07  señal=UNDER
+  Real Madrid: over hist=54.8%  rec=60.0%  gap=+5.2pp  avg_goles=2.95  señal=OVER
+  Barcelona: over hist=64.0%  rec=90.0%  gap=+26.0pp  avg_goles=3.23  señal=OVER
+  Bayern Munich: over hist=79.6%  rec=100.0%  gap=+20.4pp  avg_goles=4.20  señal=OVER
+  Juventus: over hist=47.6%  rec=60.0%  gap=+12.4pp  avg_goles=2.63  señal=OVER
+  Paris SG: over hist=70.4%  rec=60.0%  gap=-10.4pp  avg_goles=3.48  señal=UNDER
+|    | Equipo        | Liga           | Over2.5 hist   | Over2.5 rec   | Gap over   |   Avg goles |   Avg goles rec |   Goles H avg |   Goles A avg | Señal over   |
+|----+---------------+----------------+----------------+---------------+------------+-------------+-----------------+---------------+---------------+--------------|
+|  0 | Man City      | Premier League | 69.3%          | 60.0%         | -9.3pp     |        3.57 |             2.9 |          2.71 |          0.86 | UNDER        |
+|  1 | Arsenal       | Premier League | 65.4%          | 60.0%         | -5.4pp     |        3.07 |             2.9 |          2.06 |          1.01 | UNDER        |
+|  2 | Real Madrid   | La Liga        | 54.8%          | 60.0%         | +5.2pp     |        2.95 |             3.3 |          2.25 |          0.71 | OVER         |
+|  3 | Barcelona     | La Liga        | 64.0%          | 90.0%         | +26.0pp    |        3.23 |             3.3 |          2.39 |          0.84 | OVER         |
+|  4 | Bayern Munich | Bundesliga     | 79.6%          | 100.0%        | +20.4pp    |        4.2  |             4.9 |          3.27 |          0.94 | OVER         |
+|  5 | Juventus      | Serie A        | 47.6%          | 60.0%         | +12.4pp    |        2.63 |             2.6 |          1.83 |          0.79 | OVER         |
+|  6 | Paris SG      | Ligue 1        | 70.4%          | 60.0%         | -10.4pp    |        3.48 |             3.1 |          2.57 |          0.9  | UNDER        |
+  guardado: img/forecasting_over_por_equipo.png

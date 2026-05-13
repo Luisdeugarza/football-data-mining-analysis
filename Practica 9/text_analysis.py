@@ -155,3 +155,143 @@ plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "wordcloud_top20_barras.png"), dpi=130)
 plt.close()
 print("  guardado: img/wordcloud_top20_barras.png")
+
+
+# generé una wordcloud por liga en un loop para comparar el vocabulario de equipos
+# que tiene cada competición — usé el colormap distintivo de cada liga
+
+print("\nnubes de palabras por liga")
+
+LIGA_COLORMAPS = {
+    "E0":  "Blues",
+    "SP1": "Reds",
+    "D1":  "Oranges",
+    "I1":  "Greens",
+    "F1":  "Purples",
+}
+
+fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+axes_flat = axes.flatten()
+
+for i, (liga, nombre) in enumerate(LIGAS_NAME.items()):
+    sub = df[df["Div"] == liga]
+
+    tokens_liga = []
+    for _, row in sub.iterrows():
+        tokens_liga += [
+            row["HomeTeam"].replace(" ", ""),
+            row["AwayTeam"].replace(" ", ""),
+            row["FTR_text"],
+        ]
+
+    wc = WordCloud(
+        background_color="white",
+        width=800,
+        height=500,
+        min_font_size=6,
+        max_words=80,
+        colormap=LIGA_COLORMAPS[liga],
+        collocations=False,
+    ).generate(" ".join(tokens_liga))
+
+    axes_flat[i].imshow(wc, interpolation="bilinear")
+    axes_flat[i].axis("off")
+    axes_flat[i].set_title(nombre, fontweight="bold", fontsize=13,
+                            color=LIGA_COLORS[liga])
+
+    cnt_liga  = Counter(tokens_liga)
+    top3_liga = [t for t, _ in cnt_liga.most_common(10)
+                 if t not in ("HomeWin", "AwayWin", "Draw")][:3]
+    axes_flat[i].set_xlabel(f"top equipos: {' · '.join(top3_liga)}",
+                             fontsize=9, color="gray")
+    print(f"  {nombre}: top3 = {top3_liga}")
+
+axes_flat[-1].axis("off")
+plt.suptitle("Wordcloud por liga — equipos y resultados más frecuentes",
+             fontweight="bold", fontsize=15)
+plt.tight_layout()
+plt.savefig(os.path.join(IMG_DIR, "wordcloud_por_liga.png"), dpi=130,
+            bbox_inches="tight")
+plt.close()
+print("  guardado: img/wordcloud_por_liga.png")
+
+
+# construí un corpus por temporada para ver cómo cambia el vocabulario con el tiempo
+# en temporadas COVID hay equipos que desaparecen o aparecen por primera vez
+
+print("\nnubes de palabras por temporada")
+
+SEASON_LABELS = {
+    1920: "2019/20", 2021: "2020/21", 2122: "2021/22",
+    2223: "2022/23", 2324: "2023/24", 2425: "2024/25", 2526: "2025/26",
+}
+
+seasons_sorted = sorted(df["Season"].dropna().unique().astype(int))
+fig, axes      = plt.subplots(2, 4, figsize=(20, 9))
+axes_flat      = axes.flatten()
+
+for i, season in enumerate(seasons_sorted):
+    sub   = df[df["Season"] == season]
+    label = SEASON_LABELS.get(season, str(season))
+
+    tokens_season = []
+    for _, row in sub.iterrows():
+        tokens_season += [
+            row["HomeTeam"].replace(" ", ""),
+            row["AwayTeam"].replace(" ", ""),
+            row["FTR_text"],
+            row["Liga_text"],
+        ]
+
+    wc = WordCloud(
+        background_color="black",
+        width=700,
+        height=400,
+        min_font_size=6,
+        max_words=60,
+        colormap="coolwarm",
+        collocations=False,
+    ).generate(" ".join(tokens_season))
+
+    axes_flat[i].imshow(wc, interpolation="bilinear")
+    axes_flat[i].axis("off")
+    axes_flat[i].set_title(label, fontweight="bold", fontsize=11, color="white")
+    axes_flat[i].set_facecolor("black")
+    print(f"  temporada {label}: {len(sub)} partidos")
+
+for j in range(len(seasons_sorted), len(axes_flat)):
+    axes_flat[j].axis("off")
+
+fig.patch.set_facecolor("black")
+plt.suptitle("Wordcloud por temporada — evolución del vocabulario 2019-2026",
+             fontweight="bold", fontsize=14, color="white")
+plt.tight_layout()
+plt.savefig(os.path.join(IMG_DIR, "wordcloud_por_temporada.png"), dpi=130,
+            bbox_inches="tight", facecolor="black")
+plt.close()
+print("  guardado: img/wordcloud_por_temporada.png")
+
+
+# calculé la diversidad de vocabulario por liga  de que quipos únicos y distribución
+# de resultados para complementar lo visual con números concretos
+
+print("\ndiversidad de vocabulario por liga")
+
+resumen_vocab = []
+for liga, nombre in LIGAS_NAME.items():
+    sub            = df[df["Div"] == liga]
+    equipos_unicos = set(sub["HomeTeam"].tolist() + sub["AwayTeam"].tolist())
+    resultados     = sub["FTR_text"].value_counts().to_dict()
+    resumen_vocab.append({
+        "Liga":      nombre,
+        "Equipos":   len(equipos_unicos),
+        "Partidos":  len(sub),
+        "HomeWin":   resultados.get("HomeWin", 0),
+        "Draw":      resultados.get("Draw", 0),
+        "AwayWin":   resultados.get("AwayWin", 0),
+        "%HomeWin":  f"{resultados.get('HomeWin',0)/len(sub)*100:.1f}%",
+        "%Draw":     f"{resultados.get('Draw',0)/len(sub)*100:.1f}%",
+        "%AwayWin":  f"{resultados.get('AwayWin',0)/len(sub)*100:.1f}%",
+    })
+
+print_tabulate(pd.DataFrame(resumen_vocab))

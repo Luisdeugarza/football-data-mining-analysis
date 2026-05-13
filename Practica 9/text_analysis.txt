@@ -30,3 +30,30 @@ top 20 tokens más frecuentes:
   guardado: img/wordcloud_global.png
   guardado: img/wordcloud_equipos.png
   guardado: img/wordcloud_top20_barras.png
+
+nubes de palabras por liga
+  Premier League: top3 = ['Wolves', 'Arsenal', 'Liverpool']
+  La Liga: top3 = ['AthBilbao', 'Barcelona', 'Celta']
+  Bundesliga: top3 = ['BayernMunich', 'Dortmund', 'Augsburg']
+  Serie A: top3 = ['Juventus', 'Fiorentina', 'Napoli']
+  Ligue 1: top3 = ['Monaco', 'Lyon', 'Marseille']
+  guardado: img/wordcloud_por_liga.png
+
+nubes de palabras por temporada
+  temporada 2019/20: 1725 partidos
+  temporada 2020/21: 1826 partidos
+  temporada 2021/22: 1826 partidos
+  temporada 2022/23: 1826 partidos
+  temporada 2023/24: 1752 partidos
+  temporada 2024/25: 1751 partidos
+  temporada 2025/26: 1145 partidos
+  guardado: img/wordcloud_por_temporada.png
+
+diversidad de vocabulario por liga
+|    | Liga           |   Equipos |   Partidos |   HomeWin |   Draw |   AwayWin | %HomeWin   | %Draw   | %AwayWin   |
+|----+----------------+-----------+------------+-----------+--------+-----------+------------+---------+------------|
+|  0 | Premier League |        28 |       2541 |      1105 |    595 |       841 | 43.5%      | 23.4%   | 33.1%      |
+|  1 | La Liga        |        28 |       2519 |      1127 |    678 |       714 | 44.7%      | 26.9%   | 28.3%      |
+|  2 | Bundesliga     |        27 |       2032 |       883 |    501 |       648 | 43.5%      | 24.7%   | 31.9%      |
+|  3 | Serie A        |        31 |       2530 |      1025 |    671 |       834 | 40.5%      | 26.5%   | 33.0%      |
+|  4 | Ligue 1        |        28 |       2229 |       962 |    546 |       721 | 43.2%      | 24.5%   | 32.3%      |

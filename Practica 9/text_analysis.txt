@@ -57,3 +57,58 @@ diversidad de vocabulario por liga
 |  2 | Bundesliga     |        27 |       2032 |       883 |    501 |       648 | 43.5%      | 24.7%   | 31.9%      |
 |  3 | Serie A        |        31 |       2530 |      1025 |    671 |       834 | 40.5%      | 26.5%   | 33.0%      |
 |  4 | Ligue 1        |        28 |       2229 |       962 |    546 |       721 | 43.2%      | 24.5%   | 32.3%      |
+
+corpus de descripciones narrativas de partidos
+  total palabras corpus narrativo: 105549
+  palabras únicas               : 159
+|    | Palabra       |   Frecuencia |
+|----+---------------+--------------|
+|  0 | gana          |        26580 |
+|  1 | goles         |         8996 |
+|  2 | victoria      |         8860 |
+|  3 | buen          |         4498 |
+|  4 | partido       |         4498 |
+|  5 | golazo        |         3624 |
+|  6 | muchosgoles   |         3624 |
+|  7 | empate        |         2991 |
+|  8 | Draw          |         2991 |
+|  9 | PremierLeague |         2541 |
+| 10 | SerieA        |         2530 |
+| 11 | LaLiga        |         2519 |
+| 12 | Ligue1        |         2229 |
+| 13 | Bundesliga    |         2032 |
+| 14 | goleada       |         1812 |
+  guardado: img/wordcloud_narrativo.png
+
+frecuencia relativa de equipos por liga
+|    | Liga           | Equipo         |   Apariciones | % del total   |
+|----+----------------+----------------+---------------+---------------|
+|  0 | Premier League | Arsenal        |           255 | 5.0%          |
+|  1 | Premier League | Wolves         |           255 | 5.0%          |
+|  2 | Premier League | Liverpool      |           254 | 5.0%          |
+|  3 | Premier League | West Ham       |           254 | 5.0%          |
+|  4 | Premier League | Crystal Palace |           254 | 5.0%          |
+|  5 | La Liga        | Ath Bilbao     |           252 | 5.0%          |
+|  6 | La Liga        | Celta          |           252 | 5.0%          |
+|  7 | La Liga        | Valencia       |           252 | 5.0%          |
+|  8 | La Liga        | Villarreal     |           252 | 5.0%          |
+|  9 | La Liga        | Betis          |           252 | 5.0%          |
+| 10 | Bundesliga     | Bayern Munich  |           226 | 5.6%          |
+| 11 | Bundesliga     | Dortmund       |           226 | 5.6%          |
+| 12 | Bundesliga     | Freiburg       |           226 | 5.6%          |
+| 13 | Bundesliga     | Wolfsburg      |           226 | 5.6%          |
+| 14 | Bundesliga     | M'gladbach     |           226 | 5.6%          |
+| 15 | Serie A        | Fiorentina     |           253 | 5.0%          |
+| 16 | Serie A        | Udinese        |           253 | 5.0%          |
+| 17 | Serie A        | Roma           |           253 | 5.0%          |
+| 18 | Serie A        | Torino         |           253 | 5.0%          |
+| 19 | Serie A        | Verona         |           253 | 5.0%          |
+| 20 | Ligue 1        | Monaco         |           232 | 5.2%          |
+| 21 | Ligue 1        | Marseille      |           232 | 5.2%          |
+| 22 | Ligue 1        | Brest          |           232 | 5.2%          |
+| 23 | Ligue 1        | Nice           |           232 | 5.2%          |
+| 24 | Ligue 1        | Lille          |           232 | 5.2%          |
+  guardado: img/wordcloud_freq_equipos_liga.png
+
+nube final con colormap de frecuencia continua
+  guardado: img/wordcloud_equipos_freq.png

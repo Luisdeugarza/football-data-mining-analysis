@@ -272,7 +272,7 @@ plt.close()
 print("  guardado: img/wordcloud_por_temporada.png")
 
 
-# calculé la diversidad de vocabulario por liga  de que quipos únicos y distribución
+# calculé la diversidad de vocabulario por liga — equipos únicos y distribución
 # de resultados para complementar lo visual con números concretos
 
 print("\ndiversidad de vocabulario por liga")
@@ -295,3 +295,138 @@ for liga, nombre in LIGAS_NAME.items():
     })
 
 print_tabulate(pd.DataFrame(resumen_vocab))
+
+
+# construí un corpus de descripciones de partidos en texto natural
+# formé una frase por partido describiendo el resultado y los goles
+# así el análisis de texto tiene contenido narrativo real y no solo nombres
+
+print("\ncorpus de descripciones narrativas de partidos")
+
+descripciones = []
+for _, row in df.iterrows():
+    home   = row["HomeTeam"].replace(" ", "")
+    away   = row["AwayTeam"].replace(" ", "")
+    ftr    = row["FTR_text"]
+    goles  = int(row["FTHG"] + row["FTAG"])
+    liga   = row["Liga_text"]
+
+    if ftr == "HomeWin":
+        desc = f"{home} victoria {home} gana gana gana {liga}"
+    elif ftr == "AwayWin":
+        desc = f"{away} victoria {away} gana gana gana {liga}"
+    else:
+        desc = f"empate Draw {home} {away} {liga}"
+
+    if goles == 0:
+        desc += " cerogoles sinGoles"
+    elif goles >= 5:
+        desc += " golazo golazo goleada muchosgoles muchosgoles"
+    elif goles >= 3:
+        desc += " goles goles buen partido"
+
+    descripciones.append(desc)
+
+corpus_narrativo = " ".join(descripciones)
+contador_narrativo = Counter(corpus_narrativo.split())
+top15_narrativo    = contador_narrativo.most_common(15)
+
+print(f"  total palabras corpus narrativo: {len(corpus_narrativo.split())}")
+print(f"  palabras únicas               : {len(contador_narrativo)}")
+
+df_narr = pd.DataFrame(top15_narrativo, columns=["Palabra", "Frecuencia"])
+print_tabulate(df_narr)
+
+wc_narrativo = WordCloud(
+    background_color="white",
+    width=1400,
+    height=600,
+    min_font_size=8,
+    max_words=120,
+    colormap="RdYlGn",
+    collocations=False,
+).generate(corpus_narrativo)
+
+plt.figure(figsize=(14, 6))
+plt.imshow(wc_narrativo, interpolation="bilinear")
+plt.axis("off")
+plt.title("Wordcloud narrativo — victoria, empate, goleada, liga",
+          fontweight="bold", fontsize=13)
+plt.tight_layout(pad=0.5)
+plt.savefig(os.path.join(IMG_DIR, "wordcloud_narrativo.png"), dpi=150,
+            bbox_inches="tight")
+plt.close()
+print("  guardado: img/wordcloud_narrativo.png")
+
+
+# calculé la frecuencia relativa de cada equipo respecto al total de su liga
+# para ver qué equipo domina más el vocabulario dentro de su competición
+
+print("\nfrecuencia relativa de equipos por liga")
+
+resumen_freq = []
+for liga, nombre in LIGAS_NAME.items():
+    sub    = df[df["Div"] == liga]
+    total  = len(sub) * 2
+    cnt    = Counter(sub["HomeTeam"].tolist() + sub["AwayTeam"].tolist())
+    top5   = cnt.most_common(5)
+    for equipo, freq in top5:
+        resumen_freq.append({
+            "Liga":      nombre,
+            "Equipo":    equipo,
+            "Apariciones": freq,
+            "% del total": f"{freq/total*100:.1f}%",
+        })
+
+print_tabulate(pd.DataFrame(resumen_freq))
+
+# grafiqué la frecuencia relativa del top 5 por liga en barras agrupadas
+
+fig, axes = plt.subplots(1, 5, figsize=(18, 5), sharey=False)
+for i, (liga, nombre) in enumerate(LIGAS_NAME.items()):
+    sub_freq = [r for r in resumen_freq if r["Liga"] == nombre]
+    equipos_f = [r["Equipo"] for r in sub_freq]
+    aparic_f  = [r["Apariciones"] for r in sub_freq]
+    axes[i].barh(equipos_f[::-1], aparic_f[::-1],
+                 color=LIGA_COLORS[liga], alpha=0.85)
+    axes[i].set_title(nombre, fontweight="bold", fontsize=9,
+                      color=LIGA_COLORS[liga])
+    axes[i].set_xlabel("apariciones", fontsize=8)
+    axes[i].tick_params(axis='y', labelsize=7)
+
+plt.suptitle("Top 5 equipos por apariciones en cada liga",
+             fontweight="bold", fontsize=13)
+plt.tight_layout()
+plt.savefig(os.path.join(IMG_DIR, "wordcloud_freq_equipos_liga.png"), dpi=130,
+            bbox_inches="tight")
+plt.close()
+print("  guardado: img/wordcloud_freq_equipos_liga.png")
+
+
+# generé la figura comparativa final — nube global de equipos coloreada
+# por frecuencia usando un colormap continuo para mostrar quién aparece más
+
+print("\nnube final con colormap de frecuencia continua")
+
+freq_dict = Counter(df["HomeTeam"].tolist() + df["AwayTeam"].tolist())
+
+wc_freq = WordCloud(
+    background_color="black",
+    width=1600,
+    height=800,
+    min_font_size=6,
+    max_words=200,
+    colormap="plasma",
+    collocations=False,
+).generate_from_frequencies(freq_dict)
+
+plt.figure(figsize=(16, 8), facecolor="black")
+plt.imshow(wc_freq, interpolation="bilinear")
+plt.axis("off")
+plt.title("Equipos del fútbol europeo 2019-2026 — tamaño proporcional a apariciones",
+          fontweight="bold", fontsize=13, color="white", pad=10)
+plt.tight_layout(pad=0.5)
+plt.savefig(os.path.join(IMG_DIR, "wordcloud_equipos_freq.png"), dpi=150,
+            bbox_inches="tight", facecolor="black")
+plt.close()
+print("  guardado: img/wordcloud_equipos_freq.png")

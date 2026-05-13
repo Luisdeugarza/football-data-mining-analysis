@@ -1,0 +1,32 @@
+análisis de texto — corpus global
+  total tokens     : 59255
+  tokens únicos    : 157
+  caracteres total : 528671
+
+top 20 tokens más frecuentes:
+|    | Token         |   Frecuencia |
+|----+---------------+--------------|
+|  0 | HomeWin       |         5102 |
+|  1 | AwayWin       |         3758 |
+|  2 | Draw          |         2991 |
+|  3 | PremierLeague |         2541 |
+|  4 | SerieA        |         2530 |
+|  5 | LaLiga        |         2519 |
+|  6 | Ligue1        |         2229 |
+|  7 | Bundesliga    |         2032 |
+|  8 | Season2021    |         1826 |
+|  9 | Season2122    |         1826 |
+| 10 | Season2223    |         1826 |
+| 11 | Season2324    |         1752 |
+| 12 | Season2425    |         1751 |
+| 13 | Season1920    |         1725 |
+| 14 | Season2526    |         1145 |
+| 15 | Wolves        |          255 |
+| 16 | Arsenal       |          255 |
+| 17 | Liverpool     |          254 |
+| 18 | WestHam       |          254 |
+| 19 | ManCity       |          254 |
+
+  guardado: img/wordcloud_global.png
+  guardado: img/wordcloud_equipos.png
+  guardado: img/wordcloud_top20_barras.png

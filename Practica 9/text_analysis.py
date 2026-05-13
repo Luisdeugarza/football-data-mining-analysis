@@ -1,0 +1,157 @@
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+
+import warnings
+warnings.filterwarnings("ignore")
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+from collections import Counter
+import os
+from tabulate import tabulate
+
+BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "..", "Practica 1", "data", "clean", "football_clean.csv")
+IMG_DIR   = os.path.join(BASE_DIR, "img")
+os.makedirs(IMG_DIR, exist_ok=True)
+
+def print_tabulate(df: pd.DataFrame):
+    print(tabulate(df, headers=df.columns, tablefmt="orgtbl"))
+
+LIGAS_NAME = {
+    "E0": "Premier League",
+    "SP1": "La Liga",
+    "D1":  "Bundesliga",
+    "I1":  "Serie A",
+    "F1":  "Ligue 1",
+}
+LIGA_COLORS = {
+    "E0":  "#3498db",
+    "SP1": "#e74c3c",
+    "D1":  "#f39c12",
+    "I1":  "#2ecc71",
+    "F1":  "#9b59b6",
+}
+FTR_MAP = {
+    "H": "HomeWin",
+    "D": "Draw",
+    "A": "AwayWin",
+}
+
+
+# cargué el dataset y construí el corpus de texto a partir de las columnas categóricas
+# usé equipos, ligas y resultados porque son los campos más ricos en vocabulario
+
+df = pd.read_csv(DATA_PATH, parse_dates=["Date"])
+
+df["FTR_text"] = df["FTR"].map(FTR_map := {
+    "H": "HomeWin",
+    "D": "Draw",
+    "A": "AwayWin",
+})
+df["Season_label"] = df["Season"].map({
+    1920: "Season1920", 2021: "Season2021", 2122: "Season2122",
+    2223: "Season2223", 2324: "Season2324", 2425: "Season2425", 2526: "Season2526",
+})
+df["Liga_text"] = df["Div"].map(LIGAS_NAME).str.replace(" ", "")
+
+
+# construí el corpus global concatenando todas las columnas de texto relevantes
+# repetí los equipos proporcional a sus apariciones para que el tamaño en la nube refleje frecuencia real
+
+tokens_global = []
+for _, row in df.iterrows():
+    tokens_global += [
+        row["HomeTeam"].replace(" ", ""),
+        row["AwayTeam"].replace(" ", ""),
+        row["Liga_text"],
+        row["FTR_text"],
+        row["Season_label"],
+    ]
+
+corpus_global = " ".join(tokens_global)
+
+print("análisis de texto — corpus global")
+print(f"  total tokens     : {len(tokens_global)}")
+print(f"  tokens únicos    : {len(set(tokens_global))}")
+print(f"  caracteres total : {len(corpus_global)}")
+
+
+# calculé las frecuencias con Counter para mostrar las palabras más comunes
+# antes de generar la nube
+
+contador = Counter(tokens_global)
+top_20   = contador.most_common(20)
+
+print("\ntop 20 tokens más frecuentes:")
+df_top = pd.DataFrame(top_20, columns=["Token", "Frecuencia"])
+print_tabulate(df_top)
+
+
+# generé la wordcloud global con todos los partidos de las 5 ligas
+# usé fondo negro para que los colores resalten más
+
+wordcloud_global = WordCloud(
+    background_color="black",
+    width=1400,
+    height=700,
+    min_font_size=8,
+    max_words=200,
+    colormap="Set2",
+    collocations=False,
+).generate(corpus_global)
+
+plt.figure(figsize=(14, 7), facecolor="black")
+plt.imshow(wordcloud_global, interpolation="bilinear")
+plt.axis("off")
+plt.tight_layout(pad=0)
+plt.savefig(os.path.join(IMG_DIR, "wordcloud_global.png"), dpi=150,
+            bbox_inches="tight", facecolor="black")
+plt.close()
+print("\n  guardado: img/wordcloud_global.png")
+
+
+# generé una wordcloud separada solo con nombres de equipos
+# para ver cuáles dominan en presencia histórica en el dataset
+
+tokens_equipos = [row["HomeTeam"].replace(" ", "") for _, row in df.iterrows()] + \
+                 [row["AwayTeam"].replace(" ", "") for _, row in df.iterrows()]
+
+wordcloud_equipos = WordCloud(
+    background_color="white",
+    width=1400,
+    height=700,
+    min_font_size=8,
+    max_words=150,
+    colormap="tab20",
+    collocations=False,
+).generate(" ".join(tokens_equipos))
+
+plt.figure(figsize=(14, 7))
+plt.imshow(wordcloud_equipos, interpolation="bilinear")
+plt.axis("off")
+plt.tight_layout(pad=0)
+plt.savefig(os.path.join(IMG_DIR, "wordcloud_equipos.png"), dpi=150,
+            bbox_inches="tight")
+plt.close()
+print("  guardado: img/wordcloud_equipos.png")
+
+
+# grafiqué el top 20 en barras para complementar la nube con información cuantitativa
+
+fig, ax = plt.subplots(figsize=(12, 6))
+tokens_top = [t[0] for t in top_20]
+freqs_top  = [t[1] for t in top_20]
+colors_bar = ["#3498db" if f > 2000 else "#2ecc71" if f > 500 else "#e74c3c"
+               for f in freqs_top]
+
+ax.barh(tokens_top[::-1], freqs_top[::-1], color=colors_bar[::-1], alpha=0.85)
+ax.set_xlabel("frecuencia")
+ax.set_title("Top 20 tokens más frecuentes en el corpus de fútbol europeo",
+             fontweight="bold")
+plt.tight_layout()
+plt.savefig(os.path.join(IMG_DIR, "wordcloud_top20_barras.png"), dpi=130)
+plt.close()
+print("  guardado: img/wordcloud_top20_barras.png")
